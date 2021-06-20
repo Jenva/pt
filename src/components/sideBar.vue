@@ -1,32 +1,108 @@
 <template>
-  <div class="sideBar">
-    <window-top-title></window-top-title>
-    <div class="content">
-      <slot></slot>
+  <div class="side-bar" v-show="showModal">
+    <div class="content" ref="modalContent">
+      <window-top-title :title="title" class="title" @close="closeModal"></window-top-title>
+      <div class="table">
+        <slot></slot>
+      </div>
+      <div class="bottom-nav">
+        <el-button size="small" @click="closeModal">关闭</el-button>
+        <el-button type="primary" size="small" @click="closeModal">确定</el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import windowTopTitle from './windowTopTitle.vue'
+import windowTopTitle  from '@/components/windowTopTitle'
 export default {
+  props: {
+    title: {
+      type: String,
+      default: '查看'
+    }
+  },
   components: {
     windowTopTitle
   },
   data () {
     return {
-
+      showModal: false
     }
   },
-  mounted () {
+  watch: {
+    showModal (data) {
+      if (data) {
+        setTimeout(() => {
+          this.$refs.modalContent.classList = 'content show'
+        })
+        document.documentElement.style.overflowY = 'hidden'
+      } else {
+        document.documentElement.style.overflowY = 'auto'
+      }
+    }
   },
   methods: {
+    showList () {
+      this.showModal = true
+    },
+    closeModal () {
+      setTimeout(() => {
+        this.$refs.modalContent.classList = 'content'
+      })
+      setTimeout(() => {
+        this.showModal = false
+      }, 600)
+      this.$emit('close')
+    }
   }
 }
-</script>
+</script> 
 
 <style lang="less" scoped>
-.content {
-  padding: 24px;
+.side-bar {
+  position: fixed;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 2000;
+  .content {
+    position: absolute;
+    width: 40%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    right: -40%;
+    background: #21232d;
+    transition: right 0.8s;
+    padding-bottom: 60px;
+    .title {
+      border-top: 1px dashed #13585c;
+      border-bottom: 1px dashed #13585c;
+    }
+    .table {
+      padding: 40px 24px 24px;
+      .page {
+        margin-top: 20px;
+        text-align: right;
+      }
+    }
+    .bottom-nav {
+      position: absolute;
+      width: 100%;
+      height: 60px;
+      bottom: 60px;
+      right: 0;
+      text-align: center;
+      border-top: 1px solid #13585c;
+      border-bottom: 1px solid #13585c;
+      line-height: 60px;
+    }
+  }
+  .content.show {
+    right: 0;
+  }
 }
 </style>

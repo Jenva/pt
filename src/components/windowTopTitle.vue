@@ -2,7 +2,7 @@
   <div class="top-title">
     <img src="../assets/live_icon_title_normal.png" alt="" class="icon">
     <span class="text">{{title}}</span>
-    <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+    <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="close">
   </div>
 </template>
 
@@ -22,6 +22,9 @@ export default {
   mounted () {
   },
   methods: {
+    close () {
+      this.$emit('close')
+    }
   }
 }
 </script>
@@ -36,6 +39,7 @@ export default {
   .close {
     width: 24px;
     height: 24px;
+    cursor: pointer;
   }
   .text {
     flex: 6;

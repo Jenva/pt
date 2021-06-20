@@ -11,6 +11,10 @@ li {
   list-style: none;
 }
 
+body,html {
+  height: 100%;
+}
+
 .el-button--goon.is-active,
 .el-button--goon:active {
   background: #1d4b56;
@@ -29,4 +33,110 @@ li {
   color: #FFF;
   background-color: #1d4b56;
   border-color: #1d4b56;
+}
+
+.el-button--primary.is-active,
+.el-button--primary:active {
+  background: #31dbe4;
+  border-color: #31dbe4;
+  color: #fff;
+}
+
+.el-button--primary:focus,
+.el-button--primary:hover {
+  background: #2abfc7;
+  border-color: #2abfc7;
+  color: #fff;
+}
+
+.el-button--primary {
+  color: #FFF;
+  background-color: #209399;
+  border-color: #209399;
+}
+
+.el-button--default.is-active,
+.el-button--default:active {
+  background: rgba(0,0,0,0);
+  border-color: #209399;
+  color: #fff;
+}
+
+.el-button--default:focus,
+.el-button--default:hover {
+  background: rgba(0,0,0,0.3);
+  border-color: #209399;
+  color: #fff;
+}
+
+.el-button--default {
+  color: #FFF;
+  background-color: rgba(0,0,0,0);
+  border-color: #209399;
+}
+
+
+.el-table th, .el-table tr, .el-table__empty-block, .el-table, .el-table__expanded-cell  {
+  background: #21232d!important;
+  color: #fff;
+}
+.el-table tbody tr:hover>td {
+  /* color: #000; */
+  background-color: #1d1d1d!important;
+}
+.el-table td, .el-table th.is-leaf {
+  border-bottom: 1px solid #13585c!important;
+}
+.el-table--border td, .el-table--border th {
+  border-right: 1px solid #13585c!important;
+}
+.el-table--border, .el-table--group {
+  border: 1px solid #13585c!important;
+}
+.hidden-columns .gutter:last-of-type {
+  border-right: 1px solid #13585c!important;
+}
+.el-table::before,
+.el-table--border:after {
+  background-color: #13585c!important;
+}
+.el-form-item__label {
+  color: #fff!important;
+}
+.el-input__inner,
+.el-range-input {
+  background: #1a2129!important;
+  color: #fff!important;
+}
+
+.el-range-separator {
+  color: #fff!important;
+}
+
+.el-tree {
+  background: #21232d;
+  color: #fff;
+}
+.el-tree-node__content:hover,
+.el-tree-node:focus>.el-tree-node__content {
+  background: #a2a4a7;
+}
+
+.el-dialog, .el-pager li {
+  background: #21232d;
+}
+
+.el-pagination,
+.el-pagination__total ,
+.el-pagination__jump {
+  color: #fff!important;
+}
+
+.el-pagination button:disabled {
+  background: #21232d!important;
+  color: #21232d!important;
+}
+.el-pagination button {
+  color:#fff!important;
+  background: #21232d!important;
 }

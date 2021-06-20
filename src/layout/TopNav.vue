@@ -65,10 +65,12 @@ export default {
           normalIcon: require('../assets/nav_tool/nav_icon_passengerflowmanagement_normal.png'),
           children: [
             {
-              title: '五类车监控'
+              title: '五类车监控',
+              route: '/vehicleMonitor'
             },
             {
-              title: '五类车统计列表'
+              title: '五类车统计列表',
+              route: '/statList'
             },
             {
               title: '五类车统计报表'
@@ -76,18 +78,42 @@ export default {
           ]
         },
         {
-          title: '实况监控',
+          title: '客流管理',
           route: '/monitor2',
           clickIcon: require('../assets/nav_tool/nav_icon_live_click.png'),
           hoverIcon: require('../assets/nav_tool/nav_icon_live_hover.png'),
-          normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png')
+          normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png'),
+          children: [
+            {
+              title: '客流监控',
+              route: '/psgFlowMonitor'
+            },
+            {
+              title: '客流统计列表',
+              route: '/psgFlowStatList'
+            },
+            {
+              title: '客流实时热力地图',
+              route: '/psgFlowHeatMap'
+            },
+            {
+              title: '客流任务启动设置',
+              route: '/psgFlowTaskManager'
+            },
+          ]
         },
         {
-          title: '实况监控',
+          title: '系统管理',
           route: '/monitor3',
           clickIcon: require('../assets/nav_tool/nav_icon_live_click.png'),
           hoverIcon: require('../assets/nav_tool/nav_icon_live_hover.png'),
-          normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png')
+          normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png'),
+          children: [
+            {
+              title: '分组管理',
+              route: '/groupManager'
+            }
+          ]
         }
       ]
     }
@@ -172,7 +198,7 @@ export default {
       display: inline-block;
       font-size: 28px;
       color: #fff;
-      line-height: 70px;
+      line-height: 64px;
     }
   }
   .user-info {

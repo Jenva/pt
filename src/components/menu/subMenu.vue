@@ -14,7 +14,7 @@
       <ul class="child-list" ref="child-list">
         <!-- <div class="top"></div> -->
         <!-- <li>测试sssssssssssssssssssssssssssssssssss</li> -->
-        <li v-for="(item, index) in menu.children" :key="index">{{ item.title }}</li>
+        <li v-for="(item, index) in menu.children" :key="index" @click="changeRoute(item.route)">{{ item.title }}</li>
         <!-- <div class="bottom"></div> -->
       </ul>
     </div>
@@ -159,6 +159,7 @@ export default {
     // transform: translateX(50%);
     // border-image-source: url('../../assets/nav_tool/nav-content.png');
     // border-image-slice: 18 2 12 2;
+    z-index: 1000;
     .child-list{
       position: relative;
       border: 1px solid #2dccd3;
