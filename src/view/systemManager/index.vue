@@ -146,7 +146,7 @@ export default {
   methods: {
     showSideBar (type, data) {
       this.type = type
-      this.title = type.indexOf('add') ? '新增' : '修改'
+      this.title = type.indexOf('add') > -1 ? '新增' : '修改'
       this.formData = data || {}
       this.$refs.sideBar.showList()
     }
