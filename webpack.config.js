@@ -7,8 +7,8 @@ module.exports = {
       '@': './src'
     },
     output: {
-        path: './build',
-        filename: 'bundle.js'
+      path: './build',
+      filename: 'bundle.js'
     },
     module: {
       rules: {

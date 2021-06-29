@@ -7,7 +7,7 @@
       </div>
       <div class="bottom-nav">
         <el-button size="small" @click="closeModal">关闭</el-button>
-        <el-button type="primary" size="small" @click="closeModal">确定</el-button>
+        <el-button type="primary" size="small" @click="confirm">确定</el-button>
       </div>
     </div>
   </div>
@@ -45,6 +45,10 @@ export default {
   methods: {
     showList () {
       this.showModal = true
+    },
+    confirm () {
+      this.$emit('confirm')
+      this.closeModal()
     },
     closeModal () {
       setTimeout(() => {

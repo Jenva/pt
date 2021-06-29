@@ -11,73 +11,70 @@
       <el-button type="primary" @click="showSideBar('addGroup')">创建分组</el-button>
     </div>
     <div class="system-table">
-      <el-table :data="tableList">
+      <el-table :data="data" :loading="loading">
         <el-table-column align="center" type="expand">
-          <template slot-scope>
+          <template slot-scope="scope">
             <div class="three">
-              <el-table :data="tableList" :show-header="false">
+              <el-table :data="scope.row.children" :show-header="false">
                 <el-table-column align="center" type="expand">
-                  <template slot-scope>
+                  <template slot-scope="scope">
                     <div style="padding-left: 80px;">
-                      <el-table :data="tableList" :show-header="false">
-                        <el-table-column label="所属分组" prop="groupName" align="center">
-                          <template>
-                            <span>试试</span>
-                          </template>
+                      <el-table :data="scope.row.children" :show-header="false">
+                        <el-table-column label="所属分组" prop="name" align="center">
                         </el-table-column>
-                        <el-table-column label="摄像机名称" prop="gun" align="center"></el-table-column>
-                        <el-table-column label="所属服务器" prop="serve" align="center"></el-table-column>
+                        <el-table-column label="摄像机名称" prop="device" align="center"></el-table-column>
+                        <el-table-column label="所属服务器" prop="server" align="center"></el-table-column>
                         <el-table-column label="操纵" align="center">
                           <template slot-scope="scope">
-                            <el-button type="text" @click="showSideBar('editArea', scope.row)">编辑分区</el-button>
+                            <el-button type="text" @click="showSideBar('editGroup', scope.row)">编辑分区</el-button>
                             <el-button type="text" @click="showSideBar('addAnalyse', scope.row)">添加分析</el-button>
-                            <el-button type="text">删除区域</el-button>
+                            <el-button type="text" @click="showSideBar('addCamera', scope.row)">绑定视频枪</el-button>
+                            <el-button type="text" @click="deleteGroup(scope.row.id)">删除区域</el-button>
                           </template>
                         </el-table-column>
                       </el-table>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column label="所属分组" prop="groupName" align="center"></el-table-column>
-                <el-table-column label="摄像机名称" prop="gun" align="center"></el-table-column>
-                <el-table-column label="所属服务器" prop="serve" align="center"></el-table-column>
+                <el-table-column label="所属分组" prop="name" align="center"></el-table-column>
+                <el-table-column label="摄像机名称" prop="device" align="center"></el-table-column>
+                <el-table-column label="所属服务器" prop="server" align="center"></el-table-column>
                 <el-table-column label="操纵" align="center">
                   <template slot-scope="scope">
-                    <el-button type="text" @click="showSideBar('editArea', scope.row)">编辑分区</el-button>
+                    <el-button type="text" @click="showSideBar('addGroup', scope.row)">添加分区</el-button>
+                    <el-button type="text" @click="showSideBar('editGroup', scope.row)">编辑分区</el-button>
                     <el-button type="text" @click="showSideBar('addAnalyse', scope.row)">添加分析</el-button>
-                    <el-button type="text">删除区域</el-button>
+                    <el-button type="text" @click="showSideBar('addCamera', scope.row)">绑定视频枪</el-button>
+                    <el-button type="text" @click="deleteGroup(scope.row.id)">删除区域</el-button>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="所属分组" prop="groupName" align="center"></el-table-column>
-        <el-table-column label="摄像机名称" prop="gun" align="center"></el-table-column>
-        <el-table-column label="所属服务器" prop="serve" align="center"></el-table-column>
+        <el-table-column label="所属分组" prop="name" align="center"></el-table-column>
+        <el-table-column label="摄像机名称" prop="device" align="center"></el-table-column>
+        <el-table-column label="所属服务器" prop="server" align="center"></el-table-column>
         <el-table-column label="操纵" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="showSideBar('editGroup', scope.row)">编辑</el-button>
-            <el-button type="text" @click="showSideBar('addArea')">添加分区</el-button>
-            <el-button type="text">删除分组</el-button>
+            <el-button type="text" @click="showSideBar('addGroup', scope.row)">添加分区</el-button>
+            <el-button type="text" @click="deleteGroup(scope.row.id)">删除分组</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- <el-tree :data="data" :props="defaultProps"></el-tree> -->
     </div>
-    <side-bar ref="sideBar" :title="title">
+    <side-bar ref="sideBar" :title="title" @confirm="confirm">
       <el-form :model="formData" label-position="left">
         <el-form-item label="分组名称：" v-if="type.indexOf('Group') > 0">
-          <el-input v-model="formData.groupName" style="width: 80%"></el-input>
-        </el-form-item>
-        <el-form-item label="区域名称：" v-else-if="type.indexOf('Area') > 0">
-          <el-input v-model="formData.areaName" style="width: 80%"></el-input>
+          <el-input v-model="formData.name" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="功能名称：" v-else-if="type.indexOf('Analyse') > 0">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="设备选择：" v-if="type.indexOf('Group')  === -1">
-          <el-select v-model="formData.device" style="width: 80%" filterable multiple>
+          <el-select v-model="formData.code" style="width: 80%" filterable multiple>
             <el-option value="1" label="10.21.01"></el-option>
             <el-option value="2" label="11.24.01"></el-option>
           </el-select>
@@ -88,6 +85,7 @@
 </template>
 
 <script>
+import groupAPI from '@/api/groupAPI'
 import sideBar from '@/components/sideBar'
 export default {
   components: {
@@ -98,57 +96,78 @@ export default {
       group: '',
       title: '',
       type: '',
+      loading: false,
       tableList: [
         { groupName: '五类车', gun: 111,  serve: '机场总服务器' }
       ],
       formData: {},
-      data: [{
-          label: '一级 1',
-          children: [{
-            label: '二级 1-1',
-            children: [{
-              label: '三级 1-1-1'
-            }]
-          }]
-        }, {
-          label: '一级 2',
-          children: [{
-            label: '二级 2-1',
-            children: [{
-              label: '三级 2-1-1'
-            }]
-          }, {
-            label: '二级 2-2',
-            children: [{
-              label: '三级 2-2-1'
-            }]
-          }]
-        }, {
-          label: '一级 3',
-          children: [{
-            label: '二级 3-1',
-            children: [{
-              label: '三级 3-1-1'
-            }]
-          }, {
-            label: '二级 3-2',
-            children: [{
-              label: '三级 3-2-1'
-            }]
-          }]
-      }],
+      list: [],
+      id: '',
+      data: [],
       defaultProps: {
         children: 'children',
         label: 'label'
       }
     }
   },
+  mounted () {
+    this.getList()
+  },
   methods: {
     showSideBar (type, data) {
       this.type = type
-      this.title = type.indexOf('add') > -1 ? '新增' : '修改'
-      this.formData = data || {}
+      this.title = type.indexOf('add') ? '新增' : '修改'
+      if (type.indexOf('add') > -1) {
+        this.id = data && data.id
+      } else {
+        this.formData = data
+      }
       this.$refs.sideBar.showList()
+    },
+    getList () {
+      this.loading = true
+      groupAPI.getGroupList().then(res => {
+        this.list = res.data.payload
+        const rootNodes = this.list.filter(item => !item.parentId)
+        this.getTree(rootNodes)
+        this.data = rootNodes
+        this.loading = false
+      })
+    },
+    getTree (data) {
+      for (let i = 0; i < data.length; i++) {
+        const rootNode = data[i]
+        if (this.list.some(item => item.parentId === rootNode.id)) {
+          rootNode.children = this.list.filter(item => item.parentId === rootNode.id)
+          this.getTree(rootNode.children)
+        }
+      }
+    },
+    deleteGroup (id) {
+      groupAPI.deleteGroup(id).then(() => {
+        this.getList()
+      })
+    },
+    confirm () {
+      const params = {}
+      if (this.type.indexOf('Group') > 0) {
+        params.type = 0
+        params.parentId = this.id || 0
+      }
+      if (this.type.indexOf('Area') > 0) {
+        console.log(this.id)
+        params.type = 1
+        params.parentId = this.formData.id || this.id
+      }
+      if (this.formData.name) {
+        params.name = this.formData.name
+      }
+      if (this.formData.code.length) {
+        params.code = this.formData.code
+      }
+      groupAPI.addGroup(params).then(() => {
+        this.getList()
+      })
     }
   }
 }
