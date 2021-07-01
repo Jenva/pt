@@ -1,5 +1,6 @@
 module.exports = {
   devServer: {
+    port: 1000,
     proxy: {
         '/test': {  // 'demo'是请求地址中，以demo开头都适用这个
             target: 'http://192.10.14.21:21314', // 真实的服务器地址
