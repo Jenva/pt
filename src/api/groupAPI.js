@@ -13,6 +13,12 @@ export default {
       url, params
     )
   },
+  editGroup (id, params) {
+    const url = `/group/edit/${id}`
+    return APIHelper.createAxios().put(
+      url, params
+    )
+  },
   deleteGroup (id) {
     const url = `/group/delete/${id}`
     return APIHelper.createAxios().delete(
