@@ -66,7 +66,7 @@
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="设备选择：" v-if="type > 1">
-          <el-select v-model="formData.cameraInfo" style="width: 80%" filterable multiple>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable>
             <el-option :value="info.id" :label="info.cameraName" v-for="info in camera" :key="info.id"></el-option>
           </el-select>
         </el-form-item>
@@ -203,18 +203,13 @@ export default {
     },
     handleCamera () {
       const params = {}
-      const cameraList = this.camera
-      .filter(item => this.formData.cameraInfo.includes(item.id))
-      .map(item => {
-        return {
-          cameraId: item.id,
-          cameraName: item.cameraName,
-          groupId: this.id
-        }
-      })
+      const selectedCamera = this.camera
+      .find(item => this.formData.cameraId === item.id)
+      params.cameraId = selectedCamera.id
+      params.cameraName = selectedCamera.cameraName
+      params.groupId = this.id
       if (this.handleType === 'add') {
-        params.parentId = this.formData.id || 0
-        groupAPI.saveCamera(cameraList).then(() => {
+        groupAPI.saveCamera(params).then(() => {
           this.getList()
         })
       }
