@@ -24,7 +24,7 @@
             </el-input>
           </el-form-item>
         </el-form>
-        <el-button type="primary" class="login-btn">登录</el-button>
+        <el-button type="primary" class="login-btn" @click="login">登录</el-button>
       </div>
     </div>
   </div>
@@ -35,6 +35,32 @@ export default {
   data () {
     return {
       formData: {}
+    }
+  },
+  methods: {
+    login () {
+      const bykj = window.bykj
+      const cxxNotifier = (cmd, msg) => {
+        console.log('js received:' + cmd + ' body:' + msg);
+        bykj.frameCall('test',msg);  
+        if(cmd=='userpswd'){
+          //send login response to c++
+          let jsonBody = {
+            uri:'',
+            sql:'127.0.0.1;9394;test;test;dbha2;',
+            name:'管理员'
+          };
+          let jsonstr = JSON.stringify(jsonBody);
+          console.log(jsonstr)
+          bykj.frameCall('logined',jsonstr);  
+          //_frameCall('logined',jsonstr);              		
+        }
+      }
+      //register c++ callback function
+      bykj.frameRegister(cxxNotifier)
+      //_frameRegister(cxxNotifier);
+      //获取用户 密码 
+      bykj.frameCall('userpswd','{}')
     }
   }
 }

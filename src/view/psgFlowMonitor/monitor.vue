@@ -48,10 +48,80 @@ export default {
       ]
     }
   },
+  mounted () {
+    // this.frameRegister()
+  },
+  beforeDestroy () {
+    // this.destroyVideo()
+  },
   methods: {
     handleNodeClick (data) {
       console.log(data)
       this.createVideo()
+    },
+    frameRegister () {
+      const cxxNotifier = (cmd) => {
+        switch (cmd) {
+          case 'stopplay':
+            this.stopVideo()
+            break
+          case 'startplay':
+            this.stopVideo()
+            break
+          case 'destroyplayer':
+            this.destroyVideo()
+            break
+          default:
+            break
+        }
+      }
+      window.bykj.frameRegister(cxxNotifier);
+    },
+    createVideo () {
+      const rect = document.querySelector('.video').getBoundingClientRect()
+      console.log(rect)
+      const json = {
+        players: [
+          { 
+            id: 'psg-flow-monitor-1',
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height
+          }
+        ]
+      }
+      window.bykj.frameCall('createplayer', JSON.stringify(json))
+    },
+    startVideo () {
+      var json={
+        players: [{
+          id: 'psg-flow-monitor-1', 
+          camera:{
+            type:0,
+            domain:"YFGZHOM1.A1",
+            id:	"000002X0000",
+            level: 0,
+          }
+        }]
+      }
+      window.bykj.frameCall('startplay', JSON.stringify(json))
+    },
+    stopVideo () {
+      var json={
+        players:[{
+          id: 'psg-flow-monitor-1'
+        }]
+      }
+      window.bykj.frameCall('stopplay', JSON.stringify(json))
+    },
+    destroyVideo () {
+      var json={
+        players:[{
+          id: 'psg-flow-monitor-1',
+        }]
+      }
+      window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
   }
 }

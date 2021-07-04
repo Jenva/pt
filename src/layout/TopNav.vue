@@ -52,7 +52,7 @@ export default {
       menuList: [
         {
           title: '实况监控',
-          route: '/monitor',
+          route: '/liveMonitor',
           clickIcon: require('../assets/nav_tool/nav_icon_live_click.png'),
           hoverIcon: require('../assets/nav_tool/nav_icon_live_hover.png'),
           normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png')

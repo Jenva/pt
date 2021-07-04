@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/view/login'
 import Layout from '@/layout'
-import liveMonitor from '@/view/liveMonitor'
+import liveMonitor from '@/view/liveMonitor/index'
 import vehicleMonitor from '@/view/vehicle/monitor'
 import statList from '@/view/vehicle/statList'
 import psgFlowMonitor from '@/view/psgFlowMonitor/monitor'
@@ -20,7 +20,7 @@ const router = new Router({
     component: Layout,
     children: [
       {
-        path: '/monitor',
+        path: 'liveMonitor',
         component: liveMonitor
       },
       {
