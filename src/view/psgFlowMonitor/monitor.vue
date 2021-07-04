@@ -130,11 +130,12 @@ export default {
 <style lang="less" scoped>
 .flow-monitor {
   display: flex;
+  min-height: 100%;
+  box-sizing: border-box;
   padding: 24px;
   background: #21232d;
   .task-list {
     width: 354px;
-    height: 870px;
     .task-title {
       width: 126px;
       height: 48px;
@@ -152,7 +153,7 @@ export default {
     }
   }
   .content {
-    flex: 1;
+    width: calc(100% - 354px);
     margin-left: 24px;
     border: 1px solid #13585c;
     .videoContent {

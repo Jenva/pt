@@ -39,6 +39,8 @@ export default {
   },
   methods: {
     login () {
+      this.$store.commit('changeLogined', true)
+      // window.sessionStorage.setItem('logined', true)
       const bykj = window.bykj
       const cxxNotifier = (cmd, msg) => {
         console.log('js received:' + cmd + ' body:' + msg);
@@ -50,6 +52,7 @@ export default {
             sql:'127.0.0.1;9394;test;test;dbha2;',
             name:'管理员'
           };
+          // bykj.saveToken('true')
           let jsonstr = JSON.stringify(jsonBody);
           console.log(jsonstr)
           bykj.frameCall('logined',jsonstr);  

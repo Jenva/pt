@@ -6,6 +6,14 @@
       </div>
       <h1 class="title">视频监控分析平台</h1>
     </div>
+    <div class="nav">
+      <div class="leftArrow" @click="moveMenu('l')"></div>
+      <cust-nav class="cust-nav">
+        <sub-menu :menu="menu" v-for="menu in menuList" :key="menu.route">
+        </sub-menu>
+      </cust-nav>
+      <div class="rightArrow"  @click="moveMenu('r')"></div>
+    </div>
     <div class="user-info">
       <el-row class="user">
         <el-col span="5" class="imgCol">
@@ -29,14 +37,6 @@
           <img src="../assets/nav_tool/nav_icon_closewindow_normal.png" alt="">
         </div>
       </div>
-    </div>
-    <div class="nav">
-      <div class="leftArrow" @click="moveMenu('l')"></div>
-      <cust-nav class="cust-nav">
-        <sub-menu :menu="menu" v-for="menu in menuList" :key="menu.route">
-        </sub-menu>
-      </cust-nav>
-      <div class="rightArrow"  @click="moveMenu('r')"></div>
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ export default {
             },
             {
               title: '五类车统计列表',
-              route: '/statList'
+              route: '/vehicleStatList'
             },
             {
               title: '五类车统计报表'
@@ -147,17 +147,20 @@ export default {
 
 <style lang="less" scoped>
 .top-nav {
+  display: flex;
   width: 100%;
   height: 70px;
   box-sizing: border-box;
   padding: 0 36px 0 41px;
   background: #13151f;
   .nav {
+    flex: 2;
     float: left;
     position: relative;
     height: 100%;
     width: 1177px;
     margin-left: 30px;
+    // overflow: hidden;
     .leftArrow {
       position: absolute;
       left: 0;
@@ -186,6 +189,7 @@ export default {
     }
   }
   .logo {
+    flex: 1;
     float: left;
     .logo-img {
       display: inline-block;
@@ -202,6 +206,7 @@ export default {
     }
   }
   .user-info {
+    flex: 1;
     float: right;
     display: flex;
     width: 264px;

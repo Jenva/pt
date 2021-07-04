@@ -28,7 +28,7 @@ const router = new Router({
         component: vehicleMonitor
       },
       {
-        path: '/statList',
+        path: '/vehicleStatList',
         component: statList
       },
       {

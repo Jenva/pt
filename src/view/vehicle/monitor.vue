@@ -21,7 +21,7 @@
       <div class="content-bottom">
         <div class="title">今日0点至今五类车进出统计表</div>
         <div class="table">
-          <el-table :data="tableList" width="100%">
+          <el-table :data="tableList" style="width: 100%">
             <el-table-column label="汽车" width="240" align="center">
               <el-table-column label="进入" width="80" align="center" prop="enter">
                 <template slot-scope="scope">
@@ -235,14 +235,13 @@ export default {
 <style lang="less" scoped>
 .vehicle-monitor {
   display: flex;
-  width: 100%;
-  height: 100%;
   box-sizing: border-box;
   padding: 24px;
   background: #21232d;
+  overflow: auto;
   .task-list {
     width: 354px;
-    height: 870px;
+    min-height: 100%;
     .task-title {
       width: 126px;
       height: 48px;
@@ -260,14 +259,13 @@ export default {
     }
   }
   .vehicle-content {
-    flex: 1;
+    width: calc(100% - 354px);
     margin-left: 24px;
     padding-bottom: 13px;
     border: 1px solid #13585c;
     .content-main {
       display: flex;
       box-sizing: border-box;
-      width: 100%;
       height: 638px;
       .vehicle-video {
         flex: 1;
