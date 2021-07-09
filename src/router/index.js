@@ -5,6 +5,7 @@ import Layout from '@/layout'
 import liveMonitor from '@/view/liveMonitor/index'
 import vehicleMonitor from '@/view/vehicle/monitor'
 import statList from '@/view/vehicle/statList'
+import vehicleStatistics from '@/view/vehicle/statistics'
 import psgFlowMonitor from '@/view/psgFlowMonitor/monitor'
 import psgFlowStatList from '@/view/psgFlowMonitor/statList'
 import psgFlowHeatMap from '@/view/psgFlowMonitor/heatMap'
@@ -30,6 +31,10 @@ const router = new Router({
       {
         path: '/vehicleStatList',
         component: statList
+      },
+      {
+        path: '/vehicleStatistics',
+        component: vehicleStatistics
       },
       {
         path: '/psgFlowMonitor',

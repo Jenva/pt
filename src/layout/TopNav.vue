@@ -73,7 +73,8 @@ export default {
               route: '/vehicleStatList'
             },
             {
-              title: '五类车统计报表'
+              title: '五类车统计报表',
+              route: '/vehicleStatistics'
             }
           ]
         },

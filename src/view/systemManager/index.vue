@@ -66,7 +66,7 @@
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="设备选择：" v-if="type > 1">
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple>
             <el-option :value="info.id" :label="info.cameraName" v-for="info in camera" :key="info.id"></el-option>
           </el-select>
         </el-form-item>
@@ -96,7 +96,10 @@ export default {
         { cameraName: '10.21.01', id: 1 },
         { cameraName: '10.24.01', id: 2 }
       ],
-      formData: {},
+      formData: {
+        cameraId: []
+      },
+      selectedCameraId: [],
       list: [],
       id: '',
       data: [],
@@ -138,14 +141,12 @@ export default {
     showCamera (type, data) {
       this.type = 2
       this.handleType= type
-      if (type === 'edit') {
-        this.title = '修改'
-        this.formData = data
-      } else {
-        this.id = data && data.id
-        this.title = '新增'
-      }
-      this.$refs.sideBar.showList()
+      this.formData = data
+      this.title = '绑定视频枪'
+      this.getCameraList(data.id)
+      this.$nextTick(() => {
+        this.$refs.sideBar.showList()
+      })
     },
     showAnalyse (type, data) {
       this.type = 3
@@ -158,6 +159,16 @@ export default {
         this.title = '新增'
       }
       this.$refs.sideBar.showList()
+    },
+    getCameraList (id) {
+      const params = { 
+        groupId: id
+      }
+      groupAPI.cameraList(params).then(res => {
+        console.log(res)
+        this.selectedCameraId = res.data.payload.map(item => item.cameraId)
+        this.formData.cameraId = res.data.payload.map(item => item.cameraId)
+      })
     },
     getList () {
       this.loading = true
@@ -202,16 +213,22 @@ export default {
       }
     },
     handleCamera () {
-      const params = {}
-      const selectedCamera = this.camera
-      .find(item => this.formData.cameraId === item.id)
-      params.cameraId = selectedCamera.id
-      params.cameraName = selectedCamera.cameraName
-      params.groupId = this.id
-      if (this.handleType === 'add') {
-        groupAPI.saveCamera(params).then(() => {
-          this.getList()
-        })
+      const cameraIds = this.camera
+        .filter(item => this.formData.cameraId.includes(item.id) )
+      // const selectedCamera = this.camera
+      //   .filter(item => cameraIds.includes(item.id))
+      for (let i = 0; i < cameraIds.length; i++) {
+        let params = {}
+        const element = cameraIds[i]
+        params.cameraId = element.id
+        params.cameraName = element.cameraName
+        params.groupId = this.formData.id
+        console.log(params)
+        if (this.handleType === 'add') {
+          groupAPI.saveCamera(params).then(() => {
+            this.getList()
+          })
+        }
       }
     },
     confirm () {
