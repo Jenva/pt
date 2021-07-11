@@ -12,17 +12,17 @@ Vue.config.productionTip = false
 Vue.prototype.$commonJS = commonJS
 
 
-// router.beforeEach((to, from, next) => {
-//   const isLogined = window.bykj.getToken()
-//   console.log(isLogined)
-//   if (isLogined) {
-//     next()
-//   } else if (to.path === '/login') {
-//     next()
-//   } else {
-//     next('/login')
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  const isLogined = window.bykj && window.bykj.getToken() || true
+  console.log(isLogined)
+  if (isLogined) {
+    next()
+  } else if (to.path === '/login') {
+    next()
+  } else {
+    next('/login')
+  }
+})
 
 new Vue({
   render: h => h(App),

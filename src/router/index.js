@@ -11,6 +11,7 @@ import psgFlowStatList from '@/view/psgFlowMonitor/statList'
 import psgFlowHeatMap from '@/view/psgFlowMonitor/heatMap'
 import psgFlowTaskManager from '@/view/psgFlowMonitor/taskManager'
 import groupManager from '@/view/systemManager'
+import message from '@/components/message'
 
 Vue.use(Router)
 
@@ -61,6 +62,10 @@ const router = new Router({
   {
     path: '/login',
     component: Login
+  },
+  {
+    path: '/message',
+    component: message
   },
 
 ]})

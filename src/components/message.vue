@@ -165,10 +165,15 @@ export default {
     }
   },
   mounted () {
+    this.connectWebsocket()
   },
   methods: {
     selecedTab (type) {
       this.currentTab = type
+    },
+    connectWebsocket() {
+      const websocket = new WebSocket('ws://192.168.1.180:9088')
+      console.log(websocket)
     }
   }
 }

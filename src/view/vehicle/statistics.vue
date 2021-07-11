@@ -1,9 +1,9 @@
 <template>
   <div class="vehicle-statistics">
     <div class="statistics-search">
-      <el-form model="formData">
+      <el-form model="formData" label-width="90px">
         <el-row>
-          <el-col span="5">
+          <el-col span="5" label-width="100px">
             <el-form-item label="时间范围">
               <el-time-picker v-model="formData.starTime"></el-time-picker>
             </el-form-item>
@@ -22,14 +22,14 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col span="5">
+          <el-col span="6">
             <el-form-item label="五类车类型">
               <el-select v-model="formData.vehicleType">
                 <el-option value="1" label="汽车"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col class="statistics-btn" span="4">
+          <el-col class="statistics-btn" span="3">
             <el-button type="primary">查询</el-button>
             <el-button>重置</el-button>
           </el-col>
