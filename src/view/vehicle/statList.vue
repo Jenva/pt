@@ -38,7 +38,7 @@
         <el-table-column label="车辆离开" prop="vehicleOut" align="center"></el-table-column>
         <el-table-column label="视频回放" align="center" prop="review">
           <template slot-scope="scope">
-            <el-button size="mini">
+            <el-button size="mini" @click="playVideo(scope.row)">
               <img src="../../assets/vehiclemanagement_icon_historicversion_normal.png" alt="" style="vertical-align: middle">
               {{'历史视频' + scope.row.review}}
             </el-button>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import days from 'dayjs'
 export default {
   data () {
     return {
@@ -78,6 +79,20 @@ export default {
     },
     handleCurrentChange () {
 
+    },
+    playVideo () {
+      var cur = new Date();
+      var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+      var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
+      var json={
+          type:1,					//0 : ʵʱ��Ƶ   1 ¼����Ƶ
+          domain:"YFGZHOM1.A1",	//�����
+          id:	"000002X0000",			//�����id
+          level: 0,		//�������� 0 ������  1 ������ (���Բ��
+          begin:startTime,
+          end:stopTime
+      }
+      window.bykj.frameCall('popup', JSON.stringify(json)); 
     }
   }
 }

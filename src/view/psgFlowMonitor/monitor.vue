@@ -49,24 +49,25 @@ export default {
     }
   },
   mounted () {
-    // this.frameRegister()
+    this.frameRegister()
+    this.createVideo()
   },
   beforeDestroy () {
-    // this.destroyVideo()
+    this.destroyVideo()
   },
   methods: {
     handleNodeClick (data) {
       console.log(data)
-      this.createVideo()
+      this.startVideo()
     },
     frameRegister () {
       const cxxNotifier = (cmd) => {
         switch (cmd) {
-          case 'stopplay':
+          case 'stoplay':
             this.stopVideo()
             break
           case 'startplay':
-            this.stopVideo()
+            this.startVideo()
             break
           case 'destroyplayer':
             this.destroyVideo()
@@ -75,7 +76,7 @@ export default {
             break
         }
       }
-      window.bykj.frameRegister(cxxNotifier);
+      window.bykj && window.bykj.frameRegister(cxxNotifier);
     },
     createVideo () {
       const rect = document.querySelector('.video').getBoundingClientRect()
@@ -83,20 +84,20 @@ export default {
       const json = {
         players: [
           { 
-            id: 'psg-flow-monitor-1',
+            id: '1',
             x: rect.left,
             y: rect.top,
-            width: rect.width,
-            height: rect.height
+            w: rect.width,
+            h: rect.height
           }
         ]
       }
-      window.bykj.frameCall('createplayer', JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo () {
       var json={
         players: [{
-          id: 'psg-flow-monitor-1', 
+          id: '1', 
           camera:{
             type:0,
             domain:"YFGZHOM1.A1",
@@ -105,23 +106,23 @@ export default {
           }
         }]
       }
-      window.bykj.frameCall('startplay', JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
       var json={
         players:[{
-          id: 'psg-flow-monitor-1'
+          id: '1'
         }]
       }
-      window.bykj.frameCall('stopplay', JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
       var json={
         players:[{
-          id: 'psg-flow-monitor-1',
+          id: '1',
         }]
       }
-      window.bykj.frameCall('destroyplayer', JSON.stringify(json));
+      window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
   }
 }

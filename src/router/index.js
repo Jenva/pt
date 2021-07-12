@@ -5,11 +5,13 @@ import Layout from '@/layout'
 import liveMonitor from '@/view/liveMonitor/index'
 import vehicleMonitor from '@/view/vehicle/monitor'
 import statList from '@/view/vehicle/statList'
+import vehicleStatistics from '@/view/vehicle/statistics'
 import psgFlowMonitor from '@/view/psgFlowMonitor/monitor'
 import psgFlowStatList from '@/view/psgFlowMonitor/statList'
 import psgFlowHeatMap from '@/view/psgFlowMonitor/heatMap'
 import psgFlowTaskManager from '@/view/psgFlowMonitor/taskManager'
 import groupManager from '@/view/systemManager'
+import message from '@/components/message'
 
 Vue.use(Router)
 
@@ -30,6 +32,10 @@ const router = new Router({
       {
         path: '/vehicleStatList',
         component: statList
+      },
+      {
+        path: '/vehicleStatistics',
+        component: vehicleStatistics
       },
       {
         path: '/psgFlowMonitor',
@@ -56,6 +62,10 @@ const router = new Router({
   {
     path: '/login',
     component: Login
+  },
+  {
+    path: '/message',
+    component: message
   },
 
 ]})

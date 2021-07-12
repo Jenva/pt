@@ -155,15 +155,16 @@ export default {
     }
   },
   beforeDestroy () {
-    // this.destroyVideo()
+    this.destroyVideo()
   },
   mounted () {
+      this.createVideo()
   },
   methods: {
     toDetail () {},
     handleNodeClick (data) {
       console.log(data)
-      this.createVideo()
+      this.startVideo()
     },
     frameRegister () {
       const cxxNotifier = (cmd) => {
@@ -181,27 +182,29 @@ export default {
             break
         }
       }
-      window.bykj.frameRegister(cxxNotifier);
+      window.bykj && window.bykj.frameRegister(cxxNotifier);
     },
     createVideo () {
       const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
+      console.log(rect.height)
       const json = {
         players: [
           { 
-            id: 'vehicle-monitor-1',
-            x: rect.left,
+            id: '1',
+            x: rect.left - 20,
             y: rect.top,
-            width: rect.width,
-            height: rect.height
+            w: rect.width + 20,
+            h: rect.height
           }
         ]
       }
-      window.bykj.frameCall('createplayer', JSON.stringify(json))
+      console.log(JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo () {
       var json={
         players: [{
-          id: 'vehicle-monitor-1', 
+          id: '1', 
           camera:{
             type:0,
             domain:"YFGZHOM1.A1",
@@ -210,23 +213,23 @@ export default {
           }
         }]
       }
-      window.bykj.frameCall('startplay', JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
       var json={
         players:[{
-          id: 'vehicle-monitor-1'
+          id: '1'
         }]
       }
-      window.bykj.frameCall('stopplay', JSON.stringify(json))
+      window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
       var json={
         players:[{
-          id: 'vehicle-monitor-1',
+          id: '1',
         }]
       }
-      window.bykj.frameCall('destroyplayer', JSON.stringify(json));
+      window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
   }
 }
