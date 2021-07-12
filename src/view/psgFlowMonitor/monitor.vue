@@ -131,7 +131,7 @@ export default {
 <style lang="less" scoped>
 .flow-monitor {
   display: flex;
-  min-height: 100%;
+  height: 100%;
   box-sizing: border-box;
   padding: 24px;
   background: #21232d;
@@ -141,6 +141,7 @@ export default {
     .task-title {
       width: 126px;
       height: 48px;
+      margin-bottom: 12px;
       background: url('../../assets/tab_bg@2x.jpg');
       background-size: 100% 100%;
       text-align: center;
@@ -148,7 +149,7 @@ export default {
       color: #2dccd3;
     }
     .list {
-      height: calc(100% - 48px);
+      height: 846px;
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;
@@ -156,6 +157,7 @@ export default {
   }
   .content {
     width: calc(100% - 354px);
+    height: 905px;
     margin-left: 24px;
     border: 1px solid #13585c;
     .videoContent {
