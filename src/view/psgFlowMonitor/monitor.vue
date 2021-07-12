@@ -136,6 +136,7 @@ export default {
   background: #21232d;
   .task-list {
     width: 354px;
+    flex-shrink: 0;
     .task-title {
       width: 126px;
       height: 48px;
