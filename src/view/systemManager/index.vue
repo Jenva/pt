@@ -167,7 +167,8 @@ export default {
       groupAPI.cameraList(params).then(res => {
         console.log(res)
         this.selectedCameraId = res.data.payload.map(item => item.cameraId)
-        this.formData.cameraId = res.data.payload.map(item => item.cameraId)
+        this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
+        // this.formData.cameraId = res.data.payload.map(item => item.cameraId)
       })
     },
     getList () {
@@ -203,6 +204,9 @@ export default {
       if (this.handleType === 'add') {
         params.type = this.id ? 1 : 0
         params.parentId = this.id || 0
+        // if (params.parentId) {
+        //   params.code = this.formData.code
+        // }
         groupAPI.addGroup(params).then(() => {
           this.getList()
         })
@@ -223,7 +227,6 @@ export default {
         params.cameraId = element.id
         params.cameraName = element.cameraName
         params.groupId = this.formData.id
-        console.log(params)
         if (this.handleType === 'add') {
           groupAPI.saveCamera(params).then(() => {
             this.getList()

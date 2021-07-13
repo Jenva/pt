@@ -132,6 +132,16 @@ body,html {
   color: #fff!important;
 }
 
+.el-dialog__header { border-bottom: 1px solid #13585c }
+.el-dialog__title { color: #fff; }
+
+.el-input.is-disabled .el-input__inner {
+  background-color: #b3b3b3!important;
+  border-color: #E4E7ED;
+  color: #C0C4CC;
+  cursor: not-allowed;
+}
+
 .el-pagination button:disabled {
   background: #21232d!important;
   color: #21232d!important;

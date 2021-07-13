@@ -56,6 +56,10 @@ const router = new Router({
       {
         path: '/groupManager',
         component: groupManager
+      },
+      {
+        path: '/dict',
+        component: () => import('@/view/dictManager')
       }
     ]
   },

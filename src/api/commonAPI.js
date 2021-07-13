@@ -1,8 +1,14 @@
 import APIHelper from "./APIHelper"
 
 export default {
-  getALLDict () {
+  getALLDictMap () {
     const url = '/dict-detail/getAllDictMap'
+    return APIHelper.createAxios().get(
+      url
+    )
+  },
+  getALLDict () {
+    const url = '/dict/list'
     return APIHelper.createAxios().get(
       url
     )
@@ -11,6 +17,36 @@ export default {
     const url = '/dict-detail/list'
     return APIHelper.createAxios().get(
       url, { params }
+    )
+  },
+  addDictDetail (params) {
+    const url = '/dict-detail/save'
+    return APIHelper.createAxios().post(
+      url, params 
+    )
+  },
+  deleteDictDetail (id) {
+    const url = `/dict-detail/${id}`
+    return APIHelper.createAxios().delete(
+      url
+    )
+  },
+  addDict (params) {
+    const url = '/dict/save'
+    return APIHelper.createAxios().post(
+      url, params
+    )
+  },
+  editDict (id, params) {
+    const url = `/dict/${id}`
+    return APIHelper.createAxios().put(
+      url, params
+    )
+  },
+  deleteDict (id, params) {
+    const url = `/dict/${id}`
+    return APIHelper.createAxios().delete(
+      url, params
     )
   },
   getCameraList (params) {

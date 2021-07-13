@@ -3,7 +3,15 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy></el-tree>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
+          <span class="custom-tree-node" slot-scope="{ data }">
+            <span>{{ data.name }}</span>
+            <span>
+              <el-tag v-if="data.cameraId" size="mini">视频枪</el-tag>
+              <el-tag v-else type="success" size="mini">组/区域</el-tag>
+            </span>
+          </span>
+        </el-tree>
       </div>
     </div>
     <div class="vehicle-content">
@@ -149,6 +157,7 @@ export default {
         label: 'name',
         isLeaf: 'leaf'
       },
+      type: '0-CAR',
       vehiclePicList: [],
 
     }
@@ -192,7 +201,6 @@ export default {
           if (!item.parentId) item.leaf = true
           return item
         })
-        console.log(children)
         return resolve(children)
       })
     },
@@ -296,6 +304,14 @@ export default {
   overflow: auto;
   .task-list {
     width: 354px;
+    .custom-tree-node {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      padding-right: 8px;
+    }
     .task-title {
       width: 126px;
       height: 48px;
