@@ -291,14 +291,15 @@ export default {
   display: flex;
   box-sizing: border-box;
   padding: 24px;
+  height: 100%;
   background: #21232d;
   overflow: auto;
   .task-list {
     width: 354px;
-    min-height: 100%;
     .task-title {
       width: 126px;
       height: 48px;
+      margin-bottom: 12px;
       background: url('../../assets/tab_bg@2x.jpg');
       background-size: 100% 100%;
       text-align: center;
@@ -306,7 +307,7 @@ export default {
       color: #2dccd3;
     }
     .list {
-      height: calc(100% - 48px);
+      height: 860px;
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;
@@ -314,6 +315,7 @@ export default {
   }
   .vehicle-content {
     width: calc(100% - 354px);
+    height: 905px;
     margin-left: 24px;
     padding-bottom: 13px;
     border: 1px solid #13585c;

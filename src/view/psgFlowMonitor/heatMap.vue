@@ -111,10 +111,13 @@ export default {
   display: flex;
   height: 100%;
   background: #1f2831;
+  box-sizing: border-box;
   padding: 24px;
   .area {
     width: 444px;
     padding: 23px;
+    box-sizing: border-box;
+    height: 919px;
     border: 1px solid #13585c;
     .select {
       margin-bottom: 30px;
@@ -126,6 +129,7 @@ export default {
   .heat-map-img {
     position: relative;
     flex: 1;
+    height: 919px;
     margin-left: 24px;
     border: 1px solid #13585c;
     .tip {
