@@ -18,5 +18,9 @@ export default {
     return APIHelper.createAxios().get(
       url, { params }
     )
+  },
+  downloadFile (fileId) {
+    const url = APIHelper.filePrefix + `/file/downloadFile?fileId=${fileId}`
+    return url
   }
 }

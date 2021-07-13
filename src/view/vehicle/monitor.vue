@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy></el-tree>
       </div>
     </div>
     <div class="vehicle-content">
@@ -12,8 +12,8 @@
         <div class="vehicle-current-list">
           <div class="title">最近捕获车辆</div>
           <div class="list">
-            <div class="cell">
-              <img src="" alt="">
+            <div class="cell" v-for="pic in vehiclePicList" :key="pic">
+              <img :src="downloadFile(pic)" alt="">
             </div>
           </div>
         </div>
@@ -132,7 +132,13 @@
 </template>
 
 <script>
+import vehicleAPI from '@/api/vehicleAPI'
+import commonAPI from '@/api/commonAPI'
+import groupAPI from '@/api/groupAPI'
+import groupMixins from '@/mixins/groupMixins'
+import dayjs from 'dayjs'
 export default {
+  mixins: [groupMixins],
   data () {
     return {
       tableList: [
@@ -140,31 +146,78 @@ export default {
       ],
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'name',
+        isLeaf: 'leaf'
       },
-      treeData: [
-        {
-          id: 1,
-          label: '五类车',
-          children: [
-            { id: 2, label: 'T1航站楼', children: [ { id: 3, label: '摄像头1' } ] },
-            { id: 4, label: 'T2航站楼', children: [ { id: 5, label: '摄像头2' } ] }
-          ]
-        }
-      ]
+      vehiclePicList: [],
+
     }
   },
   beforeDestroy () {
     this.destroyVideo()
   },
   mounted () {
-      this.createVideo()
+    this.createVideo()
   },
   methods: {
     toDetail () {},
     handleNodeClick (data) {
-      console.log(data)
-      this.startVideo()
+      if (data.cameraId) {
+        this.getStatFromData(data.cameraCode || 'D3C01')
+        this.getRecentListFromRedis(data.cameraCode || 'D3C01')
+      }
+    },
+    getCameraByGroupId (data, cb) {
+      const params = {
+        groupId: data.id
+      }
+      groupAPI.cameraList(params).then(res => {
+        res.data.payload.forEach(item => {
+          item.name = item.cameraName || '视频枪' + item.id
+        })
+        const cameraList = res.data.payload
+        cb(cameraList)
+      })
+    },
+    loadNode (node, resolve) {
+      if (node.level === 1) {
+        return resolve(node.data.children)
+      }
+      if (!node.data.parentId) {
+        return resolve([])
+      }
+      this.getCameraByGroupId(node.data, (data) => {
+        if (!node.data.children) node.data.children = []
+        const children = node.data.children.concat(data).map(item => {
+          if (!item.parentId) item.leaf = true
+          return item
+        })
+        console.log(children)
+        return resolve(children)
+      })
+    },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
+    },
+    getStatFromData (code) {
+      const params = {
+        'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
+        areaCode : code
+      }
+      vehicleAPI.getStatFromData(params).then(res => {
+        console.log(res)
+      })
+    },
+    getRecentListFromRedis (code) {
+      const params = {
+        cameraCode : code
+      }
+      vehicleAPI.getRecentListFromRedis(params).then(res => {
+        console.log(res)
+        this.vehiclePicList = res.data.payload.map(item => {
+          return JSON.parse(item.fileList)
+        }).flat()
+      })
     },
     frameRegister () {
       const cxxNotifier = (cmd) => {
@@ -186,7 +239,6 @@ export default {
     },
     createVideo () {
       const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
-      console.log(rect.height)
       const json = {
         players: [
           { 
@@ -198,7 +250,6 @@ export default {
           }
         ]
       }
-      console.log(JSON.stringify(json))
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo () {

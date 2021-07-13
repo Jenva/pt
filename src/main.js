@@ -14,7 +14,6 @@ Vue.prototype.$commonJS = commonJS
 
 router.beforeEach((to, from, next) => {
   const isLogined = window.bykj && window.bykj.getToken() || true
-  console.log(isLogined)
   if (isLogined) {
     next()
   } else if (to.path === '/login') {

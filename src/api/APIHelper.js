@@ -6,7 +6,7 @@ import axios from 'axios'
 import { Notification } from 'element-ui'
 import qs from 'qs'
 export default {
-  filePrefix: process.env.MICRO_API_PREFIX,
+  filePrefix: process.env.VUE_APP_FILE_REFIX,
   baseURL: process.env.VUE_APP_REFIX,
   // createAxios (config = []) {
   //   // b = [...config, {}]
