@@ -231,6 +231,7 @@ export default {
       }
       vehicleAPI.getStatFromData(params).then(res => {
         console.log(res)
+        this.tableList = res.data.payload
       })
     },
     getRecentListFromRedis (code) {
