@@ -136,6 +136,15 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="查看"
+      :visible="showPreview"
+      width="100%"
+      fullscreen
+      @close="close"
+    >
+      <preview-pic></preview-pic>
+    </el-dialog>
   </div>
 </template>
 
@@ -143,12 +152,15 @@
 import vehicleAPI from '@/api/vehicleAPI'
 import commonAPI from '@/api/commonAPI'
 import groupAPI from '@/api/groupAPI'
+import previewPic from '@/components/previewPic'
 import groupMixins from '@/mixins/groupMixins'
 import dayjs from 'dayjs'
 export default {
   mixins: [groupMixins],
+  components: {previewPic},
   data () {
     return {
+      showPreview: false,
       tableList: [
         { enter: 1 }
       ],
@@ -169,7 +181,12 @@ export default {
     this.createVideo()
   },
   methods: {
-    toDetail () {},
+    toDetail () {
+      this.showPreview = true
+    },
+    close () {
+      this.showPreview = false
+    },
     handleNodeClick (data) {
       if (data.cameraId) {
         this.getStatFromData(data.cameraCode || 'D3C01')
