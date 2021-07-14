@@ -219,8 +219,6 @@ export default {
     handleCamera () {
       const cameraIds = this.camera
         .filter(item => this.formData.cameraId.includes(item.id) )
-      // const selectedCamera = this.camera
-      //   .filter(item => cameraIds.includes(item.id))
       for (let i = 0; i < cameraIds.length; i++) {
         let params = {}
         const element = cameraIds[i]

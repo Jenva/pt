@@ -16,10 +16,16 @@
       </div>
       <div class="table">
         <el-table :data="tableList" border>
-          <el-table-column label="当前场景人数" align="center" prop="all"></el-table-column>
-          <el-table-column label="区域1人数" align="center" prop="1"></el-table-column>
-          <el-table-column label="区域2人数" align="center" prop="2"></el-table-column>
-          <el-table-column label="区域3人数" align="center" prop="3"></el-table-column>
+          <el-table-column label="当前场景人数" align="center" prop="passengerCount"></el-table-column>
+          <template v-for="(area, index) in tableList.length && tableList[0].areaInfo">
+            <el-table-column :label="`区域${index + 1}人数`" align="center" prop="1" :key="area.id">
+              <template>
+                <span>{{ area.value }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="区域2人数" align="center" prop="2"></el-table-column>
+            <el-table-column label="区域3人数" align="center" prop="3"></el-table-column> -->
+          </template>
         </el-table>
       </div>
     </div>
@@ -27,11 +33,12 @@
 </template>
 
 <script>
+import psgAPI from '@/api/psgAPI'
 export default {
   data () {
     return {
       tableList: [
-        { all: 10, 1: 2, 2: 5, 3: 3 }
+        // { all: 10, 1: 2, 2: 5, 3: 3 }
       ],
       defaultProps: {
         label: 'label',
@@ -58,7 +65,24 @@ export default {
   methods: {
     handleNodeClick (data) {
       console.log(data)
-      this.startVideo()
+      this.getList()
+      // this.startVideo()
+    },
+    getList () {
+      const params = {
+        cameraCode: 'test01',
+        groupId: 2
+      }
+      psgAPI.getRealTimeFromRedis(params).then(res => {
+        console.log()
+        const data = res.data.payload
+        data.areaInfo = JSON.parse(data.areaInfo)
+        for (let i = 0; i < data.areaInfo.length; i++) {
+          const element = data.areaInfo[i]
+          data[i] = element
+        }
+        this.tableList = [data]
+      })
     },
     frameRegister () {
       const cxxNotifier = (cmd) => {

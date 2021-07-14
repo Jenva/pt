@@ -7,7 +7,7 @@ export default {
       url, { params }
     )
   },
-  getStatList(params) {
+  getStatDetailList(params) {
     const url = '/stat-car/statDetailFromDayStart'
     return APIHelper.createAxios().get(
       url, { params }

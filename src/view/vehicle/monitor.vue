@@ -20,7 +20,7 @@
         <div class="vehicle-current-list">
           <div class="title">最近捕获车辆</div>
           <div class="list">
-            <div class="cell" v-for="pic in vehiclePicList" :key="pic">
+            <div class="cell" v-for="(pic, index) in vehiclePicList" :key="pic+index">
               <img :src="downloadFile(pic)" alt="">
             </div>
           </div>
@@ -29,24 +29,28 @@
       <div class="content-bottom">
         <div class="title">今日0点至今五类车进出统计表</div>
         <div class="table">
-          <el-table :data="tableList" style="width: 100%">
-            <el-table-column label="汽车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
+          <el-table :data="emptyData" style="width: 100%">
+            <template v-for="(list) in tableList">
+              <el-table-column :label="`${getDisplayDict(list[0], carTypeDict)}`" width="240" align="center" :key="list[0]">
+                <el-table-column :label="`${getDisplayDict(carData.status, carEntranceType)}`" width="80" align="center" prop="enter" v-for="(carData, index) in list[1]" :key="carData.cartype+index">
+                  <template slot-scope>
+                    <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ carData.count }}</a>
+                  </template>
+                </el-table-column>
               </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
+            </template>
+                <!-- <el-table-column label="离开" width="80" align="center" prop="leave">
+                  <template slot-scope="scope">
+                    <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
+                  </template>
+                </el-table-column>
+                <el-table-column label="存量" width="80" align="center" prop="save">
+                  <template slot-scope="scope">
+                    <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
+                  </template>
+                </el-table-column>
               </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column>
+            </template>
             <el-table-column label="公交车" width="240" align="center">
               <el-table-column label="进入" width="80" align="center" prop="enter">
                 <template slot-scope="scope">
@@ -131,7 +135,7 @@
                   <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
                 </template>
               </el-table-column>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
         </div>
       </div>
@@ -143,7 +147,7 @@
       fullscreen
       @close="close"
     >
-      <preview-pic></preview-pic>
+      <preview-pic :picList="picList"></preview-pic>
     </el-dialog>
   </div>
 </template>
@@ -161,16 +165,20 @@ export default {
   data () {
     return {
       showPreview: false,
+      currentCameraCode: 0,
+      picList: [],
       tableList: [
-        { enter: 1 }
       ],
       defaultProps: {
         children: 'children',
         label: 'name',
         isLeaf: 'leaf'
       },
+      carTypeDict: [],
+      carEntranceType: [],
       type: '0-CAR',
       vehiclePicList: [],
+      emptyData: []
 
     }
   },
@@ -179,15 +187,43 @@ export default {
   },
   mounted () {
     this.createVideo()
+    this.getDict('CAR_TYPE', 'carTypeDict')
+    this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
   },
   methods: {
+    consoles (list) {
+      console.log(list)
+    },
+    getDict (value, name) {
+      const params = {
+        dictValue: value
+      }
+      commonAPI.getDictByValue(params).then(res => {
+        this[name] = res.data.payload
+      })
+    },
+    getDisplayDict (value, arr) {
+      return this.$commonJS.getDisplayDict(value, arr)
+    },
     toDetail () {
       this.showPreview = true
+      const params = {
+        'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
+        areaCode : this.currentCameraCode || 'D3C01'
+      }
+      vehicleAPI.getStatDetailList(params).then(res => {
+        console.log(res)
+        this.picList = res.data.payload.map(item => {
+          item.fileList = JSON.parse(item.fileList)
+          return item
+        })
+      })
     },
     close () {
       this.showPreview = false
     },
     handleNodeClick (data) {
+      this.currentCameraCode = data.cameraCode
       if (data.cameraId) {
         this.getStatFromData(data.cameraCode || 'D3C01')
         this.getRecentListFromRedis(data.cameraCode || 'D3C01')
@@ -230,8 +266,19 @@ export default {
         areaCode : code
       }
       vehicleAPI.getStatFromData(params).then(res => {
-        console.log(res)
-        this.tableList = res.data.payload
+        const tableList = res.data.payload
+        const map = new Map()
+        for (let i = 0; i < tableList.length; i++) {
+          const element = tableList[i]
+          if (map.has(element.cartype)) {
+            console.log(map.get(element.cartype))
+            map.set(element.cartype, [...map.get(element.cartype), element])
+          } else {
+            map.set(element.cartype, [element])
+          }
+        }
+        this.tableList = [...map.entries()]
+        this.emptyData = [{}]
       })
     },
     getRecentListFromRedis (code) {
@@ -239,9 +286,8 @@ export default {
         cameraCode : code
       }
       vehicleAPI.getRecentListFromRedis(params).then(res => {
-        console.log(res)
         this.vehiclePicList = res.data.payload.map(item => {
-          return JSON.parse(item.fileList)
+          return JSON.parse(item.fileList)[1]
         }).flat()
       })
     },

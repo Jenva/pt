@@ -1,11 +1,13 @@
 <template>
   <div class="preView">
     <div class="bigPic">
-      <img :src="picList[selectedIndex]" alt="">
+      <img :src="downloadFile(picList[selectedIndex].fileList[1])" alt="">
     </div>
     <div class="picList">
-      <div class="picCell" v-for="(pic, index) in picList" :key="pic" @click="selectPic(index)">
-        <img :src="pic" alt="" :class="{heightLight: index === selectedIndex}">
+      <div class="picCell" v-for="(pic, index) in picList" :key="pic.id" @click="selectPic(index)">
+        <div :class="{heightLight: index === selectedIndex}" style="width: 150px;height: 100%">
+          <img :src="downloadFile(pic.fileList[0])" alt="" >
+        </div>
         <!-- index ==== selectedIndex ? 'heightLight' : '' -->
       </div>
     </div>
@@ -13,6 +15,7 @@
 </template>
 
 <script>
+import commonAPI from '@/api/commonAPI'
 export default {
   props: {
     picList: {
@@ -45,6 +48,9 @@ export default {
   methods: {
     selectPic (index) {
       this.selectedIndex = index
+    },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
     }
   }
 }
@@ -82,7 +88,7 @@ export default {
     .picCell {
       flex-shrink: 0;
       // width: 10%;
-      height: 150px;
+      height: 100px;
       overflow: hidden;
       padding: 5px;
       img {
