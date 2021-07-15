@@ -62,12 +62,15 @@
         <el-form-item label="分组名称：" v-if="type === 1">
           <el-input v-model="formData.name" style="width: 80%"></el-input>
         </el-form-item>
-        <el-form-item label="功能名称：" v-if="type > 2">
+        <!-- <el-form-item label="功能名称：" v-if="type === 2">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="设备选择：" v-if="type > 1">
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple v-if="type === 2">
             <el-option :value="info.id" :label="info.cameraName" v-for="info in camera" :key="info.id"></el-option>
+          </el-select>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple v-else @change="changeAnalsy">
+            <el-option :value="info.id" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -93,13 +96,14 @@ export default {
         { groupName: '五类车', gun: 111,  serve: '机场总服务器' }
       ],
       camera: [
-        { cameraName: '10.21.01', id: 1 },
+        { cameraName: '10.21.01', id: 1, code: '123' },
         { cameraName: '10.24.01', id: 2 }
       ],
       formData: {
         cameraId: []
       },
       selectedCameraId: [],
+      analsyCamera: [],
       list: [],
       id: '',
       data: [],
@@ -158,6 +162,12 @@ export default {
         this.id = data && data.id
         this.title = '新增'
       }
+      const params = { 
+        groupId: data.id
+      }
+      groupAPI.cameraList(params).then(res => {
+        this.analsyCamera =  res.data.payload
+      })
       this.$refs.sideBar.showList()
     },
     getCameraList (id) {
@@ -165,10 +175,8 @@ export default {
         groupId: id
       }
       groupAPI.cameraList(params).then(res => {
-        console.log(res)
         this.selectedCameraId = res.data.payload.map(item => item.cameraId)
         this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
-        // this.formData.cameraId = res.data.payload.map(item => item.cameraId)
       })
     },
     getList () {
@@ -232,11 +240,36 @@ export default {
         }
       }
     },
+    changeAnalsy (data) {
+      console.log(data)
+      window.bykj && window.bykj.frameCall('editregions')
+    },
+    handlerAnalsy () {
+      "saveregions"
+      const params = [
+        {
+          "code": "camera01-01" || this.formData.cameraId,
+          "x": [ 0.1, 0.6, 0.6, 0.1, 0.3 ],
+          "y": [0.85, 0.4, 0.8, 0.8, 0.5 ],
+          "in": {
+            "x": [0.1, 0.5],
+            "y": [0.2, 0.8]
+          },
+          "out":{
+            "x":[ 0.5, 0.8],
+            "y":[0.6, 0.4]
+          }
+        }
+      ]
+      groupAPI.updateCamera(this.id, {areaInfo: JSON.stringify(params)}).then()
+    },
     confirm () {
       if (this.type === 1) {
         this.handleGroup()
       } else if (this.type === 2) {
         this.handleCamera()
+      } else if (this.type === 3) {
+        this.handlerAnalsy()
       }
     }
   }

@@ -39,7 +39,7 @@ export default {
   },
   updateCamera (id, params) {
     const url = `/camera-areas/update/${id}`
-    return APIHelper.createAxios().post(
+    return APIHelper.createAxios().put(
       url, params 
     )
   }
