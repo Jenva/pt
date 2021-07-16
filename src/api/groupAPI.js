@@ -14,7 +14,7 @@ export default {
     )
   },
   editGroup (id, params) {
-    const url = `/group/edit/${id}`
+    const url = `/group/update/${id}`
     return APIHelper.createAxios().put(
       url, params
     )
@@ -25,7 +25,7 @@ export default {
       url
     )
   },
-  cameraList (params) {
+  getCameraListByGroupId (params) {
     const url = '/camera-areas/listByGroupId'
     return APIHelper.createAxios().get(
       url, { params }

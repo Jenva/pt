@@ -178,21 +178,43 @@ export default {
       carEntranceType: [],
       type: '0-CAR',
       vehiclePicList: [],
-      emptyData: []
-
+      emptyData: [],
+      players: []
     }
   },
   beforeDestroy () {
     this.destroyVideo()
   },
   mounted () {
-    this.createVideo()
+    this.resize()
+    this.getPlayers()
     this.getDict('CAR_TYPE', 'carTypeDict')
     this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
   },
   methods: {
-    consoles (list) {
-      console.log(list)
+    getPlayers () {
+      const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
+      var players =  [
+        { 
+          id: '1',
+          x: rect.left - 20,
+          y: rect.top,
+          w: rect.width + 20,
+          h: rect.height
+        }
+      ]
+      this.players = players
+      this.createVideo()
+      console.log(players)
+    },
+    resize () {
+      window.onresize = () => {
+        this.getPlayers()
+        var json = {
+          players: this.players
+        }
+        window.bykj && window.bykj.frameCall('adjustplayer', JSON.stringify(json))
+      }
     },
     getDict (value, name) {
       const params = {
@@ -227,13 +249,14 @@ export default {
       if (data.cameraId) {
         this.getStatFromData(data.cameraCode || 'D3C01')
         this.getRecentListFromRedis(data.cameraCode || 'D3C01')
+        this.startVideo(data)
       }
     },
     getCameraByGroupId (data, cb) {
       const params = {
         groupId: data.id
       }
-      groupAPI.cameraList(params).then(res => {
+      groupAPI.getCameraListByGroupId(params).then(res => {
         res.data.payload.forEach(item => {
           item.name = item.cameraName || '视频枪' + item.id
         })
@@ -310,28 +333,19 @@ export default {
       window.bykj && window.bykj.frameRegister(cxxNotifier);
     },
     createVideo () {
-      const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
       const json = {
-        players: [
-          { 
-            id: '1',
-            x: rect.left - 20,
-            y: rect.top,
-            w: rect.width + 20,
-            h: rect.height
-          }
-        ]
+        players: this.getPlayers
       }
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
-    startVideo () {
+    startVideo (data) {
       var json={
         players: [{
-          id: '1', 
+          id: this.players(item => item.id)[0],
           camera:{
-            type:0,
-            domain:"YFGZHOM1.A1",
-            id:	"000002X0000",
+            type: data.type,
+            domain:  data.serverId,
+            id:	data.id,
             level: 0,
           }
         }]
@@ -339,18 +353,14 @@ export default {
       window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
-      var json={
-        players:[{
-          id: '1'
-        }]
+      var json = {
+        players: this.players(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
-      var json={
-        players:[{
-          id: '1',
-        }]
+      var json = {
+        players: this.players.map(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }

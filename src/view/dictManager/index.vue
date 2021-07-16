@@ -180,7 +180,6 @@ export default {
         dictValue
       }
       commonAPI.getDictByValue(parmas).then(res => {
-        console.log(res)
         this.dictDetailList = res.data.payload
       })
     },
@@ -211,7 +210,9 @@ export default {
       }
     },
     deleteDetailDict (id) {
-      commonAPI.deleteDictDetail(id).then()
+      commonAPI.deleteDictDetail(id).then(() => {
+        this.getDict()
+      })
     },
     beforeClose (done) {
       if (this.$refs.treeForm) {

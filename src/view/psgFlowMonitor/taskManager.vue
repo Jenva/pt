@@ -68,7 +68,6 @@
           <el-form-item label="摄像机:">
             <el-select v-model="formData.cameraIds" multiple="">
               <el-option :value="camera.id.toString()" :label="camera.name" v-for="camera in cameraList" :key="camera.id"></el-option>
-              <el-option value="10" label="测试"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="采集频率:">
@@ -152,7 +151,6 @@ export default {
           if (item.groupId) {
             const groupName = this.groupList
               .find(group => group.id === item.groupId)
-            // console.log(this.groupList, item.groupId)
             item.groupName = groupName ? groupName.name : ''
           }
           const taskConfig = JSON.parse(item.taskConfig)
@@ -165,10 +163,10 @@ export default {
     },
     addTask () {
       const params = Object.assign({ taskType: 'CAR' }, this.formData)
-      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
-      if (params.triggerTime)params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
+      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
+      if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
       delete params.rate
       delete params.alarm
       taskAPI.addTask(params).then(() => {
@@ -187,9 +185,9 @@ export default {
     },
     updateTask () {
       const params = Object.assign({}, this.formData)
-      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
+      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
       delete params.rate
       delete params.alarm
