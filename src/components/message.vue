@@ -1,6 +1,5 @@
 <template>
   <div class="sideBar">
-    <window-top-title title="消息"></window-top-title>
     <div class="content">
       <div class="tabs">
         <span :class="['tab', currentTab === 'custom' ? 'selected' : '' ]" @click="selecedTab('custom')">
@@ -12,6 +11,21 @@
       </div>
       <div class="tabContent">
         <ul class="list">
+          <li v-for="(message, index) in listData" :key="index">
+            <div class="heatMap">
+              <img :src="downloadFile(message.data.file)" alt="">
+            </div>
+            <div class="info">
+              <div class="text">
+                <span>T1航站楼西三指廊客流一级预警</span>
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage(index)">
+              </div>
+              <div class="other">
+                <span>{{message.data.time}}</span>
+                <el-button class="btn" size="mini" @click="toDetail(message)">查看详情</el-button>
+              </div>
+            </div>
+          </li>
           <li>
             <div class="heatMap">
               <img src="" alt="">
@@ -38,7 +52,7 @@
               </div>
               <div class="other">
                 <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
+                <el-button class="btn" size="mini" @click="toDetail()">查看详情</el-button>
               </div>
             </div>
           </li>
@@ -154,26 +168,49 @@
 </template>
 
 <script>
-import windowTopTitle from './windowTopTitle.vue'
+import commonAPI from '@/api/commonAPI'
 export default {
-  components: {
-    windowTopTitle
-  },
   data () {
     return {
-      currentTab: 'custom'
+      currentTab: 'custom',
+      peopleData: [],
+      carData: []
+    }
+  },
+  computed: {
+    listData () {
+      return this.currentTab === 'custom' ? this.peopleData : this.carData
     }
   },
   mounted () {
     this.connectWebsocket()
   },
   methods: {
+    toDetail (message) {
+      console.log(this.currentTab)
+      const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
+      this.$router.push(`${path}?data=${message}`)
+    },
     selecedTab (type) {
       this.currentTab = type
     },
     connectWebsocket() {
-      const websocket = new WebSocket('ws://192.168.1.180:9088')
-      console.log(websocket)
+      const ws = new WebSocket('ws://192.168.1.180:9088')
+      ws.onmessage = this.getMessage
+      console.log(ws)
+    },
+    getMessage (evt) {
+      if (evt.appid === 'renqun') {
+        this.peopleData = [].concat(this.peopleData, evt.data)
+      } else if (evt.appid === 'carType') {
+        this.carData = [].concat(this.carData, evt.data)
+      }
+    },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
+    },
+    closeMessage (index) {
+      this.listData.splice(index, 1)
     }
   }
 }

@@ -44,7 +44,7 @@ export default {
     )
   },
   deleteDict (id, params) {
-    const url = `/dict/${id}`
+    const url = `/dict/delete/${id}`
     return APIHelper.createAxios().delete(
       url, params
     )

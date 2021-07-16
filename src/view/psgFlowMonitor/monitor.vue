@@ -3,7 +3,15 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
+          <span class="custom-tree-node" slot-scope="{ data }">
+            <span>{{ data.name }}</span>
+            <span>
+              <el-tag v-if="data.cameraId" size="mini">视频枪</el-tag>
+              <el-tag v-else type="success" size="mini">组/区域</el-tag>
+            </span>
+          </span>
+        </el-tree>
       </div>
     </div>
     <div class="content">
@@ -11,13 +19,13 @@
         <div class="video"></div>
         <div class="heatMap">
           <div class="heatMap-title">热力图</div>
-          <img src="" alt="">
+          <img :src="downloadFile(tableData.file)" alt="">
         </div>
       </div>
       <div class="table">
-        <el-table :data="tableList" border>
+        <el-table :data="[tableData]" border>
           <el-table-column label="当前场景人数" align="center" prop="passengerCount"></el-table-column>
-          <template v-for="(area, index) in tableList.length && tableList[0].areaInfo">
+          <template v-for="(area, index) in tableData.areaInfo">
             <el-table-column :label="`区域${index + 1}人数`" align="center" prop="1" :key="area.id">
               <template>
                 <span>{{ area.value }}</span>
@@ -34,55 +42,98 @@
 
 <script>
 import psgAPI from '@/api/psgAPI'
+import groupAPI from '@/api/groupAPI'
+import commonAPI from '@/api/commonAPI'
+import groupMixins from '@/mixins/groupMixins'
 export default {
+  mixins: [groupMixins],
   data () {
     return {
-      tableList: [
-        // { all: 10, 1: 2, 2: 5, 3: 3 }
-      ],
+      type: 'PSG',
+      tableData: [],
+      groupList: [],
       defaultProps: {
         label: 'label',
-        children: 'children'
+        children: 'children',
+        isLeaf: 'leaf'
       },
-      treeData: [
-        {
-          id: 1, label: '客流监控',
-          children: [
-            { id: 2, label: 't1航站', children: [ { id: 3, label: 'a区' } ] },
-            { id: 4, label: 't2航站', children: [ { id: 5, label: 'b区' } ] }
-          ]
-        }
-      ]
     }
   },
   mounted () {
     this.frameRegister()
-    this.createVideo()
   },
   beforeDestroy () {
     this.destroyVideo()
   },
   methods: {
-    handleNodeClick (data) {
-      console.log(data)
-      this.getList()
-      // this.startVideo()
+    getPlayers () {
+      const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
+      var players =  [
+        { 
+          id: '1',
+          x: rect.left - 20,
+          y: rect.top,
+          w: rect.width + 20,
+          h: rect.height
+        }
+      ]
+      this.players = players
+      this.createVideo()
     },
-    getList () {
+    handleNodeClick (data) {
+      this.currentCameraCode = data.cameraCode
+      if (data.cameraId) {
+        this.getList(data)
+        this.startVideo(data)
+      }
+    },
+    getList (data) {
       const params = {
-        cameraCode: 'test01',
-        groupId: 2
+        cameraCode: data.cameraCode || 'test01',
+        groupId: 2 || data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
-        console.log()
         const data = res.data.payload
         data.areaInfo = JSON.parse(data.areaInfo)
         for (let i = 0; i < data.areaInfo.length; i++) {
           const element = data.areaInfo[i]
           data[i] = element
         }
-        this.tableList = [data]
+        this.tableData = data
       })
+    },
+    loadNode (node, resolve) {
+      if (node.level === 1) {
+        return resolve(node.data.children)
+      }
+      if (!node.data.parentId) {
+        return resolve([])
+      }
+      this.getCameraByGroupId(node.data, (data) => {
+        if (!node.data.children) node.data.children = []
+        const children = node.data.children
+          .concat(data)
+          .map(item => {
+            if (item.cameraId) item.leaf = true
+            return item
+          })
+        return resolve(children)
+      })
+    },
+    getCameraByGroupId (data, cb) {
+      const params = {
+        groupId: data.id
+      }
+      groupAPI.getCameraListByGroupId(params).then(res => {
+        res.data.payload.forEach(item => {
+          item.name = item.cameraName || '视频枪' + item.id
+        })
+        const cameraList = res.data.payload
+        cb(cameraList)
+      })
+    },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
     },
     frameRegister () {
       const cxxNotifier = (cmd) => {
@@ -103,29 +154,19 @@ export default {
       window.bykj && window.bykj.frameRegister(cxxNotifier);
     },
     createVideo () {
-      const rect = document.querySelector('.video').getBoundingClientRect()
-      console.log(rect)
       const json = {
-        players: [
-          { 
-            id: '1',
-            x: rect.left,
-            y: rect.top,
-            w: rect.width,
-            h: rect.height
-          }
-        ]
+        players: this.getPlayers
       }
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
-    startVideo () {
+    startVideo (data) {
       var json={
         players: [{
-          id: '1', 
+          id: this.players(item => item.id)[0],
           camera:{
-            type:0,
-            domain:"YFGZHOM1.A1",
-            id:	"000002X0000",
+            type: data.type,
+            domain: data.serverId,
+            id:	data.id,
             level: 0,
           }
         }]
@@ -133,18 +174,14 @@ export default {
       window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
-      var json={
-        players:[{
-          id: '1'
-        }]
+      var json = {
+        players: this.players(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
-      var json={
-        players:[{
-          id: '1',
-        }]
+      var json = {
+        players: this.players(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
@@ -171,6 +208,14 @@ export default {
       text-align: center;
       line-height: 48px;
       color: #2dccd3;
+    }
+    .custom-tree-node {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      padding-right: 8px;
     }
     .list {
       height: 846px;

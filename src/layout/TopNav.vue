@@ -16,10 +16,10 @@
     </div>
     <div class="user-info">
       <el-row class="user">
-        <el-col span="5" class="imgCol">
+        <el-col :span="5" class="imgCol">
           <img src="../assets/nav_tool/nav_icon_usermanagement_normal.png" alt="">
         </el-col>
-        <el-col span="12">
+        <el-col :span="12">
           <div class="userName">管理员</div>
         </el-col>
       </el-row>
@@ -113,7 +113,11 @@ export default {
             {
               title: '分组管理',
               route: '/groupManager'
-            }
+            },
+            {
+              title: '字典管理',
+              route: '/dict'
+            },
           ]
         }
       ]

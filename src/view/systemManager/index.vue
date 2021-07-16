@@ -59,15 +59,20 @@
     </div>
     <side-bar ref="sideBar" :title="title" @confirm="confirm" @close="closeModal">
       <el-form :model="formData" label-position="left">
-        <el-form-item label="分组名称：" v-if="type === 1">
-          <el-input v-model="formData.name" style="width: 80%"></el-input>
-        </el-form-item>
+        <div v-if="type === 1">
+          <el-form-item label="分组名称：" >
+            <el-input v-model="formData.name" style="width: 80%"></el-input>
+          </el-form-item>
+          <el-form-item label="分组编号：" v-if="handleType === 'add'">
+            <el-input v-model="formData.code" style="width: 80%"></el-input>
+          </el-form-item>
+        </div>
         <el-form-item label="功能名称：" v-if="type > 2">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="设备选择：" v-if="type > 1">
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple>
-            <el-option :value="info.id" :label="info.cameraName" v-for="info in camera" :key="info.id"></el-option>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id">
+            <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -77,6 +82,7 @@
 
 <script>
 import groupAPI from '@/api/groupAPI'
+import commonAPI from '@/api/commonAPI'
 import sideBar from '@/components/sideBar'
 export default {
   components: {
@@ -89,17 +95,12 @@ export default {
       type: '',
       loading: false,
       handleType: '',
-      tableList: [
-        { groupName: '五类车', gun: 111,  serve: '机场总服务器' }
-      ],
-      camera: [
-        { cameraName: '10.21.01', id: 1 },
-        { cameraName: '10.24.01', id: 2 }
-      ],
+      tableList: [],
       formData: {
-        cameraId: []
+        cameraId: ''
       },
       selectedCameraId: [],
+      allCameraList: [],
       list: [],
       id: '',
       data: [],
@@ -143,7 +144,7 @@ export default {
       this.handleType= type
       this.formData = data
       this.title = '绑定视频枪'
-      this.getCameraList(data.id)
+      this.getAlltCameraList()
       this.$nextTick(() => {
         this.$refs.sideBar.showList()
       })
@@ -158,17 +159,21 @@ export default {
         this.id = data && data.id
         this.title = '新增'
       }
+      this.getCameraList(data.id)
       this.$refs.sideBar.showList()
+    },
+    getAlltCameraList () {
+      commonAPI.getCameraList().then(res => {
+        this.allCameraList = res.data.payload
+      })
     },
     getCameraList (id) {
       const params = { 
         groupId: id
       }
-      groupAPI.cameraList(params).then(res => {
-        console.log(res)
+      groupAPI.getCameraListByGroupId(params).then(res => {
         this.selectedCameraId = res.data.payload.map(item => item.cameraId)
         this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
-        // this.formData.cameraId = res.data.payload.map(item => item.cameraId)
       })
     },
     getList () {
@@ -202,6 +207,7 @@ export default {
       const params = {}
       params.name = this.formData.name
       if (this.handleType === 'add') {
+        params.code = this.formData.code
         params.type = this.id ? 1 : 0
         params.parentId = this.id || 0
         // if (params.parentId) {
