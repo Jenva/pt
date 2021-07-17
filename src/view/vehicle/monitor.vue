@@ -387,7 +387,7 @@ export default {
         players: [{
           id: this.players.map(item => item.id)[0],
           camera:{
-            type: data.type,
+            type: 0,
             domain:  data.serverId,
             id:	data.id,
             level: 0,

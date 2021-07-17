@@ -36,8 +36,8 @@
         <el-table-column label="客流量" prop="psgCount" align="center"></el-table-column>
         <el-table-column label="视频回放" prop="review" align="center">
           <template slot-scope="scope">
-            <el-button size="mini">
-              {{'历史视频' + scope.row.review}}
+            <el-button size="mini" @click="playVideo(scope.row)">
+              历史视频
             </el-button>
           </template>
         </el-table-column>
@@ -66,6 +66,7 @@
 
 <script>
 import groupAPI from '@/api/groupAPI'
+import days from 'dayjs'
 export default {
   data () {
     return {
@@ -95,6 +96,20 @@ export default {
       groupAPI.getGroupList(params).then(res => {
         this.groupList = res.data.payload
       })
+    },
+    playVideo (data) {
+      var cur = new Date();
+      var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+      var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
+      var json = {
+          type:1,
+          domain: data.serverId || "YFGZHOM1.A1",
+          id:	data.id || "000002X0000",
+          level: 0,
+          begin: startTime,
+          end: stopTime
+      }
+      window.bykj && window.bykj.frameCall('popup', JSON.stringify(json)); 
     }
   }
 }

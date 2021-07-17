@@ -142,19 +142,19 @@ export default {
         this[name] = res.data.payload
       })
     },
-    playVideo () {
+    playVideo (data) {
       var cur = new Date();
       var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
       var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
       var json={
-          type:1,					//0 : ʵʱ��Ƶ   1 ¼����Ƶ
-          domain:"YFGZHOM1.A1",	//�����
-          id:	"000002X0000",			//�����id
-          level: 0,		//�������� 0 ������  1 ������ (���Բ��
+          type: 1,
+          domain: data.serverId || "YFGZHOM1.A1",
+          id:	data.id || "000002X0000",
+          level: 0,
           begin:startTime,
           end:stopTime
       }
-      window.bykj.frameCall('popup', JSON.stringify(json)); 
+      window.bykj && window.bykj.frameCall('popup', JSON.stringify(json)); 
     }
   }
 }
