@@ -3,49 +3,50 @@
     <div class="search">
       <el-form :model="formData" inline>
         <el-row>
-          <el-col span="7">
+          <el-col :span="7">
             <el-form-item label="时间范围">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%"></el-date-picker>
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%" value-format="yyyy-MM-DD HH:mm:ss"></el-date-picker>
             </el-form-item>
           </el-col>          
-          <el-col span="6">
+          <el-col :span="6">
             <el-form-item label="区域">
-              <el-select placeholder="请选择区域" v-model="formData.area">
-                <el-option value="1">t1</el-option>
+              <el-select placeholder="请选择区域" v-model="formData.Type">
+                <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col span="6">
+          <el-col :span="6">
             <el-form-item label="五类车类型">
-              <el-select placeholder="请选择五类车类型" v-model="formData.type">
-                <el-option value="1">汽车</el-option>
+              <el-select placeholder="请选择五类车类型" v-model="formData.cartype">
+                <el-option :value="type.detailValue" :label="type.detailName" v-for="type in carTypeDict" :key="type.id">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col span="5">
+          <el-col :span="5">
             <el-button>清除数据</el-button>
-            <el-button type="primary">查询</el-button>
+            <el-button type="primary" @click="search">查询</el-button>
           </el-col>
         </el-row>
       </el-form>
     </div>
     <div class="table">
       <el-table :data="tableList" border>
-        <el-table-column label="区域" prop="area" align="center"></el-table-column>
+        <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="time" align="center"></el-table-column>
-        <el-table-column label="车辆类型" prop="vehicleType" align="center"></el-table-column>
-        <el-table-column label="车辆进入" prop="vehicleIn" align="center"></el-table-column>
-        <el-table-column label="车辆离开" prop="vehicleOut" align="center"></el-table-column>
+        <el-table-column label="车辆类型" prop="cartype" align="center"></el-table-column>
+        <el-table-column label="车辆进入" prop="0-count" align="center"></el-table-column>
+        <el-table-column label="车辆离开" prop="1-count" align="center"></el-table-column>
         <el-table-column label="视频回放" align="center" prop="review">
           <template slot-scope="scope">
             <el-button size="mini" @click="playVideo(scope.row)">
               <img src="../../assets/vehiclemanagement_icon_historicversion_normal.png" alt="" style="vertical-align: middle">
-              {{'历史视频' + scope.row.review}}
+              历史视频
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div class="page">
+      <!-- <div class="page">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -54,17 +55,22 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="total">
         </el-pagination>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import days from 'dayjs'
+import vehicleAPI from '@/api/vehicleAPI'
+import groupAPI from '@/api/groupAPI'
+import commonAPI from '@/api/commonAPI'
 export default {
   data () {
     return {
       total: 50,
+      grouplist: [],
+      carTypeDict: [],
       formData: {
         createTime: [],
       },
@@ -73,12 +79,68 @@ export default {
       ]
     }
   },
+  created () {
+    this.getGroupList()
+  },
+  mounted () {
+    this.getDict('CAR_TYPE', 'carTypeDict')
+    this.getList()
+  },
   methods: {
     handleSizeChange () {
 
     },
     handleCurrentChange () {
 
+    },
+    getList (params) {
+      // const params = {
+      //   createTime_gt: '2021-05-01 00:00:00',
+      //   createTime_lt: '2021-07-17 00:00:00'
+      // }
+      vehicleAPI.statListByLimitTime(params).then(res => {
+        console.log(res)
+        const list = res.data.payload
+        const tableList = []
+        list.forEach(item => {
+          const groupName = this.grouplist.find(item => item.id === item.group_id)
+          item.groupName = groupName ? groupName.name : '-'
+          const data = tableList.find(value => value['group_id'] === item['group_id'] && value.cartype === item.cartype)
+          if (data) {
+            data[`${item.status}-count`] = item.count
+          } else {
+            item[`${item.status}-count`] = item.count
+            tableList.push(item)
+          }
+        })
+        this.tableList = tableList
+      })
+    },
+    getGroupList () {
+      const params = {
+        // code: '0-CAR',
+        type: 1
+      }
+      groupAPI.getGroupList(params).then(res => {
+        this.grouplist = res.data.payload
+      })
+    },
+    search () {
+      const params = Object.assign({}, this.formData)
+      if (params.createTime[0]) {
+        params['createTime_gt'] = params.createTime[0]
+        params['createTime_lt'] = params.createTime[1]
+        delete params.createTime
+      }
+      this.getList(params)
+    },
+    getDict (value, name) {
+      const params = {
+        dictValue: value
+      }
+      commonAPI.getDictByValue(params).then(res => {
+        this[name] = res.data.payload
+      })
     },
     playVideo () {
       var cur = new Date();

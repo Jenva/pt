@@ -28,7 +28,7 @@
           <template v-for="(area, index) in tableData.areaInfo">
             <el-table-column :label="`区域${index + 1}人数`" align="center" prop="1" :key="area.id">
               <template>
-                <span>{{ area.value }}</span>
+                <span @click="getMessage">{{ area.value }}</span>
               </template>
             </el-table-column>
             <!-- <el-table-column label="区域2人数" align="center" prop="2"></el-table-column>
@@ -61,13 +61,14 @@ export default {
   },
   mounted () {
     this.frameRegister()
+    this.getPlayers()
   },
   beforeDestroy () {
     this.destroyVideo()
   },
   methods: {
     getPlayers () {
-      const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
+      const rect = document.querySelector('.video').getBoundingClientRect()
       var players =  [
         { 
           id: '1',
@@ -93,14 +94,56 @@ export default {
         groupId: 2 || data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
+        console.log(res)
         const data = res.data.payload
+        // const data = {
+        // "id": null,
+        //   "groupId": null,
+        //   "cameraCode": "test01",
+        //   "areaInfo": "[{\"id\":\"001\",\"value\":10}]",
+        //   "passengerCount": 10,
+        //   "collectTime": "2021-07-14T17:00:00.000+0800",
+        //   "createBy": null,
+        //   "createTime": null,
+        //   "updateTime": null,
+        //   "updateBy": null,
+        //   "remark": null,
+        //   "file": "/home/wuleiche/a.jpg"
+        // }
         data.areaInfo = JSON.parse(data.areaInfo)
         for (let i = 0; i < data.areaInfo.length; i++) {
           const element = data.areaInfo[i]
           data[i] = element
         }
+        console.log(data)
         this.tableData = data
       })
+    },
+    connectWebsocket() {
+      if (this.ws) this.ws.close()
+      this.ws = new WebSocket('ws://192.168.1.180:9088')
+      this.ws.onmessage = this.getMessage
+    },
+    getMessage (evt) {
+      const detail = evt.data.detial
+      // const detail = {
+      //   "regions":[{
+      //     "id":0,
+      //     "value":100
+      //     },{
+      //     "id":1,
+      //     "value":100
+      //     }],
+      //   "value": 200,
+      //   "file": "/home/renqun/a.jpg"
+      // }
+      for (let i = 0; i < detail.regions.length; i++) {
+        const element = detail.regions[i]
+        detail[i] = element
+      }
+      detail.passengerCount = detail.value
+      detail.areaInfo = detail.regions
+      this.tableData = detail
     },
     loadNode (node, resolve) {
       if (node.level === 1) {
@@ -155,14 +198,14 @@ export default {
     },
     createVideo () {
       const json = {
-        players: this.getPlayers
+        players: this.players
       }
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
       var json={
         players: [{
-          id: this.players(item => item.id)[0],
+          id: this.players.map(item => item.id)[0],
           camera:{
             type: data.type,
             domain: data.serverId,
@@ -175,13 +218,13 @@ export default {
     },
     stopVideo () {
       var json = {
-        players: this.players(item => item.id)[0]
+        players: this.players.map(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
       var json = {
-        players: this.players(item => item.id)[0]
+        players: this.players.map(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }

@@ -4,7 +4,7 @@
       <div class="select">
         <span class="text">区域：</span>
         <el-select v-model="selectedArea" placeholder="请选择区域">
-          <el-option value="1">t1</el-option>
+          <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
       </div>
       <div class="list">
@@ -55,6 +55,7 @@
 
 <script>
 import windowTopTitle  from '@/components/windowTopTitle'
+import groupAPI from '@/api/groupAPI'
 export default {
   components: {
     windowTopTitle
@@ -64,6 +65,7 @@ export default {
       total: 50,
       selectedArea: '',
       showModal: false,
+      grouplist: false,
       tableList: [
         { area: '东三走廊', count: 100 }
       ],
@@ -84,6 +86,9 @@ export default {
       }
     }
   },
+  mounted () {
+    this.getGroupList()
+  },
   methods: {
     showList () {
       this.showModal = true
@@ -101,7 +106,16 @@ export default {
     },
     handleCurrentChange () {
 
-    }
+    },
+    getGroupList () {
+      const params = {
+        // code: '0-CAR',
+        type: 1
+      }
+      groupAPI.getGroupList(params).then(res => {
+        this.grouplist = res.data.payload
+      })
+    },
   }
 }
 </script> 

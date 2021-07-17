@@ -29,13 +29,26 @@
       <div class="content-bottom">
         <div class="title">今日0点至今五类车进出统计表</div>
         <div class="table">
-          <el-table :data="emptyData" style="width: 100%">
-            <template v-for="(list) in tableList">
+          <el-table :data="tableList" style="width: 100%">
+            <!-- <template v-for="(list) in tableList">
               <el-table-column :label="`${getDisplayDict(list[0], carTypeDict)}`" width="240" align="center" :key="list[0]">
                 <el-table-column :label="`${getDisplayDict(carData.status, carEntranceType)}`" width="80" align="center" prop="enter" v-for="(carData, index) in list[1]" :key="carData.cartype+index">
                   <template slot-scope>
                     <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ carData.count }}</a>
                   </template>
+                </el-table-column>
+              </el-table-column>
+            </template> -->
+            <template v-for="(carType) in carTypeDict">
+              <el-table-column :label="carType.detailName" width="240" align="center" :key="carType.id">
+                <el-table-column :label="entranceType.detailName" width="80" align="center"
+                  :prop="`${carType.detailValue + '-' + entranceType.detailValue}-count`"
+                  v-for="(entranceType) in carEntranceType" :key="entranceType.id">
+                    <template slot-scope="scope">
+                      <a href="javascrpit:;" @click="toDetail"
+                      style="color: #fff">{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}
+                      </a>
+                    </template>
                 </el-table-column>
               </el-table-column>
             </template>
@@ -168,6 +181,7 @@ export default {
       currentCameraCode: 0,
       picList: [],
       tableList: [
+        { '3-1-count': 10 }
       ],
       defaultProps: {
         children: 'children',
@@ -178,8 +192,9 @@ export default {
       carEntranceType: [],
       type: '0-CAR',
       vehiclePicList: [],
-      emptyData: [],
-      players: []
+      emptyData: [{}],
+      players: [],
+      ws: ''
     }
   },
   beforeDestroy () {
@@ -231,7 +246,7 @@ export default {
       this.showPreview = true
       const params = {
         'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
-        areaCode : this.currentCameraCode || 'D3C01'
+        areaCode: this.currentCameraCode || 'D3C01'
       }
       vehicleAPI.getStatDetailList(params).then(res => {
         console.log(res)
@@ -285,24 +300,53 @@ export default {
     },
     getStatFromData (code) {
       const params = {
-        'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
-        areaCode : code
+        // 'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
+        'createTime_gt': '2021-07-11 00:00:00',
+        cameraCode : code
       }
       vehicleAPI.getStatFromData(params).then(res => {
-        const tableList = res.data.payload
-        const map = new Map()
-        for (let i = 0; i < tableList.length; i++) {
-          const element = tableList[i]
-          if (map.has(element.cartype)) {
-            console.log(map.get(element.cartype))
-            map.set(element.cartype, [...map.get(element.cartype), element])
-          } else {
-            map.set(element.cartype, [element])
+        console.log(res)
+        // const tableList = res.data.payload
+        const tableList =  [
+          {
+              "cartype": 3,
+              "count": 2,
+              "status": 0
+          },
+          {
+              "cartype": 1,
+              "count": 4,
+              "status": 0
+          },
+          {
+              "cartype": 2,
+              "count": 1,
+              "status": 0
           }
-        }
-        this.tableList = [...map.entries()]
-        this.emptyData = [{}]
+        ]
+        const data = tableList.reduce((pre, current) => {
+          const key = `${current.cartype}-${current.status}-count`
+          return Object.assign({}, { [key]: current.count }, pre)
+        }, {})
+        this.tableList = [data]
+        // this.connectWebsocket()
       })
+    },
+    connectWebsocket() {
+      if (this.ws) this.ws.close()
+      this.ws = new WebSocket('ws://192.168.1.180:9088')
+      this.ws.onmessage = this.getMessage
+    },
+    getMessage () {
+      // const detail = evt.data.detial
+      const detail = {
+        "cartype": 3,
+        "count": 2,
+        "status": 0
+      }
+      const key = `${detail.cartype}-${detail.status}-count`
+      detail[key] = detail.count
+      this.tableList = [Object.assign({}, this.tableList[0], detail)]
     },
     getRecentListFromRedis (code) {
       const params = {
@@ -341,7 +385,7 @@ export default {
     startVideo (data) {
       var json={
         players: [{
-          id: this.players(item => item.id)[0],
+          id: this.players.map(item => item.id)[0],
           camera:{
             type: data.type,
             domain:  data.serverId,
@@ -354,7 +398,7 @@ export default {
     },
     stopVideo () {
       var json = {
-        players: this.players(item => item.id)[0]
+        players: this.players.map(item => item.id)[0]
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },

@@ -3,7 +3,7 @@
     <div class="search">
       <el-form :model="formData" inline>
         <el-row>
-          <el-col span="7">
+          <el-col :span="7">
             <el-form-item label="触发时间">
               <el-date-picker
                 type="datetimerange"
@@ -15,14 +15,14 @@
               </el-date-picker>
             </el-form-item>
           </el-col>          
-          <el-col span="6">
+          <el-col :span="6">
             <el-form-item label="区域">
               <el-select placeholder="请选择区域" v-model="formData.area">
-                <el-option value="1">t1</el-option>
+                <el-option :value="group.id" :label="group.name" v-for="group in groupList" :key="group.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col span="5">
+          <el-col :span="5">
             <el-button type="primary">查询</el-button>
             <el-button>重置</el-button>
           </el-col>
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import groupAPI from '@/api/groupAPI'
 export default {
   data () {
     return {
@@ -72,7 +73,28 @@ export default {
       total: 50,
       tableList: [
         { area: 't1', time: '2010-10-10 20:20:20', psgCount: '100', review: 1, heatMap: 2, warningCount: 1 }
-      ]
+      ],
+      groupList: []
+    }
+  },
+  mounted () {
+    this.getGroupList()
+  },
+  methods: {
+    handleSizeChange () {
+
+    },
+    handleCurrentChange () {
+
+    },
+    getGroupList () {
+      const params = {
+        // code: '0-CAR',
+        type: 1
+      }
+      groupAPI.getGroupList(params).then(res => {
+        this.groupList = res.data.payload
+      })
     }
   }
 }

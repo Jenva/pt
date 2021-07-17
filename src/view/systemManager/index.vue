@@ -3,7 +3,8 @@
     <div class="system-search">
       <span class="system-search-title">分组列表:</span>
       <el-select v-model="group" class="system-search-select" placeholder="请选择分组">
-        <el-option value="1" label="五类车"></el-option>
+        <el-option :value="item.code" :label="item.name" v-for="item in groupList" :key="item.id">
+        </el-option>
       </el-select>
       <el-button type="primary" class="system-search-btn" @click="search">获取分组</el-button>
     </div>
@@ -38,18 +39,16 @@
           <div class="system-cell">{{node.label}}</div>
           <div v-if="node.level === 1" class="system-cell">
             <el-button type="text" @click.stop="showGroup('edit', data)">编辑</el-button>
-            <el-button type="text" @click.stop="showGroup('add', data)">添加分区</el-button>
+            <el-button type="text" @click.stop="showGroup('add', data, node.level)">添加分区</el-button>
             <el-button type="text" @click.stop="deleteGroup(data.id)">删除分组</el-button>
           </div>
           <div v-else-if="node.level === 2" class="system-cell">
-            <el-button type="text" @click.stop="showGroup('add', data)">添加分区</el-button>
+            <el-button type="text" @click.stop="showGroup('add', data, node.level)">添加分区</el-button>
             <el-button type="text" @click.stop="showGroup('edit', data)">编辑分区</el-button>
-            <el-button type="text" @click.stop="showAnalyse('add', data)">添加分析</el-button>
-            <el-button type="text" @click.stop="showCamera('add', data)">绑定视频枪</el-button>
             <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button>
           </div>
           <div v-else-if="node.level > 2" class="system-cell">
-            <el-button type="text" @click.stop="showGroup('edit', data)">编辑分区</el-button>
+            <el-button type="text" @click.stop="showGroup('edit', data, node.level)">编辑分区</el-button>
             <el-button type="text" @click.stop="showAnalyse('add', data)">添加分析</el-button>
             <el-button type="text" @click.stop="showCamera('add', data)">绑定视频枪</el-button>
             <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button>
@@ -73,12 +72,12 @@
         <!-- <el-form-item label="功能名称：" v-if="type === 2">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item> -->
-        <el-form-item label="设备选择：">
+        <el-form-item label="设备选择：" v-else>
           <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id" v-if="type === 2">
             <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
           </el-select>
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable multiple v-else @change="changeAnalsy">
-            <el-option :value="info.id" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
+          <el-select v-model="formData.cameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
+            <el-option :value="info" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -99,6 +98,7 @@ export default {
       group: '',
       title: '',
       type: '',
+      groupList: [],
       loading: false,
       handleType: '',
       tableList: [],
@@ -134,7 +134,7 @@ export default {
       }
       this.$refs.sideBar.showList()
     },
-    showGroup (type, data) {
+    showGroup (type, data, level) {
       this.type = 1
       this.handleType= type
       if (type === 'edit') {
@@ -142,6 +142,7 @@ export default {
         this.title = '修改'
       } else {
         this.id = data && data.id
+        this.formData.level = level ? level : 0
         this.title = '新增'
       }
       this.$refs.sideBar.showList()
@@ -179,16 +180,21 @@ export default {
         groupId: id
       }
       groupAPI.getCameraListByGroupId(params).then(res => {
-        this.selectedCameraId = res.data.payload.map(item => item.cameraId)
-        this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
+        this.analsyCamera = res.data.payload
+        // this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
       })
     },
     getList () {
       this.loading = true
       groupAPI.getGroupList().then(res => {
         this.list = res.data.payload
-        const rootNodes = this.list.filter(item => !item.parentId)
+        let rootNodes = this.list.filter(item => !item.parentId)
         this.getTree(rootNodes)
+        if (this.group) {
+          rootNodes = rootNodes.filter(item => item.code === this.group)
+        } else {
+          this.groupList = rootNodes.filter(item => !item.parentId)
+        }
         this.data = rootNodes
         this.loading = false
       })
@@ -215,8 +221,9 @@ export default {
       params.name = this.formData.name
       if (this.handleType === 'add') {
         params.code = this.formData.code
-        params.type = this.id ? 1 : 0
+        // params.type = this.id ? 1 : 0
         params.parentId = this.id || 0
+        params.type = this.formData.level >= 2 ? 1 : 0
         // if (params.parentId) {
         //   params.code = this.formData.code
         // }
@@ -230,19 +237,15 @@ export default {
       }
     },
     handleCamera () {
-      const cameraIds = this.camera
-        .filter(item => this.formData.cameraId.includes(item.id) )
-      for (let i = 0; i < cameraIds.length; i++) {
-        let params = {}
-        const element = cameraIds[i]
-        params.cameraId = element.id
-        params.cameraName = element.cameraName
-        params.groupId = this.formData.id
-        if (this.handleType === 'add') {
-          groupAPI.saveCamera(params).then(() => {
-            this.getList()
-          })
-        }
+      const params = {}
+      const camera = this.formData.cameraId
+      params.cameraId = camera.id
+      params.cameraName = camera.cameraName
+      params.groupId = this.formData.id
+      if (this.handleType === 'add') {
+        groupAPI.saveCamera(params).then(() => {
+          this.getList()
+        })
       }
     },
     changeAnalsy (data) {

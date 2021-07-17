@@ -150,3 +150,20 @@ body,html {
   color:#fff!important;
   background: #21232d!important;
 }
+
+.el-picker-panel {
+  background: #1f2831;
+}
+
+.el-picker-panel__footer {
+  background-color: #1f2831;
+}
+.el-picker-panel__icon-btn {
+  color: #fff;
+}
+.el-picker-panel {
+  color: #C0C4CC
+}
+.el-date-table td.next-month, .el-date-table td.prev-month {
+  color: #606266
+}

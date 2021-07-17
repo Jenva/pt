@@ -18,5 +18,11 @@ export default {
     return APIHelper.createAxios().get(
       url, { params }
     )
+  },
+  statListByLimitTime(params) {
+    const url = '/stat-car/statListByLimitTime'
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
   }
 }

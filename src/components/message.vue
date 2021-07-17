@@ -197,7 +197,6 @@ export default {
     connectWebsocket() {
       const ws = new WebSocket('ws://192.168.1.180:9088')
       ws.onmessage = this.getMessage
-      console.log(ws)
     },
     getMessage (evt) {
       if (evt.appid === 'renqun') {
