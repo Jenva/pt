@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <top-nav></top-nav>
+    <top-nav v-if="!showMenu"></top-nav>
     <router-view></router-view>
   </div>
 </template>
@@ -10,6 +10,11 @@ import TopNav from './TopNav'
 export default {
   components: {
     TopNav
+  },
+  computed: {
+    showMenu () {
+      return window.bykj
+    }
   }
 }
 </script>
