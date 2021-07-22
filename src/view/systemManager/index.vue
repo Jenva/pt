@@ -239,7 +239,7 @@ export default {
     handleCamera () {
       const params = {}
       const camera = this.formData.cameraId
-      params.cameraId = camera.id
+      params.cameraCode = camera.code
       params.cameraName = camera.cameraName
       params.groupId = this.formData.id
       if (this.handleType === 'add') {

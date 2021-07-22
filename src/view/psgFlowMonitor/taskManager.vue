@@ -66,8 +66,8 @@
             <el-input v-model="formData.taskTime"></el-input>
           </el-form-item>
           <el-form-item label="摄像机:">
-            <el-select v-model="formData.cameraIds" multiple="">
-              <el-option :value="camera.id.toString()" :label="camera.name" v-for="camera in cameraList" :key="camera.id"></el-option>
+            <el-select v-model="formData.cameraCodes" multiple="">
+              <el-option :value="camera.code" :label="camera.name" v-for="camera in cameraList" :key="camera.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="采集频率:">
@@ -109,7 +109,7 @@ export default {
       cameraList: [],
       formData: {
         triggerTime: '00:01:00',
-        cameraIds: []
+        cameraCodes: []
       }
     }
   },
@@ -187,7 +187,7 @@ export default {
       const params = Object.assign({}, this.formData)
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
-      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
+      // if (params.cameraCodes) params.cameraCodes = params.cameraCodes
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
       delete params.rate
       delete params.alarm
@@ -200,7 +200,6 @@ export default {
       this.title = type === 'add' ? '新增' : '编辑'
       if (type === 'edit') {
         const formData = Object.assign({}, data)
-        formData.cameraIds = formData.cameraIds.split(',')
         formData.triggerTime = dayjs(dayjs().format('YYYY-MM-DD') + formData.triggerTime).toDate()
         let startTimeStamp = formData.triggerTime.valueOf()
         let endTimeStamp =  dayjs(dayjs().format('YYYY-MM-DD') + formData.stopTime).valueOf()
