@@ -165,7 +165,7 @@ export default {
       const params = Object.assign({ taskType: 'CAR' }, this.formData)
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
-      if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
+      // if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
       delete params.rate
       delete params.alarm
