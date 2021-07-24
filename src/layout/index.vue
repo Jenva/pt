@@ -1,15 +1,15 @@
 <template>
   <div class="layout">
-    <top-nav v-if="!showMenu"></top-nav>
+    <!-- <top-nav v-if="!showMenu"></top-nav> -->
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import TopNav from './TopNav'
+// import TopNav from './TopNav'
 export default {
   components: {
-    TopNav
+    // TopNav
   },
   computed: {
     showMenu () {

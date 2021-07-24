@@ -217,13 +217,14 @@ export default {
 
 <style lang="less" scoped>
 .sideBar {
-  height: 600px;
+  height: 100%;
   box-sizing: border-box;
   background: #272a35;
 }
 .content {
   height: 100%;
   padding: 25px 5px 25px 23px;
+  box-sizing: border-box;
 }
 .tab {
   display: inline-block;
@@ -239,7 +240,7 @@ export default {
 }
 .tabContent {
   padding: 12px 0;
-  height: calc(100% - 150px);
+  height: calc(100% - 48px);
 }
 .selected {
   color: #2dccd3;
@@ -247,7 +248,7 @@ export default {
   background-size: 100% 100%;
 }
 .list {
-  width: 564px;
+  width: 100%;
   height: 100%;
   overflow: auto;
   padding-right: 10px;

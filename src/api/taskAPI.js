@@ -7,10 +7,10 @@ export default {
       url, { params }
     )
   },
-  getTaskPageList (pageNum, pageSize) {
+  getTaskPageList (pageNum, pageSize, params) {
     const url = `/task2/list/${pageNum}/${pageSize}`
     return APIHelper.createAxios().get(
-      url
+      url, { params }
     )
   },
   addTask (params) {

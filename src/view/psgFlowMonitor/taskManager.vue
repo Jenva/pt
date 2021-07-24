@@ -145,7 +145,10 @@ export default {
     },
     getList (page = 1, limit = this.limit) {
       const pageNum = (page - 1 ) * limit
-      taskAPI.getTaskPageList(pageNum, limit).then(res => {
+      const params = {
+        taskType: 'PASSENGER'
+      }
+      taskAPI.getTaskPageList(pageNum, limit, params).then(res => {
         this.tableList = res.data.payload.rows
         this.tableList.forEach(item => {
           if (item.groupId) {
@@ -163,6 +166,7 @@ export default {
     },
     addTask () {
       const params = Object.assign({ taskType: 'CAR' }, this.formData)
+      params.taskType = 'PASSENGER'
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
       // if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')

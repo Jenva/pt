@@ -72,9 +72,9 @@ export default {
       var players =  [
         { 
           id: '1',
-          x: rect.left - 20,
+          x: rect.left,
           y: rect.top,
-          w: rect.width + 20,
+          w: rect.width,
           h: rect.height
         }
       ]
@@ -261,7 +261,7 @@ export default {
       padding-right: 8px;
     }
     .list {
-      height: 846px;
+      height: calc(100% - 60px);
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;
@@ -269,9 +269,10 @@ export default {
   }
   .content {
     width: calc(100% - 354px);
-    height: 905px;
+    height: 100%;
     margin-left: 24px;
     border: 1px solid #13585c;
+    overflow: hidden;
     .videoContent {
       display: flex;
       .video,

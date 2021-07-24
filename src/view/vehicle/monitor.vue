@@ -7,7 +7,7 @@
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
             <span>
-              <el-tag v-if="data.cameraId" size="mini">视频枪</el-tag>
+              <el-tag v-if="data.cameraCode" size="mini">视频枪</el-tag>
               <el-tag v-else type="success" size="mini">组/区域</el-tag>
             </span>
           </span>
@@ -261,7 +261,7 @@ export default {
     },
     handleNodeClick (data) {
       this.currentCameraCode = data.cameraCode
-      if (data.cameraId) {
+      if (data.cameraCode) {
         this.getStatFromData(data.cameraCode || 'D3C01')
         this.getRecentListFromRedis(data.cameraCode || 'D3C01')
         this.startVideo(data)
@@ -300,30 +300,30 @@ export default {
     },
     getStatFromData (code) {
       const params = {
-        // 'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
-        'createTime_gt': '2021-07-11 00:00:00',
+        'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
+        // 'createTime_gt': '2021-07-11 00:00:00',
         cameraCode : code
       }
       vehicleAPI.getStatFromData(params).then(res => {
         console.log(res)
-        // const tableList = res.data.payload
-        const tableList =  [
-          {
-              "cartype": 3,
-              "count": 2,
-              "status": 0
-          },
-          {
-              "cartype": 1,
-              "count": 4,
-              "status": 0
-          },
-          {
-              "cartype": 2,
-              "count": 1,
-              "status": 0
-          }
-        ]
+        const tableList = res.data.payload
+        // const tableList =  [
+        //   {
+        //       "cartype": 3,
+        //       "count": 2,
+        //       "status": 0
+        //   },
+        //   {
+        //       "cartype": 1,
+        //       "count": 4,
+        //       "status": 0
+        //   },
+        //   {
+        //       "cartype": 2,
+        //       "count": 1,
+        //       "status": 0
+        //   }
+        // ]
         const data = tableList.reduce((pre, current) => {
           const key = `${current.cartype}-${current.status}-count`
           return Object.assign({}, { [key]: current.count }, pre)
@@ -337,13 +337,13 @@ export default {
       this.ws = new WebSocket('ws://192.168.1.180:9088')
       this.ws.onmessage = this.getMessage
     },
-    getMessage () {
-      // const detail = evt.data.detial
-      const detail = {
-        "cartype": 3,
-        "count": 2,
-        "status": 0
-      }
+    getMessage (evt) {
+      const detail = evt.data.detial
+      // const detail = {
+      //   "cartype": 3,
+      //   "count": 2,
+      //   "status": 0
+      // }
       const key = `${detail.cartype}-${detail.status}-count`
       detail[key] = detail.count
       this.tableList = [Object.assign({}, this.tableList[0], detail)]
@@ -441,7 +441,7 @@ export default {
       color: #2dccd3;
     }
     .list {
-      height: 860px;
+      height: calc(100% - 70px);
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;
@@ -449,10 +449,11 @@ export default {
   }
   .vehicle-content {
     width: calc(100% - 354px);
-    height: 905px;
+    height: calc(100% - 12px);
     margin-left: 24px;
-    padding-bottom: 13px;
+    // padding-bottom: 13px;
     border: 1px solid #13585c;
+    overflow: hidden;
     .content-main {
       display: flex;
       box-sizing: border-box;
