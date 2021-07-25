@@ -6,10 +6,6 @@
         <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
-            <span>
-              <el-tag v-if="data.cameraId" size="mini">视频枪</el-tag>
-              <el-tag v-else type="success" size="mini">组/区域</el-tag>
-            </span>
           </span>
         </el-tree>
       </div>
@@ -51,6 +47,7 @@ export default {
     return {
       type: 'PSG',
       tableData: [],
+      players: [],
       groupList: [],
       defaultProps: {
         label: 'label',
@@ -61,13 +58,14 @@ export default {
   },
   mounted () {
     this.frameRegister()
-    this.getPlayers()
+    this.getPlayers(true)
+    this.resize()
   },
   beforeDestroy () {
     this.destroyVideo()
   },
   methods: {
-    getPlayers () {
+    getPlayers (isMounted) {
       const rect = document.querySelector('.video').getBoundingClientRect()
       var players =  [
         { 
@@ -79,11 +77,20 @@ export default {
         }
       ]
       this.players = players
-      this.createVideo()
+      isMounted && this.createVideo()
+    },
+    resize () {
+      window.onresize = () => {
+        this.getPlayers()
+        var json = {
+          players: this.players
+        }
+        window.bykj && window.bykj.frameCall('adjustplayer', JSON.stringify(json))
+      }
     },
     handleNodeClick (data) {
       this.currentCameraCode = data.cameraCode
-      if (data.cameraId) {
+      if (data.cameraCode) {
         this.getList(data)
         this.startVideo(data)
       }
@@ -94,7 +101,6 @@ export default {
         groupId: 2 || data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
-        console.log(res)
         const data = res.data.payload
         // const data = {
         // "id": null,
@@ -157,7 +163,7 @@ export default {
         const children = node.data.children
           .concat(data)
           .map(item => {
-            if (item.cameraId) item.leaf = true
+            if (item.cameraCode) item.leaf = true
             return item
           })
         return resolve(children)
@@ -208,8 +214,8 @@ export default {
           id: this.players.map(item => item.id)[0],
           camera:{
             type: 0,
-            domain: data.serverId,
-            id:	data.id,
+            domain:  data.serverId || 'YFGZHOM1.A1',
+            id:	'000002X0000' || data.id.toString(),
             level: 0,
           }
         }]
@@ -257,7 +263,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 14Px;
       padding-right: 8px;
     }
     .list {
@@ -287,7 +293,7 @@ export default {
         border: 1px solid #13585c;
         .heatMap-title {
           padding: 9px 24px 8px;
-          font-size: 18px;
+          font-size: 18Px;
           line-height: 1;
           color: #fff;
         }

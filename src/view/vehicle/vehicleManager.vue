@@ -8,7 +8,7 @@
         <el-table-column label="任务名" prop="name" align="center"></el-table-column>
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="采集频率" prop="rate" align="center"></el-table-column>
-        <el-table-column label="摄像机" prop="gun" align="center">
+        <el-table-column label="摄像机" prop="cameraCodes" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.cameraCodes.join(',')}}</span>
           </template>
@@ -151,7 +151,7 @@ export default {
     getList (page = 1, limit = this.limit) {
       const pageNum = (page - 1 ) * limit
       const params = {
-        taskType: 'PASSENGER'
+        taskType: 'CAR'
       }
       taskAPI.getTaskPageList(pageNum, limit, params).then(res => {
         this.tableList = res.data.payload.rows
@@ -179,7 +179,7 @@ export default {
     },
     addTask () {
       const params = Object.assign({}, this.formData)
-      params.taskType = 'PASSENGER'
+      params.taskType = 'CAR'
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
       // if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')

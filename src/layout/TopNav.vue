@@ -75,6 +75,10 @@ export default {
             {
               title: '五类车统计报表',
               route: '/vehicleStatistics'
+            },
+            {
+              title: '五类车任务管理',
+              route: '/vehicleManager'
             }
           ]
         },
