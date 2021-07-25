@@ -1,163 +1,125 @@
 <template>
-  <div class="sideBar">
-    <div class="content">
-      <div class="tabs">
-        <span :class="['tab', currentTab === 'custom' ? 'selected' : '' ]" @click="selecedTab('custom')">
-          客流告警（99+）
+  <div class="message-sideBar">
+    <div class="message-content">
+      <div class="message-tabs">
+        <span :class="['message-tab', currentTab === 'custom' ? 'selected' : '' ]" @click="selecedTab('custom')">
+          客流告警（{{peopleData.length}}）
         </span>
-        <span :class="['tab', currentTab === 'car' ? 'selected' : '' ]" @click="selecedTab('car')">
-          五类车告警（99+）
+        <span :class="['message-tab', currentTab === 'car' ? 'selected' : '' ]" @click="selecedTab('car')">
+          五类车告警（{{carData.length}}）
         </span>
       </div>
-      <div class="tabContent">
-        <ul class="list">
-          <li v-for="(message, index) in listData" :key="index">
-            <div class="heatMap">
+      <div class="message-tabContent">
+        <ul class="message-list" >
+          <li v-for="(message, index) in listData" :key="index" @click="toDetail">
+            <div class="message-heatMap">
               <img :src="downloadFile(message.data.file)" alt="">
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
+            <div class="message-info">
+              <div class="message-text">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage(index)">
               </div>
-              <div class="other">
-                <span>{{message.data.time}}</span>
-                <el-button class="btn" size="mini" @click="toDetail(message)">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{message.data.time}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail(message)">查看详情</el-button>
               </div>
             </div>
           </li>
           <li>
-            <div class="heatMap">
-              <img src="" alt="">
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="heatMap">
-              <img src="" alt="">
-            </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
-              </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini" @click="toDetail()">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
           </li>
           <li>
-            <div class="heatMap">
-              <img src="" alt="">
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="heatMap">
-              <img src="" alt="">
-            </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
-              </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
           </li>
           <li>
-            <div class="heatMap">
-              <img src="" alt="">
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="heatMap">
-              <img src="" alt="">
-            </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
-              </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
           </li>
           <li>
-            <div class="heatMap">
-              <img src="" alt="">
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="heatMap">
-              <img src="" alt="">
-            </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
-              </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
           </li>
           <li>
-            <div class="heatMap">
-              <img src="" alt="">
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
-            <div class="info">
-              <div class="text">
-                <span>T1航站楼西三指廊客流一级预警</span>
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close">
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
-              <div class="other">
-                <span>12:00:02</span>
-                <el-button class="btn" size="mini">查看详情</el-button>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
+            </div>
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
+              </div>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="message-heatMap">
+              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
+            </div>
+            <div class="message-info">
+              <div class="message-text">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
+              </div>
+              <div class="message-other">
+                <span class="message-text">{{'12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
           </li>
@@ -188,8 +150,10 @@ export default {
   methods: {
     toDetail (message) {
       console.log(this.currentTab)
-      const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
-      this.$router.push(`${path}?data=${message}`)
+      const path = this.currentTab === 'custom' ? '/#/psgFlowMonitor' : '/#/vehicleMonitor'
+      const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
+      window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${message}`, name}))
+      // this.$router.push(`${path}?data=${message}`)
     },
     selecedTab (type) {
       this.currentTab = type
@@ -200,9 +164,10 @@ export default {
     },
     getMessage (evt) {
       if (evt.appid === 'renqun') {
-        this.peopleData = [].concat(this.peopleData, evt.data)
-      } else if (evt.appid === 'carType') {
-        this.carData = [].concat(this.carData, evt.data)
+        this.peopleData = [].concat(this.peopleData, [evt.data.detail])
+      } else if (evt.appid === 'wuleiche') {
+        evt.data.file = evt.data.file0
+        this.carData = [].concat(this.carData, [evt.data.data])
       }
     },
     downloadFile (id) {
@@ -216,21 +181,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.sideBar {
-  height: 100%;
+.message-sideBar {
+  width: 100%;
+  // height: 100%;
   box-sizing: border-box;
   background: #272a35;
 }
-.content {
+.message-content {
   height: 100%;
-  padding: 25px 5px 25px 23px;
+  padding: 10px 5px 10px 10px;
   box-sizing: border-box;
 }
-.tab {
+.message-tab {
   display: inline-block;
-  width: 191px;
+  width: 40%;
   height: 48px;
-  font-size: 18px;
+  font-size: 16px;
   color: #818d99;
   text-align: center;
   line-height: 48px;
@@ -238,7 +204,7 @@ export default {
     cursor: pointer;
   }
 }
-.tabContent {
+.messge-abContent {
   padding: 12px 0;
   height: calc(100% - 48px);
 }
@@ -247,7 +213,7 @@ export default {
   background: url('../assets/tab_bg@2x.jpg');
   background-size: 100% 100%;
 }
-.list {
+.message-list {
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -277,15 +243,15 @@ export default {
     padding: 11px;
     margin-bottom: 12px;
     border: 1px solid #13585c;
-    .heatMap {
-      width: 174px;
-      height: 89px;
+    .message-heatMap {
+      width: 100px;
+      height: 50px;
       margin-right: 12px;
     }
-    .info {
+    .message-info {
       position: relative;
       flex: 1;
-      .text {
+      .message-text {
         color: #fff;
         font-size: 18px;
       }
@@ -293,7 +259,7 @@ export default {
         float: right;
         vertical-align: middle;
       }
-      .other {
+      .message-other {
         position: absolute;
         width: 100%;
         bottom: 0;
@@ -301,8 +267,11 @@ export default {
         span {
           vertical-align: text-bottom; 
         }
-        .btn {
+        .message-btn {
           float: right;
+          width: 90px;
+          height: 25px;
+          font-size: 14px;
         }
       }
     }

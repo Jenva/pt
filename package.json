@@ -52,8 +52,10 @@
       "postcss-pxtorem": {
         "rootValue": 192,
         "remPrecision": 8,
+        "selectorBlackList": ["message-","cp-icon-"],
         "propList": [
-          "*"
+          "*",
+          "!fontSize"
         ]
       }
     }

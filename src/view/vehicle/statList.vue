@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="7">
             <el-form-item label="时间范围">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%" value-format="yyyy-MM-DD HH:mm:ss"></el-date-picker>
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%"></el-date-picker>
             </el-form-item>
           </el-col>          
           <el-col :span="6">
@@ -33,7 +33,13 @@
     <div class="table">
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
-        <el-table-column label="统计时段" prop="time" align="center"></el-table-column>
+        <el-table-column label="统计时段" prop="time" align="center">
+          <template>
+            <span>
+              {{startTime}}-{{endTime}}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="车辆类型" prop="cartype" align="center"></el-table-column>
         <el-table-column label="车辆进入" prop="0-count" align="center"></el-table-column>
         <el-table-column label="车辆离开" prop="1-count" align="center"></el-table-column>
@@ -71,6 +77,8 @@ export default {
       total: 50,
       grouplist: [],
       carTypeDict: [],
+      startTime: '',
+      endTime: '',
       formData: {
         createTime: [],
       },
@@ -99,7 +107,6 @@ export default {
       //   createTime_lt: '2021-07-17 00:00:00'
       // }
       vehicleAPI.statListByLimitTime(params).then(res => {
-        console.log(res)
         const list = res.data.payload
         const tableList = []
         list.forEach(item => {
@@ -128,8 +135,10 @@ export default {
     search () {
       const params = Object.assign({}, this.formData)
       if (params.createTime[0]) {
-        params['createTime_gt'] = params.createTime[0]
-        params['createTime_lt'] = params.createTime[1]
+        params['createTime_gt'] = days(params.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['createTime_lt'] = days(params.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        this.startTime = params.createTime_gt
+        this.endTime = params.createTime_lt
         delete params.createTime
       }
       this.getList(params)
@@ -143,7 +152,9 @@ export default {
       })
     },
     playVideo (data) {
-      var cur = new Date();
+      var cur = new Date()
+      // var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+      // var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
       var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
       var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
       var json={

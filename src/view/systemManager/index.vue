@@ -72,14 +72,19 @@
         <!-- <el-form-item label="功能名称：" v-if="type === 2">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
         </el-form-item> -->
-        <el-form-item label="设备选择：" v-else>
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id" v-if="type === 2">
-            <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
-          </el-select>
-          <el-select v-model="formData.cameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
-            <el-option :value="info" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
-          </el-select>
-        </el-form-item>
+        <div v-else>
+          <el-form-item label="设备选择：">
+            <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id" v-if="type === 2">
+              <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
+            </el-select>
+            <el-select v-model="formData.cameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
+              <el-option :value="info" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="type === 2 ? '已绑定视频枪:' : '已分析视频枪:'">
+            <el-tag v-for="camera in selectedCamera" :key="camera.id" style="margin-right: 5px;">{{camera.cameraName || '-'}}</el-tag>
+          </el-form-item>
+        </div>
       </el-form>
     </side-bar>
   </div>
@@ -106,10 +111,13 @@ export default {
         cameraId: ''
       },
       selectedCameraId: [],
+      analsyCameraId: 0,
       analsyCamera: [],
       allCameraList: [],
       list: [],
       id: '',
+      regions: [],
+      groupType: '',
       data: [],
       defaultProps: {
         children: 'children',
@@ -117,10 +125,29 @@ export default {
       }
     }
   },
+  computed: {
+    selectedCamera () {
+      if (this.type === 2) {
+        return this.analsyCamera
+      } else {
+        return this.analsyCamera.filter(item => item.areaInfo)
+      }
+    }
+  },
   mounted () {
     this.getList()
+    this.frameRegister()
   },
   methods: {
+     frameRegister () {
+      const cxxNotifier = (cmd, data) => {
+        console.log(data, cmd)
+        if (cmd === 'saveregions') {
+          this.regions = JSON.parse(data).regions
+        }
+      }
+      window.bykj && window.bykj.frameRegister(cxxNotifier);
+    },
     search () {
       this.getList()
     },
@@ -153,6 +180,7 @@ export default {
       this.formData = data
       this.title = '绑定视频枪'
       this.getAlltCameraList()
+      this.getCameraList(data.id)
       this.$nextTick(() => {
         this.$refs.sideBar.showList()
       })
@@ -236,6 +264,11 @@ export default {
         })
       }
     },
+    handleNodeClick (data, node) {
+      if (node.level === 1) {
+        this.groupType = data.code
+      }
+    },
     handleCamera () {
       const params = {}
       const camera = this.formData.cameraId
@@ -250,26 +283,47 @@ export default {
     },
     changeAnalsy (data) {
       console.log(data)
-      window.bykj && window.bykj.frameCall('editregions')
+      this.analsyCameraId = data.id
+      // const json = {
+      //   playerid: 0,
+      //   camera: {
+      //       domain: 'YFGZHOM1.A1' || data.cameraCode,
+      //       id:	'000002X0000' || data.id
+      //   },
+      //   type: 1,
+      //   regions: JSON.parse(data.areaInfo) || []
+      // }
+      const json = {
+        playerid: 0,
+        camera: {
+            domain: 'YFGZHOM1.A1' || data.cameraCode,
+            id:	'000002X0000' || data.id
+        },
+        type: 1,
+        count: this.groupType === 'wuleiche' ? 1 : 8,
+        regions: JSON.parse(data.areaInfo) || []
+      }
+      this.regions = JSON.parse(data.areaInfo)
+      window.bykj && window.bykj.frameCall('editregions', JSON.stringify(json))
     },
     handlerAnalsy () {
-      "saveregions"
-      const params = [
-        {
-          "code": "camera01-01" || this.formData.cameraId,
-          "x": [ 0.1, 0.6, 0.6, 0.1, 0.3 ],
-          "y": [0.85, 0.4, 0.8, 0.8, 0.5 ],
-          "in": {
-            "x": [0.1, 0.5],
-            "y": [0.2, 0.8]
-          },
-          "out":{
-            "x":[ 0.5, 0.8],
-            "y":[0.6, 0.4]
-          }
-        }
-      ]
-      groupAPI.updateCamera(this.id, {areaInfo: JSON.stringify(params)}).then()
+      // "saveregions"
+      // const params = [
+      //   {
+      //     "code": "camera01-01" || this.formData.cameraId,
+      //     "x": [ 0.1, 0.6, 0.6, 0.1, 0.3 ],
+      //     "y": [0.85, 0.4, 0.8, 0.8, 0.5 ],
+      //     "in": {
+      //       "x": [0.1, 0.5],
+      //       "y": [0.2, 0.8]
+      //     },
+      //     "out":{
+      //       "x":[ 0.5, 0.8],
+      //       "y":[0.6, 0.4]
+      //     }
+      //   }
+      // ]
+      groupAPI.updateCamera(this.analsyCameraId, {areaInfo: JSON.stringify(this.regions)}).then()
     },
     confirm () {
       if (this.type === 1) {

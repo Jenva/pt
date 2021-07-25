@@ -6,10 +6,6 @@
         <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
-            <span>
-              <el-tag v-if="data.cameraCode" size="mini">视频枪</el-tag>
-              <el-tag v-else type="success" size="mini">组/区域</el-tag>
-            </span>
           </span>
         </el-tree>
       </div>
@@ -45,8 +41,8 @@
                   :prop="`${carType.detailValue + '-' + entranceType.detailValue}-count`"
                   v-for="(entranceType) in carEntranceType" :key="entranceType.id">
                     <template slot-scope="scope">
-                      <a href="javascrpit:;" @click="toDetail"
-                      style="color: #fff">{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}
+                      <a @click="toDetail"
+                      style="color: #fff;cursor: pointer;">{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}
                       </a>
                     </template>
                 </el-table-column>
@@ -179,6 +175,8 @@ export default {
     return {
       showPreview: false,
       currentCameraCode: 0,
+      recentPicId: 0,
+      statId: 0,
       picList: [],
       tableList: [
         { '3-1-count': 10 }
@@ -199,28 +197,40 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
+    clearInterval(this.recentPicId)
+    clearInterval(this.statId)
   },
   mounted () {
     this.resize()
-    this.getPlayers()
+    this.getPlayers(1)
     this.getDict('CAR_TYPE', 'carTypeDict')
     this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
   },
   methods: {
-    getPlayers () {
+    loopMethod () { 
+      clearInterval(this.recentPicId)
+      clearInterval(this.statId)
+      this.recentPicId = setInterval(() => {
+        this.getRecentListFromRedis(this.currentCameraCode)
+      }, 10000)
+      this.statId = setInterval(() => {
+        this.getStatFromData(this.currentCameraCode || 'D3C01')
+      }, 15000)
+    },
+    getPlayers (isMounted) {
       const rect = document.querySelector('.vehicle-video').getBoundingClientRect()
       var players =  [
         { 
           id: '1',
-          x: rect.left - 20,
+          x: rect.left,
           y: rect.top,
-          w: rect.width + 20,
+          w: rect.width,
           h: rect.height
         }
       ]
       this.players = players
-      this.createVideo()
       console.log(players)
+      isMounted && this.createVideo()
     },
     resize () {
       window.onresize = () => {
@@ -244,6 +254,7 @@ export default {
     },
     toDetail () {
       this.showPreview = true
+      window.bykj.frameCall('hideplayer', JSON.stringify({type: 'all'}))
       const params = {
         'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
         areaCode: this.currentCameraCode || 'D3C01'
@@ -258,13 +269,16 @@ export default {
     },
     close () {
       this.showPreview = false
+      window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
     },
     handleNodeClick (data) {
-      this.currentCameraCode = data.cameraCode
+      this.startVideo(data)
       if (data.cameraCode) {
+        this.currentCameraCode = data.cameraCode
         this.getStatFromData(data.cameraCode || 'D3C01')
         this.getRecentListFromRedis(data.cameraCode || 'D3C01')
         this.startVideo(data)
+        this.loopMethod()
       }
     },
     getCameraByGroupId (data, cb) {
@@ -377,8 +391,9 @@ export default {
       window.bykj && window.bykj.frameRegister(cxxNotifier);
     },
     createVideo () {
+      console.log(this.getPlayers)
       const json = {
-        players: this.getPlayers
+        players: this.players
       }
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
@@ -388,12 +403,13 @@ export default {
           id: this.players.map(item => item.id)[0],
           camera:{
             type: 0,
-            domain:  data.serverId,
-            id:	data.id,
+            domain:  data.serverId || 'YFGZHOM1.A1',
+            id:	'000002X0000' || data.id.toString(),
             level: 0,
           }
         }]
       }
+      console.log(data)
       window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
@@ -427,7 +443,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 14Px;
       padding-right: 8px;
     }
     .task-title {
@@ -457,7 +473,7 @@ export default {
     .content-main {
       display: flex;
       box-sizing: border-box;
-      height: 638px;
+      height: calc(100% - 220px);
       .vehicle-video {
         flex: 1;
         border: 1px solid #2dccd3;
@@ -467,12 +483,12 @@ export default {
         margin: 0 23px 0 24px;
         .title {
           padding: 10px 0;
-          font-size: 18px;
+          font-size: 18Px;
           line-height: 1;
           color: #fff;
         }
         .list {
-          height: calc(100% - 48px);
+          height: 100%;
           padding-top: 10px;
           overflow: auto;
           .cell {
@@ -487,9 +503,10 @@ export default {
     }
     .content-bottom {
       padding: 23px;
+      height: 220px;
       .title {
         padding: 4px 0 21px 0;
-        font-size: 18px;
+        font-size: 18Px;
         font-weight: 700;
         line-height: 1;
         color: #2dccd3;

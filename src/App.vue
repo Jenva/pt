@@ -15,5 +15,6 @@ export default {
 #app {
   width: 100%;
   height: 100%;
+  font-family: '宋体';
 }
 </style>
