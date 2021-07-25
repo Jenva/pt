@@ -149,7 +149,6 @@ export default {
   },
   methods: {
     toDetail (message) {
-      console.log(this.currentTab)
       const path = this.currentTab === 'custom' ? '/#/psgFlowMonitor' : '/#/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
       window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${message}`, name}))
@@ -159,15 +158,19 @@ export default {
       this.currentTab = type
     },
     connectWebsocket() {
-      const ws = new WebSocket('ws://192.168.1.180:9088')
+      const ws = new WebSocket('ws://10.10.220.141:9088')
       ws.onmessage = this.getMessage
     },
     getMessage (evt) {
+      console.log(evt)
       if (evt.appid === 'renqun') {
-        this.peopleData = [].concat(this.peopleData, [evt.data.detail])
+        Object.keys(evt.data.detail).forEach(key => {
+          evt.data[key] = evt.data.detail[key]
+        })
+        this.peopleData = [].concat(this.peopleData, [evt.data])
       } else if (evt.appid === 'wuleiche') {
         evt.data.file = evt.data.file0
-        this.carData = [].concat(this.carData, [evt.data.data])
+        this.carData = [].concat(this.carData, [evt.data])
       }
     },
     downloadFile (id) {
