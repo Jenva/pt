@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="7">
             <el-form-item label="时间范围">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%" value-format="yyyy-MM-DD HH:mm:ss"></el-date-picker>
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%"></el-date-picker>
             </el-form-item>
           </el-col>          
           <el-col :span="6">
@@ -128,8 +128,8 @@ export default {
     search () {
       const params = Object.assign({}, this.formData)
       if (params.createTime[0]) {
-        params['createTime_gt'] = params.createTime[0]
-        params['createTime_lt'] = params.createTime[1]
+        params['createTime_gt'] = days(params.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['createTime_lt'] = days(params.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
         delete params.createTime
       }
       this.getList(params)
