@@ -23,9 +23,13 @@
                 <img src="../../assets/passengerflowmanagement_icon_edit_normal.png" alt="" style="vertical-align: middle">
                 编辑
               </el-button>
-              <el-button type="text" @click="bootTask(scope.row.id)" v-if="scope.row.bootType === 'ONECE'">
+              <el-button type="text" @click="bootTask(scope.row.id)" v-if="scope.row.bootStatus === 0">
                 <img src="../../assets/passengerflowmanagement_icon_suspend_normal.png" alt="" style="vertical-align: middle">
                 启动
+              </el-button>
+              <el-button type="text" @click="stopTask(scope.row.id)" v-else>
+                <img src="../../assets/passengerflowmanagement_icon_suspend_normal.png" alt="" style="vertical-align: middle">
+                停止
               </el-button>
             </div>
           </template>
@@ -207,7 +211,14 @@ export default {
       }
     },
     bootTask (id) {
-      taskAPI.bootTask(id).then()
+      taskAPI.bootTask(id).then(() => {
+        this.getList()
+      })
+    },
+    stopTask (id) {
+      taskAPI.stopTask(id).then(() => {
+        this.getList()
+      })
     },
     updateTask () {
       const params = Object.assign({}, this.formData)

@@ -30,5 +30,11 @@ export default {
     return APIHelper.createAxios().put(
       url, params
     )
+  },
+  stopTask (id) {
+    const url = `/task2/stop/${id}`
+    return APIHelper.createAxios().put(
+      url
+    )
   }
 }

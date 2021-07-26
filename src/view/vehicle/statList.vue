@@ -151,21 +151,31 @@ export default {
         this[name] = res.data.payload
       })
     },
-    playVideo (data) {
-      // var cur = new Date()
-      var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
-      var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
-      // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-      // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
-      var json={
-          type: 1,
-          domain: data.serverId || "YFGZHOM1.A1",
-          id:	data.id || "000002X0000",
-          level: 0,
-          begin:startTime,
-          end:stopTime
+    getCameraInfo (id, cb) {
+      const params = {
+        groupId: id
       }
-      window.bykj && window.bykj.frameCall('popup', JSON.stringify(json)); 
+      groupAPI.getCameraListByGroupId(params).then((res) => {
+        cb(res.data.payload)
+      })
+    },
+    playVideo (data) {
+      this.getCameraInfo(data.group_id, (data) => {
+        // var cur = new Date()
+        var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+        // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
+        var json={
+            type: 1,
+            domain: data[0].serverId || "YFGZHOM1.A1",
+            id:	data[0].cameraCode || "000002X0000",
+            level: 0,
+            begin:startTime,
+            end:stopTime
+        }
+        window.bykj && window.bykj.frameCall('popup', JSON.stringify(json)); 
+      })
     }
   }
 }

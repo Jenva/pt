@@ -8,9 +8,9 @@
       </el-select>
       <el-button type="primary" class="system-search-btn" @click="search">获取分组</el-button>
     </div>
-    <div class="system-add">
+    <!-- <div class="system-add">
       <el-button type="primary" @click="showGroup('add')">创建分组</el-button>
-    </div>
+    </div> -->
     <div class="system-table">
       <table class="system-thead">
           <colgroup>
@@ -65,9 +65,9 @@
           <el-form-item label="分组名称：" >
             <el-input v-model="formData.name" style="width: 80%"></el-input>
           </el-form-item>
-          <el-form-item label="分组编号：" v-if="handleType === 'add'">
+          <!-- <el-form-item label="分组编号：" v-if="handleType === 'add'">
             <el-input v-model="formData.code" style="width: 80%"></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </div>
         <!-- <el-form-item label="功能名称：" v-if="type === 2">
           <el-input v-model="formData.areaName" style="width: 80%"></el-input>
@@ -77,7 +77,7 @@
             <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id" v-if="type === 2">
               <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
             </el-select>
-            <el-select v-model="formData.cameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
+            <el-select v-model="formData.analsyCameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
               <el-option :value="info" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
             </el-select>
           </el-form-item>
@@ -209,7 +209,7 @@ export default {
       }
       groupAPI.getCameraListByGroupId(params).then(res => {
         this.analsyCamera = res.data.payload
-        // this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
+        this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
       })
     },
     getList () {
@@ -346,6 +346,7 @@ export default {
   box-sizing: border-box;
   background: #1f2831;
   .system-search {
+    margin-bottom: 40px;
     .system-search-title {
       padding-right: 12px;
       font-size: 18px;
