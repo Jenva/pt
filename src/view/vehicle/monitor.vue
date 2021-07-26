@@ -403,7 +403,7 @@ export default {
           camera:{
             type: 0,
             domain:  data.serverId,
-            id:	data.id.toString(),
+            id:	data.cameraCode,
             level: 0,
           }
         }]

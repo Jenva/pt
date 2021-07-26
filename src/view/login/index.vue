@@ -26,7 +26,8 @@ export default {
           //send login response to c++
           let jsonBody = {
             uri: '',
-            sql:'192.168.1.180;9394;test;test;dbha2;',
+            sql:'10.10.220.143;9394;test;test;dbha2;',
+            // sql:'192.168.1.180;9394;test;test;dbha2;',
             name:'管理员'
           };
           let jsonstr = JSON.stringify(jsonBody);
