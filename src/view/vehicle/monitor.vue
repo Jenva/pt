@@ -41,8 +41,8 @@
                   :prop="`${carType.detailValue + '-' + entranceType.detailValue}-count`"
                   v-for="(entranceType) in carEntranceType" :key="entranceType.id">
                     <template slot-scope="scope">
-                      <a @click="toDetail"
-                      style="color: #fff;cursor: pointer;">{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}
+                      <a @click="toDetail" style="color: #fff;cursor: pointer;">
+                        <u>{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}</u>
                       </a>
                     </template>
                 </el-table-column>
@@ -272,7 +272,6 @@ export default {
       window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
     },
     handleNodeClick (data) {
-      this.startVideo(data)
       if (data.cameraCode) {
         this.currentCameraCode = data.cameraCode
         this.getStatFromData(data.cameraCode || 'D3C01')
@@ -403,8 +402,8 @@ export default {
           id: this.players.map(item => item.id)[0],
           camera:{
             type: 0,
-            domain:  data.serverId || 'YFGZHOM1.A1',
-            id:	'000002X0000' || data.id.toString(),
+            domain:  data.serverId,
+            id:	data.id.toString(),
             level: 0,
           }
         }]
@@ -443,7 +442,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14Px;
+      font-size: 16Px;
       padding-right: 8px;
     }
     .task-title {
@@ -455,6 +454,7 @@ export default {
       text-align: center;
       line-height: 48px;
       color: #2dccd3;
+      font-size: 16Px;
     }
     .list {
       height: calc(100% - 70px);
@@ -516,6 +516,11 @@ export default {
 }
 </style>
 <style lang="less">
+.content-bottom {
+  .cell {
+    font-size: 16Px;
+  }
+}
 .vehicle-monitor {
   .el-table th, .el-table tr  {
     background: #21232d!important;

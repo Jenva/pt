@@ -98,7 +98,7 @@ export default {
     getList (data) {
       const params = {
         cameraCode: data.cameraCode || 'test01',
-        groupId: 2 || data.groupId
+        groupId: data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
         const data = res.data.payload
@@ -214,8 +214,8 @@ export default {
           id: this.players.map(item => item.id)[0],
           camera:{
             type: 0,
-            domain:  data.serverId || 'YFGZHOM1.A1',
-            id:	'000002X0000' || data.id.toString(),
+            domain:  data.serverId,
+            id:	data.id.toString(),
             level: 0,
           }
         }]
@@ -250,20 +250,21 @@ export default {
     flex-shrink: 0;
     .task-title {
       width: 126px;
-      height: 48px;
+      height: 48Px;
       margin-bottom: 12px;
       background: url('../../assets/tab_bg@2x.jpg');
       background-size: 100% 100%;
       text-align: center;
-      line-height: 48px;
+      line-height: 48Px;
       color: #2dccd3;
+      font-size: 16Px;
     }
     .custom-tree-node {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14Px;
+      font-size: 16Px;
       padding-right: 8px;
     }
     .list {
@@ -310,6 +311,11 @@ export default {
 </style>
 
 <style lang="less" scoped>
+.flow-monitor {
+  .cell {
+    font-size: 16Px;
+  }
+}
   // .el-tree {
   //   background: #21232d;
   //   color: #fff;

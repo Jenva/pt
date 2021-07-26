@@ -3,17 +3,17 @@
     <div class="area">
       <div class="select">
         <span class="text">区域：</span>
-        <el-select v-model="selectedArea" placeholder="请选择区域">
+        <el-select v-model="selectedArea" placeholder="请选择区域" @change="getList">
           <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
       </div>
       <div class="list">
         <el-table :data="tableList">
-          <el-table-column label="区域" align="center" prop="area"></el-table-column>
-          <el-table-column label="实时人数" align="center" prop="count"></el-table-column>
+          <el-table-column label="区域" align="center" prop="groupName"></el-table-column>
+          <el-table-column label="实时人数" align="center" prop="passengerCount"></el-table-column>
           <el-table-column label="摄像机" align="center" prop="list">
-            <template slot-scope>
-              <el-button type="text" @click="showList">机位列表</el-button>
+            <template slot-scope="scope">
+              <el-button type="text" @click="showList(scope.row)">机位列表</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -21,7 +21,8 @@
     </div>
     <div class="heat-map-img">
       <div class="tip">
-        当前人数：<span class="count">411</span>
+        <span style="font-size: 16Px">当前人数：</span>
+        <span class="count">{{totalCount}}</span>
       </div>
     </div>
     <div class="right-side" v-show="showModal">
@@ -29,11 +30,16 @@
         <window-top-title title="摄像机列表" class="title" @close="closeModal"></window-top-title>
         <div class="table">
           <el-table :data="videoList">
-            <el-table-column label="设备名" prop="deviceName" align="center"></el-table-column>
-            <el-table-column label="是否可用" prop="isCanUse" align="center"></el-table-column>
-            <el-table-column label="播放" prop="playType" align="center"></el-table-column>
+            <el-table-column label="设备名" prop="cameraName" align="center"></el-table-column>
+            <el-table-column label="是否可用" prop="isCanUse" align="center">
+              <template>
+                <span>是</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="播放" prop="cameraTypeDict" align="center">
+            </el-table-column>
           </el-table>
-          <div class="page">
+          <!-- <div class="page">
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -42,7 +48,7 @@
               layout="total, sizes, prev, pager, next, jumper"
               :total="total">
             </el-pagination>
-          </div>
+          </div> -->
         </div>
         <div class="bottom-nav">
           <el-button size="small" @click="closeModal">关闭</el-button>
@@ -56,6 +62,7 @@
 <script>
 import windowTopTitle  from '@/components/windowTopTitle'
 import groupAPI from '@/api/groupAPI'
+import psgAPI from '@/api/psgAPI'
 export default {
   components: {
     windowTopTitle
@@ -65,7 +72,8 @@ export default {
       total: 50,
       selectedArea: '',
       showModal: false,
-      grouplist: false,
+      grouplist: [],
+      totalCount: 0,
       tableList: [
         { area: '东三走廊', count: 100 }
       ],
@@ -86,12 +94,79 @@ export default {
       }
     }
   },
-  mounted () {
+  created () {
     this.getGroupList()
   },
+  mounted () {
+    this.getList()
+  },
   methods: {
-    showList () {
+    showList (row) {
       this.showModal = true
+      this.getCameraInfo(row.groupId, (data) => {
+        data.payload.forEach(item => {
+          item.cameraTypeDict = item.cameraType ? '历史回放' : '实时播放'
+        })
+        this.videoList = data.payload
+        this.total = data.total
+      })
+    },
+    getList () {
+      this.totalCount = 0
+      const params = {
+        groupId: this.selectedArea
+      }
+      psgAPI.getRealTimeByGroupId(params).then(res => {
+        console.log(res)
+        let count = 0
+        const length = res.data.payload.length
+        const map = new Map()
+        res.data.payload.forEach(async item => {
+          this.getCameraInfo(item.groupId, ({payload}) => {
+            console.log(payload)
+            if (map.has(item.groupId)) {
+              const data = map.get(item.groupId)
+              const file = { url: item.file }
+              const info = payload.find(value => value.cameraCode === item.cameraCode)
+              if (info) {
+                file.configJson = info.configJson && JSON.parse(info.configJson)
+              }
+              data.files.push(file)
+              data.passengerCount += item.passengerCount
+              map.set(item.groupId, data)
+            } else {
+              const groupName = this.grouplist.find(value => value.id === item.groupId)
+              const file = { url: item.file }
+              const info = payload.find(value => value.cameraCode === item.cameraCode)
+              if (info) {
+                file.configJson = info.configJson && JSON.parse(info.configJson)
+              }
+              const data = {
+                files: [file],
+                groupId: item.groupId,
+                groupName: groupName ? groupName.name : '-',
+                passengerCount: item.passengerCount
+              }
+              map.set(item.groupId, data)
+            }
+            count++
+            if (count === length) {
+              this.tableList = [...map.values()].flat()
+              this.tableList.forEach(item => {
+                this.totalCount += item.passengerCount
+              })
+            }
+          })
+        })
+      })
+    },
+    getCameraInfo (id, cb) {
+        const params = {
+          groupId: id
+        }
+        psgAPI.listByGroupId(params).then((res) => {
+          cb(res.data)
+        })
     },
     closeModal () {
       setTimeout(() => {
@@ -121,6 +196,7 @@ export default {
 </script> 
 
 <style lang="less" scoped>
+@bgPic: '../../assets/bg.png';
 .heatMap {
   display: flex;
   height: 100%;
@@ -136,6 +212,7 @@ export default {
     .select {
       margin-bottom: 30px;
       .text {
+        font-size: 16Px;
         color: #fff;
       }
     }
@@ -146,6 +223,8 @@ export default {
     height: 919px;
     margin-left: 24px;
     border: 1px solid #13585c;
+    background: url(@bgPic);
+    background-size: 100% 100%;
     .tip {
       position: absolute;
       width: 240px;
@@ -186,7 +265,9 @@ export default {
         border-bottom: 1px dashed #13585c;
       }
       .table {
+        height: calc(100% - 160px);
         padding: 40px 24px 24px;
+        overflow: auto;
         .page {
           margin-top: 20px;
           text-align: right;
@@ -207,6 +288,14 @@ export default {
     .content.show {
       right: 0;
     }
+  }
+}
+</style>
+<style lang="less">
+.heatMap {
+  .el-table .cell {
+    font-size: 16Px;
+    line-height: 1.5;
   }
 }
 </style>

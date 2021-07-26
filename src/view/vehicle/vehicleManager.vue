@@ -1,5 +1,5 @@
 <template>
-  <div class="task-manager">
+  <div class="vehicle-manager">
     <div class="task-add">
       <el-button size="samll" type="primary" icon="el-icon-plus" @click="showModal('add')">新增任务</el-button>
     </div>
@@ -77,8 +77,7 @@
           </el-form-item>
           <el-form-item label="采集频率:">
             <el-select v-model="formData.rate">
-              <el-option value="1" label="10分钟" key="1"></el-option>
-              <el-option value="2" label="20分钟" key="2"></el-option>
+              <el-option :value="rate.detailValue" :label="rate.detailName" :key="rate.id" v-for="rate in rateDict"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="告警指标:">
@@ -107,6 +106,7 @@ export default {
       ],
       groupList: [],
       bootTypeDict: [],
+      rateDict: [],
       type: '',
       total: 40,
       limit: 10,
@@ -120,6 +120,7 @@ export default {
   },
   created () {
     this.getDict()
+    this.getRateDict()
     this.getCameraList()
     this.getGroup()
   },
@@ -133,6 +134,14 @@ export default {
       }
       groupAPI.getGroupList(params).then(res => {
         this.groupList = res.data.payload
+      })
+    },
+    getRateDict () {
+      const params = {
+        dictValue: 'RATE'
+      }
+      commonAPI.getDictByValue(params).then(res => {
+        this.rateDict = res.data.payload
       })
     },
     getDict () {
@@ -240,7 +249,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.task-manager {
+.vehicle-manager {
   height: 100%;
   padding: 36px 24px;
   background: #21232d;
@@ -250,6 +259,14 @@ export default {
   .page {
     margin-top: 20px;
     text-align: right;
+  }
+}
+</style>
+<style lang="less">
+.vehicle-manager {
+  .el-table .cell {
+    font-size: 16Px;
+    line-height: 1.5;
   }
 }
 </style>

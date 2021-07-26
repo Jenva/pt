@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="7">
             <el-form-item label="时间范围">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 90%"></el-date-picker>
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 80%"></el-date-picker>
             </el-form-item>
           </el-col>          
           <el-col :span="6">
@@ -152,11 +152,11 @@ export default {
       })
     },
     playVideo (data) {
-      var cur = new Date()
-      // var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
-      // var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
-      var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-      var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
+      // var cur = new Date()
+      var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+      var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+      // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+      // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
       var json={
           type: 1,
           domain: data.serverId || "YFGZHOM1.A1",
@@ -187,6 +187,21 @@ export default {
   .page {
     margin-top: 20px;
     text-align: right;
+  }
+}
+</style>
+
+<style lang="less">
+.stat-list {
+  .el-table .cell {
+    font-size: 16Px;
+    line-height: 1.5;
+  }
+  .el-table td, .el-table th {
+    padding: 12Px 0
+  }
+  .el-form-item__label {
+    font-size: 16Px;
   }
 }
 </style>

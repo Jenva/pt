@@ -11,23 +11,22 @@
       </div>
       <div class="message-tabContent">
         <ul class="message-list" >
-          <li v-for="(message, index) in listData" :key="index" @click="toDetail">
+          <li v-for="(message, index) in listData" :key="index">
             <div class="message-heatMap">
-              <img :src="downloadFile(message.data.file)" alt="">
+              <img :src="downloadFile(message.file)" alt="">
             </div>
             <div class="message-info">
               <div class="message-text">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage(index)">
               </div>
               <div class="message-other">
-                <span class="message-text">{{message.data.time}}</span>
+                <span class="message-text">{{message.time}}</span>
                 <el-button class="message-btn" size="mini" @click="toDetail(message)">查看详情</el-button>
               </div>
             </div>
           </li>
-          <li>
+          <!-- <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -41,7 +40,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -55,7 +53,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -69,7 +66,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -83,7 +79,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -97,7 +92,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -111,7 +105,6 @@
           </li>
           <li>
             <div class="message-heatMap">
-              <!-- <img :src="downloadFile(message.data.file)" alt=""> -->
             </div>
             <div class="message-info">
               <div class="message-text">
@@ -122,7 +115,7 @@
                 <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
-          </li>
+          </li> -->
         </ul>
       </div>
     </div>

@@ -31,5 +31,17 @@ export default {
     return APIHelper.createAxios().put(
       url, params
     )
+  },
+  getRealTimeByGroupId (params) {
+    const url = `/stat-passenger/getRealTimeByGroupId`
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
+  },
+  listByGroupId (params) {
+    const url = `/camera-areas/listByGroupId`
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
   }
 }
