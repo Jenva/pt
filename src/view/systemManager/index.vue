@@ -32,6 +32,8 @@
         :data="data"
         node-key="id"
         :props="defaultProps"
+        @node-click="handleNodeClick"
+        :default-expanded-keys="expandedKey"
       >
         <span class="system-cell-content" slot-scope="{ node, data }">
           <div class="system-first-cell">{{node.label}}</div>
@@ -74,16 +76,19 @@
         </el-form-item> -->
         <div v-else>
           <el-form-item label="设备选择：">
-            <el-select v-model="formData.cameraId" style="width: 80%" filterable value-key="id" v-if="type === 2">
+            <el-select
+              v-model="formData.cameraId" style="width: 80%"
+              filterable v-if="type === 2" multiple value-key="code"
+            >
               <el-option :value="info" :label="info.name" v-for="info in allCameraList" :key="info.id"></el-option>
             </el-select>
             <el-select v-model="formData.analsyCameraId" style="width: 80%" filterable v-else @change="changeAnalsy" value-key="id">
               <el-option :value="info" :label="info.cameraName" v-for="info in analsyCamera" :key="info.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="type === 2 ? '已绑定视频枪:' : '已分析视频枪:'">
+          <!-- <el-form-item :label="type === 2 ? '已绑定视频枪:' : '已分析视频枪:'">
             <el-tag v-for="camera in selectedCamera" :key="camera.id" style="margin-right: 5px;">{{camera.cameraName || '-'}}</el-tag>
-          </el-form-item>
+          </el-form-item> -->
         </div>
       </el-form>
     </side-bar>
@@ -108,7 +113,7 @@ export default {
       handleType: '',
       tableList: [],
       formData: {
-        cameraId: ''
+        cameraId: []
       },
       selectedCameraId: [],
       analsyCameraId: 0,
@@ -117,6 +122,7 @@ export default {
       list: [],
       id: '',
       regions: [],
+      expandedKey: [],
       groupType: '',
       data: [],
       defaultProps: {
@@ -139,7 +145,7 @@ export default {
     this.frameRegister()
   },
   methods: {
-     frameRegister () {
+    frameRegister () {
       const cxxNotifier = (cmd, data) => {
         console.log(data, cmd)
         if (cmd === 'saveregions') {
@@ -204,12 +210,16 @@ export default {
       })
     },
     getCameraList (id) {
-      const params = { 
+      const params = {
         groupId: id
       }
       groupAPI.getCameraListByGroupId(params).then(res => {
+        res.data.payload.forEach(item => {
+          item.name = item.cameraName
+          item.code = item.cameraCode
+        })
         this.analsyCamera = res.data.payload
-        this.$set(this.formData, 'cameraId', res.data.payload.map(item => item.cameraId))
+        this.$set(this.formData, 'cameraId', res.data.payload)
       })
     },
     getList () {
@@ -249,12 +259,8 @@ export default {
       params.name = this.formData.name
       if (this.handleType === 'add') {
         params.code = this.formData.code
-        // params.type = this.id ? 1 : 0
         params.parentId = this.id || 0
         params.type = this.formData.level >= 2 ? 1 : 0
-        // if (params.parentId) {
-        //   params.code = this.formData.code
-        // }
         groupAPI.addGroup(params).then(() => {
           this.getList()
         })
@@ -265,18 +271,22 @@ export default {
       }
     },
     handleNodeClick (data, node) {
+      if (node.expanded) {
+        this.expandedKey.push(node.key)
+      } else {
+        const index = this.expandedKey.indexOf(node.key)
+        this.expandedKey.splice(index, 1)
+      }
       if (node.level === 1) {
         this.groupType = data.code
       }
     },
     handleCamera () {
       const params = {}
-      const camera = this.formData.cameraId
-      params.cameraCode = camera.code
-      params.cameraName = camera.cameraName
-      params.groupId = this.formData.id
+      const camera = this.formData.cameraId.map(item => item.code)
+      params.cameraCodes = camera
       if (this.handleType === 'add') {
-        groupAPI.saveCamera(params).then(() => {
+        groupAPI.saveCamera(this.formData.id, camera).then(() => {
           this.getList()
         })
       }
@@ -284,23 +294,14 @@ export default {
     changeAnalsy (data) {
       console.log(data)
       this.analsyCameraId = data.id
-      // const json = {
-      //   playerid: 0,
-      //   camera: {
-      //       domain: 'YFGZHOM1.A1' || data.cameraCode,
-      //       id:	'000002X0000' || data.id
-      //   },
-      //   type: 1,
-      //   regions: JSON.parse(data.areaInfo) || []
-      // }
       const json = {
         playerid: 0,
         camera: {
-            domain: 'YFGZHOM1.A1' || data.cameraCode,
-            id:	'000002X0000' || data.id
+          domain: data.serverId,
+          id:	data.cameraCode
         },
         type: 1,
-        count: this.groupType === 'wuleiche' ? 1 : 8,
+        count: this.groupType === '0-CAR' ? 1 : 8,
         regions: JSON.parse(data.areaInfo) || []
       }
       this.regions = JSON.parse(data.areaInfo)

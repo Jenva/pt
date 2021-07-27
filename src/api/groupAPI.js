@@ -31,8 +31,9 @@ export default {
       url, { params }
     )
   },
-  saveCamera (params) {
-    const url = '/camera-areas/save'
+  saveCamera (id, params) {
+    // const url = '/camera-areas/save'
+    const url = `/camera-areas/saveBatch/${id}`
     return APIHelper.createAxios().post(
       url, params 
     )

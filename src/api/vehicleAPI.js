@@ -24,5 +24,19 @@ export default {
     return APIHelper.createAxios().get(
       url, { params }
     )
+  },
+  // 报表柱形图
+  statListByCamera(params) {
+    const url = '/stat-car/statListByCamera'
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
+  },
+  // 报表折线图
+  statListByHour(params) {
+    const url = '/stat-car/statListByHour'
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
   }
 }

@@ -10,7 +10,7 @@
         <el-table-column label="采集频率" prop="rate" align="center"></el-table-column>
         <el-table-column label="摄像机" prop="gun" align="center">
           <template slot-scope="scope">
-            <span>{{scope.row.cameraCodes.join(',')}}</span>
+            <span>{{scope.row.cameraCodes && scope.row.cameraCodes.join(',')}}</span>
           </template>
         </el-table-column>
         <el-table-column label="启动时间" prop="triggerTime" align="center"></el-table-column>
