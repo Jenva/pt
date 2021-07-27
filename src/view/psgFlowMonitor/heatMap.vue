@@ -123,7 +123,6 @@ export default {
         const map = new Map()
         res.data.payload.forEach(async item => {
           this.getCameraInfo(item.groupId, ({payload}) => {
-            console.log(payload)
             if (map.has(item.groupId)) {
               const data = map.get(item.groupId)
               const file = { url: item.file }
@@ -155,6 +154,7 @@ export default {
               this.tableList.forEach(item => {
                 this.totalCount += item.passengerCount
               })
+              console.log(this.tableList)
             }
           })
         })
