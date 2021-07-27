@@ -126,7 +126,7 @@ export default {
     getGroupList () {
       const params = {
         // code: '0-CAR',
-        type: 1
+        parentId: 3
       }
       groupAPI.getGroupList(params).then(res => {
         this.grouplist = res.data.payload
