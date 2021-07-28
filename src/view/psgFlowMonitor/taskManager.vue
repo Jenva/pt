@@ -7,7 +7,7 @@
       <el-table :data="tableList">
         <el-table-column label="任务名" prop="name" align="center"></el-table-column>
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
-        <el-table-column label="采集频率" prop="rate" align="center"></el-table-column>
+        <el-table-column label="采集频率" prop="rateDisplay" align="center"></el-table-column>
         <el-table-column label="摄像机" prop="gun" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.cameraCodes && scope.row.cameraCodes.join(',')}}</span>
@@ -20,16 +20,16 @@
           <template slot-scope="scope">
             <div>
               <el-button type="text" @click="showModal('edit', scope.row)">
-                <img src="../../assets/passengerflowmanagement_icon_edit_normal.png" alt="" style="vertical-align: middle">
-                编辑
+                <img src="../../assets/passengerflowmanagement_icon_edit_normal.png" alt="" style="vertical-align: bottom">
+                <span style="line-height: 24Px;margin-left: 5Px">编辑</span>
               </el-button>
               <el-button type="text" @click="bootTask(scope.row.id)" v-if="scope.row.bootStatus === 0">
-                <img src="../../assets/passengerflowmanagement_icon_suspend_normal.png" alt="" style="vertical-align: middle">
-                启动
+                <img src="../../assets/passengerflowmanagement_icon_suspend_normal.png" alt="" style="vertical-align: bottom">
+                <span style="line-height: 24Px;margin-left: 5Px">启动</span>
               </el-button>
               <el-button type="text" @click="stopTask(scope.row.id)" v-else>
-                <img src="../../assets/passengerflowmanagement_icon_suspend_normal.png" alt="" style="vertical-align: middle">
-                停止
+                <img src="../../assets/nav_icon_closewindow_click.png" alt="" style="vertical-align: bottom">
+                <span style="line-height: 24Px;margin-left: 5Px">停止</span>
               </el-button>
             </div>
           </template>
@@ -53,7 +53,7 @@
             <el-input v-model="formData.name"></el-input>
           </el-form-item>
           <el-form-item label="区域:">
-            <el-select v-model="formData.groupId">
+            <el-select v-model="formData.groupId" @change="groupChange">
               <el-option :value="item.id" :label="item.name" v-for="item in groupList" :key="item.id"></el-option>
             </el-select>
           </el-form-item>
@@ -63,20 +63,18 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="触发时间:">
-            <el-time-picker
+            <el-date-picker
               v-model="formData.triggerTime"
-              :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }"
+              type="datetime"
               placeholder="任意时间点">
-            </el-time-picker>
+            </el-date-picker>
           </el-form-item>
           <el-form-item label="任务时长:">
             <el-input v-model="formData.taskTime"></el-input>
           </el-form-item>
           <el-form-item label="摄像机:">
             <el-select v-model="formData.cameraCodes" multiple="">
-              <el-option :value="camera.code" :label="camera.name" v-for="camera in cameraList" :key="camera.id"></el-option>
+              <el-option :value="camera.cameraCode" :label="camera.cameraName" v-for="camera in cameraList" :key="camera.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="采集频率:">
@@ -123,7 +121,6 @@ export default {
       title: '',
       cameraList: [],
       formData: {
-        triggerTime: '00:01:00',
         cameraCodes: []
       }
     }
@@ -140,9 +137,9 @@ export default {
   methods: {
     getGroup () {
       const params = {
-        type: 1
+        code: 'PSG'
       }
-      groupAPI.getGroupList(params).then(res => {
+      groupAPI.listSonByParent(params).then(res => {
         this.groupList = res.data.payload
       })
     },
@@ -162,10 +159,16 @@ export default {
         this.rateDict = res.data.payload
       })
     },
-    getCameraList () {
-      commonAPI.getCameraList().then(res => {
+    getCameraList (id) {
+      const params = {
+        groupId: id
+      }
+      groupAPI.getCameraListByGroupId(params).then(res => {
         this.cameraList = res.data.payload
       })
+    },
+    groupChange (data) {
+      this.getCameraList(data)
     },
     getList (page = 1, limit = this.limit) {
       const pageNum = (page - 1 ) * limit
@@ -181,7 +184,6 @@ export default {
             item.groupName = groupName ? groupName.name : ''
           }
           if (item.bootType) {
-            console.log(this.bootTypeDict, item.bootType)
             item.bootTypeDict = this.bootTypeDict
               .find(value => value.detailValue === item.bootType).detailName
           }
@@ -192,6 +194,11 @@ export default {
           Object.keys(taskConfig).forEach(key => {
             item[key] = taskConfig[key]
           })
+          if (item.rate) {
+            const rate = this.rateDict
+              .find(rate => parseInt(rate.detailValue) === item.rate / 25)
+            item.rateDisplay = rate.detailName
+          }
         })
         this.total = res.data.payload.total
       })
@@ -199,10 +206,9 @@ export default {
     addTask () {
       const params = Object.assign({}, this.formData)
       params.taskType = 'PASSENGER'
-      params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
+      params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate * 25, alarm: params.alarm })
-      // if (params.cameraIds) params.cameraIds = params.cameraIds.join(',')
-      if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
+      if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
       delete params.alarm
       taskAPI.addTask(params).then(() => {
@@ -229,9 +235,8 @@ export default {
     updateTask () {
       const params = Object.assign({}, this.formData)
       params.taskConfig = JSON.stringify({ rate: params.rate  * 25, alarm: params.alarm })
-      params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('HH:mm:ss')
-      // if (params.cameraCodes) params.cameraCodes = params.cameraCodes
-      if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('HH:mm:ss')
+      params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
+      if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
       delete params.alarm
       taskAPI.updateTask(params.id, params).then(() => {
@@ -243,11 +248,15 @@ export default {
       this.title = type === 'add' ? '新增' : '编辑'
       if (type === 'edit') {
         const formData = Object.assign({}, data)
-        formData.triggerTime = dayjs(dayjs().format('YYYY-MM-DD') + formData.triggerTime).toDate()
-        let startTimeStamp = formData.triggerTime.valueOf()
-        let endTimeStamp =  dayjs(dayjs().format('YYYY-MM-DD') + formData.stopTime).valueOf()
-        formData.taskTime = (endTimeStamp - startTimeStamp) / 3600000 
-        if (endTimeStamp <= startTimeStamp) formData.taskTime += 24
+        if (formData.triggerTime) {
+          const triggerTime = dayjs(formData.triggerTime).toDate()
+          let startTimeStamp = triggerTime.valueOf()
+          let endTimeStamp =  dayjs(formData.stopTime).valueOf()
+          formData.taskTime = (endTimeStamp - startTimeStamp) / 3600000 
+          if (endTimeStamp <= startTimeStamp) formData.taskTime += 24
+        }
+        formData.rate = (formData.rate / 25).toString()
+        this.getCameraList(formData.groupId)
         this.formData = formData
       }
       this.$refs.sideBar.showList()
@@ -285,6 +294,10 @@ export default {
   .el-table .cell {
     font-size: 16Px;
     line-height: 1.5;
+  }
+  .el-button {
+    font-size: 16px;
+    font-family: '宋体';
   }
 }
 </style>

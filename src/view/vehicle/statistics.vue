@@ -19,7 +19,6 @@
             <el-form-item label="摄像机" prop="camera">
               <el-select v-model="formData.camera" multiple>
                 <el-option :value="camera.cameraCode" :label="camera.cameraName" v-for="camera in cameraList" :key="camera.id"></el-option>
-                <el-option value="D3C01" label="摄像机1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -83,9 +82,8 @@ export default {
     getGroupList () {
       const params = {
         code: '0-CAR',
-        // parentId: 3
       }
-      groupAPI.getGroupList(params).then(res => {
+      groupAPI.listSonByParent(params).then(res => {
         this.grouplist = res.data.payload
       })
     },

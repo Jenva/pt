@@ -179,7 +179,7 @@ export default {
 <style lang="less" scoped>
 .message-sideBar {
   width: 100%;
-  // height: 100%;
+  height: 100%;
   box-sizing: border-box;
   background: #272a35;
 }

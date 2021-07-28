@@ -128,7 +128,7 @@ export default {
         code: '0-CAR',
         // parentId: 3
       }
-      groupAPI.getGroupList(params).then(res => {
+      groupAPI.listSonByParent(params).then(res => {
         this.grouplist = res.data.payload
       })
     },

@@ -367,6 +367,7 @@ export default {
     width: 100%;
     line-height: 40px;
     color: #fff;
+    font-size: 16Px;
     background: #212330;
     border-bottom: 1px solid #13585c;
   }
@@ -392,7 +393,12 @@ export default {
 #system-manager {
   .el-tree-node__content {
     height: 70px;
+    font-size: 16Px;
     border-bottom: 1px solid #13585c;
+  }
+  .el-button {
+    font-size: 16Px;
+    font-family: '宋体';
   }
   .el-tree-node__content:hover,
   .el-tree-node:focus>.el-tree-node__content {

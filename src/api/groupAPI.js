@@ -43,5 +43,11 @@ export default {
     return APIHelper.createAxios().put(
       url, params 
     )
+  },
+  listSonByParent (params) {
+    const url = `/group/listSonByParent`
+    return APIHelper.createAxios().get(
+      url, {params} 
+    )
   }
 }

@@ -90,10 +90,10 @@ export default {
     },
     getGroupList () {
       const params = {
-        // code: '0-CAR',
-        type: 1
+        code: 'PSG'
+        // type: 1
       }
-      groupAPI.getGroupList(params).then(res => {
+      groupAPI.listSonByParent(params).then(res => {
         this.groupList = res.data.payload
       })
     },

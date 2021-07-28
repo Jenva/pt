@@ -129,7 +129,9 @@ body,html {
 .el-pagination,
 .el-pagination__total ,
 .el-pagination__jump {
-  color: #fff!important;
+color: #fff!important;
+  font-size: 16Px!important;
+  font-family: '宋体';
 }
 
 .el-dialog__header { border-bottom: 1px solid #13585c }

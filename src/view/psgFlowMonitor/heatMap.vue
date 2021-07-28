@@ -117,8 +117,11 @@ export default {
         groupId: this.selectedArea
       }
       psgAPI.getRealTimeByGroupId(params).then(res => {
-        console.log(res)
         let count = 0
+        if (!res.data.payload) {
+          this.tableList = []
+          return
+        }
         const length = res.data.payload.length
         const map = new Map()
         res.data.payload.forEach(async item => {
@@ -184,10 +187,10 @@ export default {
     },
     getGroupList () {
       const params = {
-        // code: '0-CAR',
-        type: 1
+        code: 'PSG'
+        // type: 1
       }
-      groupAPI.getGroupList(params).then(res => {
+      groupAPI.listSonByParent(params).then(res => {
         this.grouplist = res.data.payload
       })
     },
@@ -296,6 +299,10 @@ export default {
   .el-table .cell {
     font-size: 16Px;
     line-height: 1.5;
+  }
+  .el-button {
+    font-size: 16px;
+    font-family: '宋体';
   }
 }
 </style>
