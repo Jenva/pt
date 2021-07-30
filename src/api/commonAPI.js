@@ -25,8 +25,14 @@ export default {
       url, params 
     )
   },
+  editDictDetail (id, params) {
+    const url = `/dict-detail/update/${id}`
+    return APIHelper.createAxios().put(
+      url, params 
+    )
+  },
   deleteDictDetail (id) {
-    const url = `/dict-detail/${id}`
+    const url = `/dict-detail/delete/${id}`
     return APIHelper.createAxios().delete(
       url
     )

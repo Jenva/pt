@@ -24,6 +24,9 @@
         <span style="font-size: 16Px">当前人数：</span>
         <span class="count">{{totalCount}}</span>
       </div>
+      <template v-for="item in tableList">
+        <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)">
+      </template>
     </div>
     <div class="right-side" v-show="showModal">
       <div class="content" ref="modalContent">
@@ -63,6 +66,7 @@
 import windowTopTitle  from '@/components/windowTopTitle'
 import groupAPI from '@/api/groupAPI'
 import psgAPI from '@/api/psgAPI'
+import commonAPI from '@/api/commonAPI'
 export default {
   components: {
     windowTopTitle
@@ -163,6 +167,18 @@ export default {
         })
       })
     },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
+    },
+    setStyle (data) {
+      const configJson = data.configJson
+      if (configJson) {
+        const bottom = (configJson.y / 10000).toFixed(4) * 100 + '%'
+        const left = (configJson.x / 10000).toFixed(4) * 100 + '%'
+        return `bottom: ${bottom};left: ${left};opacity: 0.7;`
+      }
+      return ''
+    },
     getCameraInfo (id, cb) {
         const params = {
           groupId: id
@@ -210,7 +226,7 @@ export default {
     width: 444px;
     padding: 23px;
     box-sizing: border-box;
-    height: 919px;
+    height: 100%;
     border: 1px solid #13585c;
     .select {
       margin-bottom: 30px;
@@ -223,7 +239,7 @@ export default {
   .heat-map-img {
     position: relative;
     flex: 1;
-    height: 919px;
+    height: 100%;
     margin-left: 24px;
     border: 1px solid #13585c;
     background: url(@bgPic);
@@ -238,11 +254,17 @@ export default {
       line-height: 60px;
       background: #13585c;
       color: #83a2af;
+      z-index: 10;
       .count {
         font-size: 20px;
         color: #fff;
         font-weight: 700;
       }
+    }
+    .image {
+      position: absolute;
+      width: 200px;
+      height: 150px;
     }
   }
   .right-side {

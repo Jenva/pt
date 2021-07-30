@@ -38,7 +38,8 @@
 
 <script>
 import psgAPI from '@/api/psgAPI'
-import groupAPI from '@/api/groupAPI'
+// import groupAPI from '@/api/groupAPI'
+import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
 import groupMixins from '@/mixins/groupMixins'
 export default {
@@ -49,6 +50,7 @@ export default {
       tableData: [],
       players: [],
       groupList: [],
+      listId: 0,
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -89,33 +91,20 @@ export default {
       }
     },
     handleNodeClick (data) {
-      this.currentCameraCode = data.cameraCode
-      if (data.cameraCode) {
+      if (data.cameraCodes) {
+        this.currentCameraCode = data.cameraCodes[0]
         this.getList(data)
         this.startVideo(data)
+        this.loop(data)
       }
     },
     getList (data) {
       const params = {
-        cameraCode: data.cameraCode || 'test01',
+        cameraCode: data.cameraCodes[0] || 'test01',
         groupId: data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
         const data = res.data.payload
-        // const data = {
-        // "id": null,
-        //   "groupId": null,
-        //   "cameraCode": "test01",
-        //   "areaInfo": "[{\"id\":\"001\",\"value\":10}]",
-        //   "passengerCount": 10,
-        //   "collectTime": "2021-07-14T17:00:00.000+0800",
-        //   "createBy": null,
-        //   "createTime": null,
-        //   "updateTime": null,
-        //   "updateBy": null,
-        //   "remark": null,
-        //   "file": "/home/wuleiche/a.jpg"
-        // }
         data.areaInfo = JSON.parse(data.areaInfo)
         for (let i = 0; i < data.areaInfo.length; i++) {
           const element = data.areaInfo[i]
@@ -125,6 +114,13 @@ export default {
         this.tableData = data
       })
     },
+    loop (data) {
+      clearInterval(this.listId)
+      this.listId = setInterval(() => {
+        // this.getList({ cameraCodes: [this.currentCameraCode], groupId: this.groupId })
+        this.getList(data)
+      }, 5000)
+    },
     connectWebsocket() {
       if (this.ws) this.ws.close()
       this.ws = new WebSocket('ws://192.168.1.180:9088')
@@ -132,17 +128,6 @@ export default {
     },
     getMessage (evt) {
       const detail = evt.data.detial
-      // const detail = {
-      //   "regions":[{
-      //     "id":0,
-      //     "value":100
-      //     },{
-      //     "id":1,
-      //     "value":100
-      //     }],
-      //   "value": 200,
-      //   "file": "/home/renqun/a.jpg"
-      // }
       for (let i = 0; i < detail.regions.length; i++) {
         const element = detail.regions[i]
         detail[i] = element
@@ -158,25 +143,31 @@ export default {
       if (!node.data.parentId) {
         return resolve([])
       }
-      this.getCameraByGroupId(node.data, (data) => {
+      this.getTaskList(node.data, (data) => {
         if (!node.data.children) node.data.children = []
         const children = node.data.children
           .concat(data)
           .map(item => {
-            if (item.cameraCode) item.leaf = true
+            if (item.taskType) item.leaf = true
             return item
           })
         return resolve(children)
       })
     },
-    getCameraByGroupId (data, cb) {
+    getTaskList (data, cb) {
       const params = {
-        groupId: data.id
+        groupId: data.id,
+        taskType: 'PASSENGER'
       }
-      groupAPI.getCameraListByGroupId(params).then(res => {
-        res.data.payload.forEach(item => {
-          item.name = item.cameraName || '视频枪' + item.id
-        })
+      taskAPI.getTaskPageList(0, 100, params).then(res => {
+        cb(res.data.payload.rows)
+      })
+    },
+    getCamera (data, cb) {
+      const params = {
+        code: data.cameraCodes[0]
+      }
+      commonAPI.getCameraList(params).then(res => {
         const cameraList = res.data.payload
         cb(cameraList)
       })
@@ -209,18 +200,21 @@ export default {
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
-      var json={
-        players: [{
-          id: this.players.map(item => item.id)[0],
-          camera:{
-            type: 0,
-            domain:  data.serverId,
-            id:	data.cameraCode,
-            level: 0,
-          }
-        }]
-      }
-      window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+      this.getCamera(data, (payload) => {
+        var json={
+          players: [{
+            id: this.players.map(item => item.id)[0],
+            camera:{
+              type: 0,
+              domain:  payload[0].serverId,
+              id:	payload[0].code,
+              level: 0,
+            }
+          }]
+        }
+        console.log(json)
+        window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+      })
     },
     stopVideo () {
       var json = {

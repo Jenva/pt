@@ -1,10 +1,10 @@
 <template>
-  <div class="stat-list">
+  <div class="psg-stat-list">
     <div class="search">
-      <el-form :model="formData" inline>
+      <el-form :model="formData" inline ref="form">
         <el-row>
           <el-col :span="7">
-            <el-form-item label="触发时间">
+            <el-form-item label="触发时间" prop="createTime">
               <el-date-picker
                 type="datetimerange"
                 v-model="formData.createTime"
@@ -16,24 +16,25 @@
             </el-form-item>
           </el-col>          
           <el-col :span="6">
-            <el-form-item label="区域">
-              <el-select placeholder="请选择区域" v-model="formData.area">
+            <el-form-item label="区域" prop="groupId">
+              <el-select placeholder="请选择区域" v-model="formData.groupId">
                 <el-option :value="group.id" :label="group.name" v-for="group in groupList" :key="group.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-button type="primary">查询</el-button>
-            <el-button>重置</el-button>
+            <el-button type="primary" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
     </div>
     <div class="table">
       <el-table :data="tableList" border>
-        <el-table-column label="区域" prop="area" align="center"></el-table-column>
-        <el-table-column label="统计时段" prop="time" align="center"></el-table-column>
-        <el-table-column label="客流量" prop="psgCount" align="center"></el-table-column>
+        <el-table-column label="区域" prop="groupname" align="center"></el-table-column>
+        <el-table-column label="摄像枪名字" prop="cameraname" align="center"></el-table-column>
+        <el-table-column label="统计时段" prop="collect_time" align="center"></el-table-column>
+        <el-table-column label="客流量" prop="passenger_count" align="center"></el-table-column>
         <el-table-column label="视频回放" prop="review" align="center">
           <template slot-scope="scope">
             <el-button size="mini" @click="playVideo(scope.row)">
@@ -43,12 +44,12 @@
         </el-table-column>
         <el-table-column label="热力截图" prop="heatMap" align="center">
           <template slot-scope="scope">
-            <el-button size="mini">
-              {{'热力图' + scope.row.heatMap}}
+            <el-button size="mini" @click="showPicDialog(scope.row)">
+              热力图
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="警告指标" align="center" prop="warningCount"></el-table-column>
+        <el-table-column label="警告指标" align="center" prop="value"></el-table-column>
       </el-table>
       <div class="page">
         <el-pagination
@@ -61,32 +62,60 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog
+      title="热力图"
+      :visible="showPic"
+      @close="close"
+      width="80%"
+      style="height: 80%"
+    >
+      <div style="width: 100%;text-align: center;">
+        <img :src="currentFile" alt="" style="height: 100%">
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import groupAPI from '@/api/groupAPI'
+import psgAPI from '@/api/psgAPI'
+import commonAPI from '@/api/commonAPI'
 import days from 'dayjs'
 export default {
   data () {
     return {
       formData: {},
-      total: 50,
-      tableList: [
-        { area: 't1', time: '2010-10-10 20:20:20', psgCount: '100', review: 1, heatMap: 2, warningCount: 1 }
-      ],
-      groupList: []
+      tableList: [],
+      groupList: [],
+      cameraList: [],
+      currentFile: '',
+      total: 0,
+      offset: 0,
+      limit: 10,
+      showPic: false
     }
   },
   mounted () {
     this.getGroupList()
+    this.getCameraList()
   },
   methods: {
-    handleSizeChange () {
-
+    handleSizeChange (size) {
+      this.limit = size
+      this.search()
     },
-    handleCurrentChange () {
-
+    handleCurrentChange (page) {
+      this.offset = 0
+      this.offset = page - 1
+      this.search()
+    },
+    downloadFile (id) {
+      return commonAPI.downloadFile(id)
+    },
+    getCameraList () {
+      commonAPI.getCameraList().then(res => {
+        this.cameraList = res.data.payload
+      })
     },
     getGroupList () {
       const params = {
@@ -97,14 +126,50 @@ export default {
         this.groupList = res.data.payload
       })
     },
+    showPicDialog (data) {
+      this.showPic = true
+      this.currentFile = this.downloadFile(data.file)
+    },
+    close () {
+      this.showPic = false
+    },
+    search () {
+      const params = {}
+      const { createTime, groupId } = this.formData
+      if (groupId) {
+        params.groupId = groupId
+      }
+      if (createTime) {
+        params['createTime_gt'] = days(createTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['createTime_lt'] = days(createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+      }
+      this.getList(this.offset, this.limit, params)
+    },
+    reset () {
+      this.$refs.form.resetFields()
+    },
+    getList (offset = 0, limit = 10, params) {
+      psgAPI.queryListByParams(offset, limit, params).then(res => {
+        res.data.payload.rows.forEach(item => {
+          if (item.area_info) {
+            item.value = JSON.parse(item.area_info)[0].value
+          }
+          if (item.collect_time) {
+            item.collect_time = days(item.collect_time).format('YYYY-MM-DD HH:mm:ss')
+          }
+        })
+        this.tableList = res.data.payload.rows
+        this.total = res.data.payload.total
+      })
+    },
     playVideo (data) {
-      var cur = new Date();
-      var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-      var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
+      const video = this.cameraList.find(item => item.name === data.cameraname)
+      var startTime = days(data.collect_time).subtract(5, 'm').format('YYYY-MM-DD HH:mm:ss')
+      var stopTime = days(data.collect_time).add(5, 'm').format('YYYY-MM-DD HH:mm:ss')
       var json = {
           type:1,
-          domain: data.serverId || "YFGZHOM1.A1",
-          id:	data.id || "000002X0000",
+          domain: video && video.serverId,
+          id:	video && video.code,
           level: 0,
           begin: startTime,
           end: stopTime
@@ -116,7 +181,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.stat-list {
+.psg-stat-list {
   height: 100%;
   padding: 24px;
   background: #21232d;
@@ -131,6 +196,21 @@ export default {
   .page {
     margin-top: 20px;
     text-align: right;
+  }
+}
+</style>
+<style lang="less">
+.psg-stat-list {
+  .el-table .cell {
+    font-size: 16Px;
+    line-height: 1.5;
+  }
+  .el-table td, .el-table th {
+    padding: 12Px 0
+  } 
+  .el-form-item__label,
+  .el-button {
+    font-size: 16Px;
   }
 }
 </style>

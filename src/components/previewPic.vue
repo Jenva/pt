@@ -1,7 +1,7 @@
 <template>
   <div class="preView">
     <div class="bigPic">
-      <img :src="downloadFile(picList[selectedIndex].fileList[1])" alt="">
+      <img :src="downloadFile(picList[selectedIndex] && picList[selectedIndex].fileList[1])" alt="">
     </div>
     <div class="picList">
       <div class="picCell" v-for="(pic, index) in picList" :key="pic.id" @click="selectPic(index)">

@@ -73,7 +73,7 @@
             <el-input v-model="formData.taskTime"></el-input>
           </el-form-item>
           <el-form-item label="摄像机:">
-            <el-select v-model="formData.cameraCodes" multiple="">
+            <el-select v-model="formData.cameraCodes">
               <el-option :value="camera.cameraCode" :label="camera.cameraName" v-for="camera in cameraList" :key="camera.id"></el-option>
             </el-select>
           </el-form-item>
@@ -121,7 +121,7 @@ export default {
       title: '',
       cameraList: [],
       formData: {
-        cameraCodes: []
+        cameraCodes: ''
       }
     }
   },
@@ -196,7 +196,7 @@ export default {
           })
           if (item.rate) {
             const rate = this.rateDict
-              .find(rate => parseInt(rate.detailValue) === item.rate / 25)
+              .find(rate => rate.detailValue === item.rate)
             item.rateDisplay = rate.detailName
           }
         })
@@ -207,7 +207,8 @@ export default {
       const params = Object.assign({}, this.formData)
       params.taskType = 'PASSENGER'
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
-      params.taskConfig = JSON.stringify({ rate: params.rate * 25, alarm: params.alarm })
+      params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
+      params.cameraCodes = [params.cameraCodes]
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
       delete params.alarm
@@ -234,7 +235,8 @@ export default {
     },
     updateTask () {
       const params = Object.assign({}, this.formData)
-      params.taskConfig = JSON.stringify({ rate: params.rate  * 25, alarm: params.alarm })
+      params.cameraCodes = [].concat(params.cameraCodes)
+      params.taskConfig = JSON.stringify({ rate: params.rate, alarm: params.alarm })
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
@@ -248,6 +250,7 @@ export default {
       this.title = type === 'add' ? '新增' : '编辑'
       if (type === 'edit') {
         const formData = Object.assign({}, data)
+        formData.cameraCodes = formData.cameraCodes.join(',')
         if (formData.triggerTime) {
           const triggerTime = dayjs(formData.triggerTime).toDate()
           let startTimeStamp = triggerTime.valueOf()
@@ -255,7 +258,7 @@ export default {
           formData.taskTime = (endTimeStamp - startTimeStamp) / 3600000 
           if (endTimeStamp <= startTimeStamp) formData.taskTime += 24
         }
-        formData.rate = (formData.rate / 25).toString()
+        // formData.rate = (formData.rate / 25).toString()
         this.getCameraList(formData.groupId)
         this.formData = formData
       }

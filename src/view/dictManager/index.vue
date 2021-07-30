@@ -39,7 +39,7 @@
           <el-input v-model="formData.detailName" style="width: 90%"></el-input>
         </el-form-item>
         <el-form-item label="编码" prop="detailValue" >
-          <el-input v-model="formData.detailValue" style="width: 90%" :disabled="treeType !== 'detailAdd'"></el-input>
+          <el-input v-model="formData.detailValue" style="width: 90%"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="formData.status" style="width: 90%">
@@ -163,12 +163,17 @@ export default {
       const params = Object.assign({}, this.treeData)
       commonAPI.editDict(this.currentId, params).then()
     },
+    editDictDetail (id, params) {
+      commonAPI.editDictDetail(id, params).then(() =>{
+        this.closeTreeDetailDialog()
+        this.getDict()
+      })
+    },
     showTreeDetailDialog (type, data) {
       this.showDialog = true
       this.treeType = type
       if (type === 'detailEdit') {
         this.formData = data
-        console.log(this.formData)
         this.treeDetailTitle = '修改'
       } else if (type === 'detailAdd') {
         this.formData = {}
@@ -183,8 +188,11 @@ export default {
         this.dictDetailList = res.data.payload
       })
     },
-    addDictDetail () {
-      commonAPI.addDictDetail().then()
+    addDictDetail (params) {
+      commonAPI.addDictDetail(params).then(() => {
+        this.closeTreeDetailDialog()
+        this.getDictByValue(this.dictValue)
+      })
     },
     comfirnAddNode (type) {
       if (type === 'tree') {
@@ -200,18 +208,18 @@ export default {
       } else {
         const params = Object.assign({}, this.formData, { dictValue: this.dictValue })
         this.$refs.treeDetail.validate(valid => {
-          if (valid) {
-            commonAPI.addDictDetail(params).then(() => {
-              this.closeTreeDetailDialog()
-              this.getDict()
-            })
+          if (!valid)  return            
+          if (this.treeType === 'detailEdit') {
+            this.editDictDetail(params.id, params)
+          } else {
+            this.addDictDetail(params)
           }
         })
       }
     },
     deleteDetailDict (id) {
       commonAPI.deleteDictDetail(id).then(() => {
-        this.getDict()
+        this.getDictByValue(this.dictValue)
       })
     },
     beforeClose (done) {
@@ -258,7 +266,12 @@ export default {
     flex: 1;
     padding: 20px;
     border: 1px solid #13585c;
+    overflow: auto;
   }
+  // .treeList {
+  //   height: 100%;
+  //   overflow: auto;
+  // }
 }
 .form-btn {
   text-align: center;

@@ -3,10 +3,10 @@
     <div class="message-content">
       <div class="message-tabs">
         <span :class="['message-tab', currentTab === 'custom' ? 'selected' : '' ]" @click="selecedTab('custom')">
-          客流告警（{{peopleData.length}}）
+          客流告警（{{peopleData.length > 99 ? '99+' : peopleData.length}}）
         </span>
         <span :class="['message-tab', currentTab === 'car' ? 'selected' : '' ]" @click="selecedTab('car')">
-          五类车告警（{{carData.length}}）
+          五类车告警（{{carData.length > 99 ? '99+' : carData.length}}）
         </span>
       </div>
       <div class="message-tabContent">
@@ -16,7 +16,7 @@
               <img :src="downloadFile(message.file)" alt="">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage(index)">
               </div>
               <div class="message-other">
@@ -29,7 +29,20 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
+                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
+              </div>
+              <div class="message-other">
+                <span class="message-text">{{'2021-07-21 12:00:00'}}</span>
+                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="message-heatMap">
+            </div>
+            <div class="message-info">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -42,7 +55,7 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -55,7 +68,7 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -68,7 +81,7 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -81,7 +94,7 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -94,20 +107,7 @@
             <div class="message-heatMap">
             </div>
             <div class="message-info">
-              <div class="message-text">
-                <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
-              </div>
-              <div class="message-other">
-                <span class="message-text">{{'12:00:00'}}</span>
-                <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="message-heatMap">
-            </div>
-            <div class="message-info">
-              <div class="message-text">
+              <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
               <div class="message-other">
@@ -142,7 +142,7 @@ export default {
   },
   methods: {
     toDetail (message) {
-      const path = this.currentTab === 'custom' ? '/#/psgFlowMonitor' : '/#/vehicleMonitor'
+      const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
       window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${message}`, name}))
       // this.$router.push(`${path}?data=${message}`)
@@ -156,14 +156,15 @@ export default {
     },
     getMessage (evt) {
       console.log(evt)
-      if (evt.appid === 'renqun') {
-        Object.keys(evt.data.detail).forEach(key => {
-          evt.data[key] = evt.data.detail[key]
-        })
-        this.peopleData = [].concat(this.peopleData, [evt.data])
-      } else if (evt.appid === 'wuleiche') {
-        evt.data.file = evt.data.file0
-        this.carData = [].concat(this.carData, [evt.data])
+      const message = evt.data && JSON.parse(evt.data)
+      Object.keys(message.data.detail).forEach(key => {
+        message.data[key] = message.data.detail[key]
+      })
+      if (message.appid === 'renqun') {
+        this.peopleData = [].concat(this.peopleData, [message.data])
+      } else if (message.appid === 'wuleiche') {
+        message.data.file = message.data.file0
+        this.carData = [].concat(this.carData, [message.data])
       }
     },
     downloadFile (id) {
@@ -184,7 +185,8 @@ export default {
   background: #272a35;
 }
 .message-content {
-  height: 100%;
+  width: 99%;
+  height: calc(100% - 20px);
   padding: 10px 5px 10px 10px;
   box-sizing: border-box;
 }
@@ -200,9 +202,10 @@ export default {
     cursor: pointer;
   }
 }
-.messge-abContent {
+.message-tabContent {
   padding: 12px 0;
   height: calc(100% - 48px);
+  overflow-y: auto;
 }
 .selected {
   color: #2dccd3;
@@ -210,9 +213,8 @@ export default {
   background-size: 100% 100%;
 }
 .message-list {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  width: calc(100% - 10px);
+  // height: calc(100% - 50px);
   padding-right: 10px;
   /*修改滚动条样式*/
   &::-webkit-scrollbar{
@@ -243,13 +245,22 @@ export default {
       width: 100px;
       height: 50px;
       margin-right: 12px;
+      img {
+        width: 100%;
+        height: 100%
+      }
     }
     .message-info {
       position: relative;
       flex: 1;
       .message-text {
         color: #fff;
+        font-size: 16px;
+      }
+      .message-close {
+        color: #fff;
         font-size: 18px;
+        cursor: pointer;
       }
       .close {
         float: right;
@@ -260,12 +271,13 @@ export default {
         width: 100%;
         bottom: 0;
         color: #fff;
+        // line-height: 25px;
         span {
-          vertical-align: text-bottom; 
+          vertical-align: -webkit-baseline-middle; 
         }
         .message-btn {
           float: right;
-          width: 90px;
+          width: 70px;
           height: 25px;
           font-size: 14px;
         }

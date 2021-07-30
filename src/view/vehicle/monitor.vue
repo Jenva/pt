@@ -164,7 +164,8 @@
 <script>
 import vehicleAPI from '@/api/vehicleAPI'
 import commonAPI from '@/api/commonAPI'
-import groupAPI from '@/api/groupAPI'
+// import groupAPI from '@/api/groupAPI'
+import taskAPI from '@/api/taskAPI'
 import previewPic from '@/components/previewPic'
 import groupMixins from '@/mixins/groupMixins'
 import dayjs from 'dayjs'
@@ -179,7 +180,7 @@ export default {
       statId: 0,
       picList: [],
       tableList: [
-        { '3-1-count': 10 }
+        // { '3-1-count': 10 }
       ],
       defaultProps: {
         children: 'children',
@@ -272,22 +273,27 @@ export default {
       window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
     },
     handleNodeClick (data) {
-      if (data.cameraCode) {
-        this.currentCameraCode = data.cameraCode
-        this.getStatFromData(data.cameraCode || 'D3C01')
-        this.getRecentListFromRedis(data.cameraCode || 'D3C01')
+      if (data.cameraCodes) {
+        this.currentCameraCode = data.cameraCodes[0]
+        this.getStatFromData(data.cameraCodes[0] || 'D3C01')
+        this.getRecentListFromRedis(data.cameraCodes[0] || 'D3C01')
         this.startVideo(data)
         this.loopMethod()
       }
     },
-    getCameraByGroupId (data, cb) {
-      const params = {
+    getTaskList (data, cb) {
+        const params = {
         groupId: data.id
       }
-      groupAPI.getCameraListByGroupId(params).then(res => {
-        res.data.payload.forEach(item => {
-          item.name = item.cameraName || '视频枪' + item.id
-        })
+      taskAPI.getTaskPageList(0, 100, params).then(res => {
+        cb(res.data.payload.rows)
+      })
+    },
+    getCamera (data, cb) {
+      const params = {
+        code: data.cameraCodes[0]
+      }
+      commonAPI.getCameraList(params).then(res => {
         const cameraList = res.data.payload
         cb(cameraList)
       })
@@ -299,7 +305,7 @@ export default {
       if (!node.data.parentId) {
         return resolve([])
       }
-      this.getCameraByGroupId(node.data, (data) => {
+      this.getTaskList(node.data, (data) => {
         if (!node.data.children) node.data.children = []
         const children = node.data.children.concat(data).map(item => {
           if (!item.parentId) item.leaf = true
@@ -397,19 +403,21 @@ export default {
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
-      var json={
-        players: [{
-          id: this.players.map(item => item.id)[0],
-          camera:{
-            type: 0,
-            domain:  data.serverId,
-            id:	data.cameraCode,
-            level: 0,
-          }
-        }]
-      }
-      console.log(data)
-      window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+      this.getCamera(data, (payload) => {
+        var json = {
+          players: [{
+            id: this.players.map(item => item.id)[0],
+            camera:{
+              type: 0,
+              domain:  payload[0].serverId,
+              id:	payload[0].code,
+              level: 0,
+            }
+          }]
+        }
+        console.log(json)
+        window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+      })
     },
     stopVideo () {
       var json = {

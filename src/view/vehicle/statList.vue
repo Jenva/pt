@@ -1,38 +1,46 @@
 <template>
   <div class="stat-list">
     <div class="search">
-      <el-form :model="formData" inline>
+      <el-form :model="formData" inline ref="form">
         <el-row>
-          <el-col :span="7">
-            <el-form-item label="时间范围">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 80%"></el-date-picker>
+          <el-col :span="9">
+            <el-form-item label="时间范围" prop="createTime">
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 85%"></el-date-picker>
             </el-form-item>
           </el-col>          
-          <el-col :span="6">
-            <el-form-item label="区域">
-              <el-select placeholder="请选择区域" v-model="formData.Type">
+          <el-col :span="5">
+            <el-form-item label="区域" prop="groupId">
+              <el-select placeholder="请选择区域" v-model="formData.groupId">
                 <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="五类车类型">
-              <el-select placeholder="请选择五类车类型" v-model="formData.cartype">
+            <el-form-item label="五类车类型" prop="carType">
+              <el-select placeholder="请选择五类车类型" v-model="formData.carType">
                 <el-option :value="type.detailValue" :label="type.detailName" v-for="type in carTypeDict" :key="type.id">
                 </el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
-            <el-button>清除数据</el-button>
+          <el-col :span="4">
+            <el-button @click="reset">清除数据</el-button>
             <el-button type="primary" @click="search">查询</el-button>
           </el-col>
         </el-row>
       </el-form>
     </div>
-    <div class="table">
+    <div class="toggle">
+      <span :class="['el-icon-tickets', 'span', name === 'table' ? 'selected' : '']" @click="changeName('table')">
+      </span>
+      <span :class="['el-icon-menu', 'span', name === 'pic' ? 'selected' : '']" @click="changeName('pic')">
+      </span>
+    </div>
+    <vehicle-pic-list v-if="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
+    <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-else></vehicle-table>
+    <!-- <div class="table">
       <el-table :data="tableList" border>
-        <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
+        <el-table-column label="区域" prop="name" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="time" align="center">
           <template>
             <span>
@@ -40,7 +48,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="车辆类型" prop="cartype" align="center"></el-table-column>
+        <el-table-column label="车辆类型" prop="carTypeDisplay" align="center"></el-table-column>
         <el-table-column label="车辆进入" prop="0-count" align="center"></el-table-column>
         <el-table-column label="车辆离开" prop="1-count" align="center"></el-table-column>
         <el-table-column label="视频回放" align="center" prop="review">
@@ -52,17 +60,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <div class="page">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
-        </el-pagination>
-      </div> -->
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -71,20 +69,35 @@ import days from 'dayjs'
 import vehicleAPI from '@/api/vehicleAPI'
 import groupAPI from '@/api/groupAPI'
 import commonAPI from '@/api/commonAPI'
+import vehiclePicList from './vehiclePicList'
+import vehicleTable from './vehicleTable'
 export default {
+  components: {
+    vehiclePicList,
+    vehicleTable
+  },
   data () {
     return {
-      total: 50,
       grouplist: [],
       carTypeDict: [],
       startTime: '',
       endTime: '',
+      name: 'table',
       formData: {
         createTime: [],
       },
       tableList: [
         { area: 't1', time: '2010-10-10 20:20:20', vehicleType: '汽车', vehicleIn: 1, vehicleOut: 2, review: 1 }
       ]
+    }
+  },
+  watch: {
+    tableList () {
+      // data.forEach(item => {
+      //   this.getCameraInfo(data.group_id, (payload) => {
+      //     data
+      //   })
+      // })
     }
   },
   created () {
@@ -101,6 +114,12 @@ export default {
     handleCurrentChange () {
 
     },
+    changeName (name) {
+      this.name = name
+    },
+    reset () {
+      this.$refs.form.resetFields()
+    },
     getList (params) {
       // const params = {
       //   createTime_gt: '2021-05-01 00:00:00',
@@ -110,9 +129,13 @@ export default {
         const list = res.data.payload
         const tableList = []
         list.forEach(item => {
-          const groupName = this.grouplist.find(item => item.id === item.group_id)
-          item.groupName = groupName ? groupName.name : '-'
+          // const groupName = this.grouplist.find(value => value.id === item.group_id)
+          // item.groupName = groupName ? groupName.name : '-'
           const data = tableList.find(value => value['group_id'] === item['group_id'] && value.cartype === item.cartype)
+          if (item.cartype > -1) {
+            const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.cartype)
+            item.carTypeDisplay =  types ? types.detailName : '-'
+          }
           if (data) {
             data[`${item.status}-count`] = item.count
           } else {
@@ -141,9 +164,13 @@ export default {
         this.endTime = params.createTime_lt
         delete params.createTime
       }
-      this.getList(params)
+      if (this.name === 'pic') {
+        this.$refs.picList.getPicList(params)
+      } else {
+        this.$refs.tableList.getList(params)
+      }
     },
-    getDict (value, name) {
+      getDict (value, name) {
       const params = {
         dictValue: value
       }
@@ -151,32 +178,6 @@ export default {
         this[name] = res.data.payload
       })
     },
-    getCameraInfo (id, cb) {
-      const params = {
-        groupId: id
-      }
-      groupAPI.getCameraListByGroupId(params).then((res) => {
-        cb(res.data.payload)
-      })
-    },
-    playVideo (data) {
-      this.getCameraInfo(data.group_id, (data) => {
-        // var cur = new Date()
-        var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
-        var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
-        // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-        // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
-        var json={
-            type: 1,
-            domain: data[0].serverId || "YFGZHOM1.A1",
-            id:	data[0].cameraCode || "000002X0000",
-            level: 0,
-            begin:startTime,
-            end:stopTime
-        }
-        window.bykj && window.bykj.frameCall('popup', JSON.stringify(json)); 
-      })
-    }
   }
 }
 </script>
@@ -191,8 +192,23 @@ export default {
     border: 1px solid #13585c;
     background: #1f2831;
   }
-  .table {
-    margin-top: 50px;
+  .toggle {
+    width: 100%;
+    margin: 20px 0 0;
+    .selected.span {
+      color: #209399;
+      background: rgba(19, 154, 163, 0.5);
+    }
+    span {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      padding: 5px 10px;
+      font-size: 20Px;
+      color: #fff;
+      border: 1px solid #209399;
+      cursor: pointer;
+    }
   }
   .page {
     margin-top: 20px;

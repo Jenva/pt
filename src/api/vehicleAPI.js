@@ -20,7 +20,13 @@ export default {
     )
   },
   statListByLimitTime(params) {
-    const url = '/stat-car/statListByLimitTime'
+    const url = `/stat-car/statListByLimitTime`
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
+  },
+  queryListByParams(offset, limit, params) {
+    const url = `/stat-car/queryListByParams/${offset}/${limit}`
     return APIHelper.createAxios().get(
       url, { params }
     )
