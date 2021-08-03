@@ -65,6 +65,14 @@ const router = new Router({
       {
         path: '/dict',
         component: () => import('@/view/dictManager')
+      },
+      {
+        path: '/supportNodeMonitor',
+        component: () => import('@/view/supportNode/monitor')
+      },
+      {
+        path: '/supportNodeStatList',
+        component: () => import('@/view/supportNode/statList')
       }
     ]
   },

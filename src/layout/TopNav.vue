@@ -108,6 +108,31 @@ export default {
           ]
         },
         {
+          title: '保障节点管理',
+          route: '/monitor2',
+          clickIcon: require('../assets/nav_tool/nav_icon_live_click.png'),
+          hoverIcon: require('../assets/nav_tool/nav_icon_live_hover.png'),
+          normalIcon: require('../assets/nav_tool/nav_icon_live_normal.png'),
+          children: [
+            {
+              title: '实时监控',
+              route: '/supportNodeMonitor'
+            },
+            {
+              title: '保障节点信息汇总',
+              route: '/supportNodeStatList'
+            },
+            // {
+            //   title: '客流实时热力地图',
+            //   route: '/psgFlowHeatMap'
+            // },
+            // {
+            //   title: '客流任务启动设置',
+            //   route: '/psgFlowTaskManager'
+            // },
+          ]
+        },
+        {
           title: '系统管理',
           route: '/monitor3',
           clickIcon: require('../assets/nav_tool/nav_icon_live_click.png'),

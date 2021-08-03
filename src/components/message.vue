@@ -19,6 +19,7 @@
               <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage(index)">
               </div>
+              <div class="message-title">{{message.taskname}}</div>
               <div class="message-other">
                 <span class="message-text">{{message.time}}</span>
                 <el-button class="message-btn" size="mini" @click="toDetail(message)">查看详情</el-button>
@@ -32,6 +33,7 @@
               <div class="message-close">
                 <img src="../assets/live_icon_close_normal.png" alt="" class="close" @click="closeMessage">
               </div>
+              <div class="message-title">任务五二五问吴经理开软件</div>
               <div class="message-other">
                 <span class="message-text">{{'2021-07-21 12:00:00'}}</span>
                 <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
@@ -255,7 +257,11 @@ export default {
       flex: 1;
       .message-text {
         color: #fff;
-        font-size: 16px;
+        font-size: 14px;
+      }
+      .message-title {
+        color: #fff;
+        font-size: 14px;
       }
       .message-close {
         color: #fff;
