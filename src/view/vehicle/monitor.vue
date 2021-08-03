@@ -164,7 +164,7 @@
 <script>
 import vehicleAPI from '@/api/vehicleAPI'
 import commonAPI from '@/api/commonAPI'
-// import groupAPI from '@/api/groupAPI'
+import groupAPI from '@/api/groupAPI'
 import taskAPI from '@/api/taskAPI'
 import previewPic from '@/components/previewPic'
 import groupMixins from '@/mixins/groupMixins'
@@ -291,9 +291,10 @@ export default {
     },
     getCamera (data, cb) {
       const params = {
-        code: data.cameraCodes[0]
+        cameraCode: data.cameraCodes[0]
       }
-      commonAPI.getCameraList(params).then(res => {
+      // commonAPI.getCameraList(params).then(res => {
+      groupAPI.getCameraList(params).then(res => {
         const cameraList = res.data.payload
         cb(cameraList)
       })
@@ -350,6 +351,21 @@ export default {
         this.tableList = [data]
         // this.connectWebsocket()
       })
+    },
+    setRegions (data) {
+      const json = {
+        playerid: this.players.map(item => item.id)[0],
+        // camera: {
+        //   domain: data.serverId,
+        //   id:	data.cameraCode
+        // },
+        type: 1,
+        count: 1,
+        regions: JSON.parse(data.areaInfo) || []
+      }
+      // this.regions = JSON.parse(data.areaInfo)
+      // console.log(json)
+      window.bykj && window.bykj.frameCall('setregions', JSON.stringify(json))
     },
     connectWebsocket() {
       if (this.ws) this.ws.close()
@@ -417,6 +433,7 @@ export default {
         }
         console.log(json)
         window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+        this.setRegions(payload[0])
       })
     },
     stopVideo () {

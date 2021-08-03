@@ -38,7 +38,7 @@
 
 <script>
 import psgAPI from '@/api/psgAPI'
-// import groupAPI from '@/api/groupAPI'
+import groupAPI from '@/api/groupAPI'
 import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
 import groupMixins from '@/mixins/groupMixins'
@@ -105,13 +105,15 @@ export default {
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
         const data = res.data.payload
-        data.areaInfo = JSON.parse(data.areaInfo)
-        for (let i = 0; i < data.areaInfo.length; i++) {
-          const element = data.areaInfo[i]
-          data[i] = element
+        if (data) {
+          data.areaInfo = JSON.parse(data.areaInfo)
+          for (let i = 0; i < data.areaInfo.length; i++) {
+            const element = data.areaInfo[i]
+            data[i] = element
+          }
+          console.log(data)
+          this.tableData = data
         }
-        console.log(data)
-        this.tableData = data
       })
     },
     loop (data) {
@@ -165,12 +167,27 @@ export default {
     },
     getCamera (data, cb) {
       const params = {
-        code: data.cameraCodes[0]
+        cameraCode: data.cameraCodes[0]
       }
-      commonAPI.getCameraList(params).then(res => {
+      groupAPI.getCameraList(params).then(res => {
         const cameraList = res.data.payload
         cb(cameraList)
       })
+    },
+    setRegions (data) {
+      const json = {
+        playerid: this.players.map(item => item.id)[0],
+        // camera: {
+        //   domain: data.serverId,
+        //   id:	data.cameraCode
+        // },
+        type: 1,
+        count: 1,
+        regions: (data.areaInfo && JSON.parse(data.areaInfo)) || []
+      }
+      // this.regions = JSON.parse(data.areaInfo)
+      // console.log(json)
+      window.bykj && window.bykj.frameCall('setregions', JSON.stringify(json))
     },
     downloadFile (id) {
       return commonAPI.downloadFile(id)
@@ -201,19 +218,21 @@ export default {
     },
     startVideo (data) {
       this.getCamera(data, (payload) => {
+        payload = payload[0] ? payload[0] : {}
         var json={
           players: [{
             id: this.players.map(item => item.id)[0],
             camera:{
               type: 0,
-              domain:  payload[0].serverId,
-              id:	payload[0].code,
+              domain:  payload.serverId,
+              id:	payload.code,
               level: 0,
             }
           }]
         }
         console.log(json)
         window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+        this.setRegions(payload)
       })
     },
     stopVideo () {
