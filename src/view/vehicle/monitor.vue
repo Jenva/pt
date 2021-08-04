@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -48,103 +48,6 @@
                 </el-table-column>
               </el-table-column>
             </template>
-                <!-- <el-table-column label="离开" width="80" align="center" prop="leave">
-                  <template slot-scope="scope">
-                    <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                  </template>
-                </el-table-column>
-                <el-table-column label="存量" width="80" align="center" prop="save">
-                  <template slot-scope="scope">
-                    <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                  </template>
-                </el-table-column>
-              </el-table-column>
-            </template>
-            <el-table-column label="公交车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="三轮车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="自行车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="卡车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="摩托车" width="240" align="center">
-              <el-table-column label="进入" width="80" align="center" prop="enter">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="离开" width="80" align="center" prop="leave">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-              <el-table-column label="存量" width="80" align="center" prop="save">
-                <template slot-scope="scope">
-                  <a href="javascrpit:;" @click="toDetail" style="color: #fff">{{ scope.row.enter }}</a>
-                </template>
-              </el-table-column>
-            </el-table-column> -->
           </el-table>
         </div>
       </div>
@@ -164,7 +67,7 @@
 <script>
 import vehicleAPI from '@/api/vehicleAPI'
 import commonAPI from '@/api/commonAPI'
-// import groupAPI from '@/api/groupAPI'
+import groupAPI from '@/api/groupAPI'
 import taskAPI from '@/api/taskAPI'
 import previewPic from '@/components/previewPic'
 import groupMixins from '@/mixins/groupMixins'
@@ -179,6 +82,7 @@ export default {
       recentPicId: 0,
       statId: 0,
       picList: [],
+      taskList: [],
       tableList: [
         // { '3-1-count': 10 }
       ],
@@ -190,11 +94,15 @@ export default {
       carTypeDict: [],
       carEntranceType: [],
       type: '0-CAR',
+      taskType: 'CAR',
       vehiclePicList: [],
       emptyData: [{}],
       players: [],
       ws: ''
     }
+  },
+  created () {
+    // this.getData()
   },
   beforeDestroy () {
     this.destroyVideo()
@@ -208,6 +116,52 @@ export default {
     this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
   },
   methods: {
+    getData () {
+      const params = {
+        taskType: this.taskType
+      }
+      const promises = [groupAPI.getGroupList(), taskAPI.getTaskPageList(0, 100, params)]
+      Promise.all(promises).then(res => {
+        const taskList = res[1].data.payload.rows
+        taskList.forEach(item => {
+          item.parentId = item.groupId
+          item.id = item.id.toString()
+        })
+        const list = res[0].data.payload.concat(taskList)
+        this.rootNodes = list.filter(item => !item.parentId)
+        this.getTree(this.rootNodes, list)
+        this.groupList = this.rootNodes.filter(item => item.code === this.type)
+      })
+    },
+    getGroupList () {
+      // const params = {
+      //   code: this.type
+      // }
+      groupAPI.getGroupList().then(res => {
+        const list = res.data.payload
+        this.rootNodes = list.filter(item => !item.parentId)
+        this.getTree(this.rootNodes, list)
+        this.groupList = this.rootNodes.filter(item => item.code === this.type)
+      })
+    },
+    getTree (data, list) {
+      // console.log(data)
+      for (let i = 0; i < data.length; i++) {
+        const rootNode = data[i]
+        if (list.some(item => item.parentId === rootNode.id || item.parentId === rootNode.groupId)) {
+          rootNode.children = list.filter(item => item.parentId === rootNode.id)
+          this.getTree(rootNode.children, list)
+        }
+      }
+    },
+    getTaskListByType () {
+      const params = {
+        taskType: 'CAR'
+      }
+      taskAPI.getTaskPageList(0, 100, params).then(res => {
+        this.taskList = res.data.payload.rows
+      })
+    },
     loopMethod () { 
       clearInterval(this.recentPicId)
       clearInterval(this.statId)

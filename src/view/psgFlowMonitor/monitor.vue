@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -39,7 +39,7 @@
 <script>
 import psgAPI from '@/api/psgAPI'
 // import groupAPI from '@/api/groupAPI'
-import taskAPI from '@/api/taskAPI'
+// import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
 import groupMixins from '@/mixins/groupMixins'
 export default {
@@ -51,6 +51,7 @@ export default {
       players: [],
       groupList: [],
       listId: 0,
+      taskType: 'PASSENGER',
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -154,15 +155,15 @@ export default {
         return resolve(children)
       })
     },
-    getTaskList (data, cb) {
-      const params = {
-        groupId: data.id,
-        taskType: 'PASSENGER'
-      }
-      taskAPI.getTaskPageList(0, 100, params).then(res => {
-        cb(res.data.payload.rows)
-      })
-    },
+    // getTaskList (data, cb) {
+    //   const params = {
+    //     groupId: data.id,
+    //     taskType: 'PASSENGER'
+    //   }
+    //   taskAPI.getTaskPageList(0, 100, params).then(res => {
+    //     cb(res.data.payload.rows)
+    //   })
+    // },
     getCamera (data, cb) {
       const params = {
         code: data.cameraCodes[0]
