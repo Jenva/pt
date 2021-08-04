@@ -31,6 +31,12 @@ export default {
       url, { params }
     )
   },
+  getCameraList(params) {
+    const url = '/camera-areas/list'
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
+  },
   saveCamera (id, params) {
     // const url = '/camera-areas/save'
     const url = `/camera-areas/saveBatch/${id}`

@@ -70,7 +70,7 @@
         <el-table-column label="计划起飞时间" prop="offTime" align="center"></el-table-column>
         <el-table-column label="计划到达时间" prop="onTime" align="center"></el-table-column>
         <el-table-column label="机位" prop="position" align="center"></el-table-column>
-        <el-table-column label="机号" align="num" prop="value"></el-table-column>
+        <el-table-column label="机号" align="center" prop="num"></el-table-column>
       </el-table>
       <div class="page">
         <el-pagination
