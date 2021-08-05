@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick">
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="taskId" node-key="id">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -83,6 +83,7 @@ export default {
       statId: 0,
       picList: [],
       taskList: [],
+      taskId: ['6-9'],
       tableList: [
         // { '3-1-count': 10 }
       ],
@@ -114,6 +115,16 @@ export default {
     this.getPlayers(1)
     this.getDict('CAR_TYPE', 'carTypeDict')
     this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
+    const params = this.$route.query.params
+    if (params) {
+      const data = JSON.parse(params)
+      this.currentCameraCode = data.camera
+      this.getStatFromData(data.camera)
+      this.getRecentListFromRedis(data.camera)
+      this.loopMethod()
+      const ids = this.taskList.forEach(item => item.cameraCodes.includes(params.camera))
+      this.taskId = [ids.id]
+    }
   },
   methods: {
     loopMethod () { 

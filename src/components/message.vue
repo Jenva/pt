@@ -146,7 +146,7 @@ export default {
     toDetail (message) {
       const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
-      window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${message}`, name}))
+      window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}`, name}))
       // this.$router.push(`${path}?data=${message}`)
     },
     selecedTab (type) {

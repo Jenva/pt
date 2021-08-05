@@ -55,7 +55,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="3" :offset="9">
+          <el-col :span="4" :offset="8">
             <el-button type="primary" @click="search">查询</el-button>
             <el-button @click="reset">重置</el-button>
           </el-col>
@@ -63,7 +63,7 @@
       </el-form>
     </div>
     <div class="table">
-      <el-table :data="tableList">
+      <el-table :data="tableList" height="100%">
         <el-table-column label="航班号" prop="flightCode" align="center"></el-table-column>
         <el-table-column label="节点名称" prop="nodeName" align="center"></el-table-column>
         <el-table-column label="节点记录时间" prop="nodeTime" align="center"></el-table-column>
@@ -222,6 +222,8 @@ export default {
 .psg-stat-list {
   height: 100%;
   padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
   background: #21232d;
   .search {
     padding: 42px 20px 20px;
@@ -229,6 +231,7 @@ export default {
     background: #1f2831;
   }
   .table {
+    height: calc(100% - 420px);
     margin-top: 50px;
   }
   .page {

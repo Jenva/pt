@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick">
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="taskId" node-key="id">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -52,6 +52,7 @@ export default {
       groupList: [],
       listId: 0,
       taskType: 'PASSENGER',
+      taskId: [],
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -63,6 +64,16 @@ export default {
     this.frameRegister()
     this.getPlayers(true)
     this.resize()
+    const params = this.$route.query.params
+    if (params) {
+      const data = JSON.parse(params)
+      this.currentCameraCode = data.camera
+      this.getStatFromData(data.camera)
+      this.getRecentListFromRedis(data.camera)
+      this.loopMethod()
+      const ids = this.taskList.forEach(item => item.cameraCodes.includes(params.camera))
+      this.taskId = [ids.id]
+    }
   },
   beforeDestroy () {
     this.destroyVideo()
@@ -261,7 +272,9 @@ export default {
   background: #21232d;
   .task-list {
     width: 354px;
+    height: 100%;
     flex-shrink: 0;
+    overflow: hidden;
     .task-title {
       width: 126px;
       height: 48Px;
@@ -282,7 +295,7 @@ export default {
       padding-right: 8px;
     }
     .list {
-      height: calc(100% - 60px);
+      min-height: calc(100% - 60Px);
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;

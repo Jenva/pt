@@ -92,7 +92,9 @@ export default {
 
 <style lang="less" scoped>
 .vehicle-pic-list {
+  height: calc(100% - 150px);
   margin-top: 30px;
+  overflow: hidden;
   ul {
     display: flex;
     justify-content: space-around;

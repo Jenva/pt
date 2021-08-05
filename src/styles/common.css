@@ -169,3 +169,29 @@ color: #fff!important;
 .el-date-table td.next-month, .el-date-table td.prev-month {
   color: #606266
 }
+
+/*修改滚动条样式*/
+div::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  width:8px;
+  height:10px;
+  /**/
+}
+div::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track {
+  background: #272a35;
+  border-radius:2px;
+}
+div::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb {
+  background: #99a8b6;
+  border-radius:10px;
+}
+div::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover {
+  background: #616b74;
+}
+div::-webkit-scrollbar-corner,
+html::-webkit-scrollbar-corner {
+  background: #179a16;
+}

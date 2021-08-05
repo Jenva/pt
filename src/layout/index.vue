@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     showMenu () {
-      return window.bykj
+      return true
     }
   }
 }

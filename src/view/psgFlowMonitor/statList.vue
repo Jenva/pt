@@ -30,7 +30,7 @@
       </el-form>
     </div>
     <div class="table">
-      <el-table :data="tableList" border>
+      <el-table :data="tableList" border height="100%">
         <el-table-column label="区域" prop="groupname" align="center"></el-table-column>
         <el-table-column label="摄像枪名字" prop="cameraname" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="collect_time" align="center"></el-table-column>
@@ -133,6 +133,9 @@ export default {
     close () {
       this.showPic = false
     },
+    getHeight () {
+      return 
+    },
     search () {
       const params = {}
       const { createTime, groupId } = this.formData
@@ -184,6 +187,8 @@ export default {
 .psg-stat-list {
   height: 100%;
   padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
   background: #21232d;
   .search {
     padding: 42px 20px 20px;
@@ -191,6 +196,7 @@ export default {
     background: #1f2831;
   }
   .table {
+    height: calc(100% - 280px);
     margin-top: 50px;
   }
   .page {

@@ -29,8 +29,9 @@ export default {
         const taskList = res[1].data.payload.rows
         taskList.forEach(item => {
           item.parentId = item.groupId
-          item.id = item.id.toString()
+          item.id = `${item.id}-${item.groupId}`
         })
+        this.taskList = taskList
         const list = res[0].data.payload.concat(taskList)
         this.rootNodes = list.filter(item => !item.parentId)
         this.getTree(this.rootNodes, list)

@@ -252,7 +252,7 @@ export default {
       padding-right: 8px;
     }
     .list {
-      height: calc(100% - 60px);
+      height: calc(100% - 50Px);
       box-sizing: border-box;
       padding: 23px;
       border: 1px solid #13585c;

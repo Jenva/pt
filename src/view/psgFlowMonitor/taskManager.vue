@@ -4,7 +4,7 @@
       <el-button size="samll" type="primary" icon="el-icon-plus" @click="showModal('add')">新增任务</el-button>
     </div>
     <div class="task-table">
-      <el-table :data="tableList">
+      <el-table :data="tableList" height="100%">
         <el-table-column label="任务名" prop="name" align="center"></el-table-column>
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="采集频率" prop="rateDisplay" align="center"></el-table-column>
@@ -281,8 +281,11 @@ export default {
 .task-manager {
   height: 100%;
   padding: 36px 24px;
+  overflow: hidden;
+  box-sizing: border-box;
   background: #21232d;
   .task-table {
+    height: calc(100% - 150px);
     margin-top: 30px;
   }
   .page {

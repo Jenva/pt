@@ -271,9 +271,12 @@ export default {
 .vehicle-manager {
   height: 100%;
   padding: 36px 24px;
+  box-sizing: border-box;
   background: #21232d;
   .task-table {
+    height: calc(100% - 64px);
     margin-top: 30px;
+    overflow: auto;
   }
   .page {
     margin-top: 20px;

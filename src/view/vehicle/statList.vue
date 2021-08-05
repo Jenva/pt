@@ -186,6 +186,8 @@ export default {
 .stat-list {
   height: 100%;
   padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
   background: #21232d;
   .search {
     padding: 42px 20px 20px;
@@ -201,9 +203,9 @@ export default {
     }
     span {
       display: inline-block;
-      width: 20px;
-      height: 20px;
-      padding: 5px 10px;
+      width: 20Px;
+      height: 20Px;
+      padding: 5Px 10Px;
       font-size: 20Px;
       color: #fff;
       border: 1px solid #209399;

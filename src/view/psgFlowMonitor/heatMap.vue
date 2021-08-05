@@ -224,9 +224,10 @@ export default {
   padding: 24px;
   .area {
     width: 444px;
+    height: 100%;
     padding: 23px;
     box-sizing: border-box;
-    height: 100%;
+    overflow: hidden;
     border: 1px solid #13585c;
     .select {
       margin-bottom: 30px;

@@ -344,6 +344,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 24px;
+  overflow: hidden;
   box-sizing: border-box;
   background: #1f2831;
   .system-search {
