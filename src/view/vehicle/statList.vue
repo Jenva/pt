@@ -36,8 +36,8 @@
       <span :class="['el-icon-menu', 'span', name === 'pic' ? 'selected' : '']" @click="changeName('pic')">
       </span>
     </div>
-    <vehicle-pic-list v-if="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
-    <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-else></vehicle-table>
+    <vehicle-pic-list v-show="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
+    <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-show="name === 'table'"></vehicle-table>
     <!-- <div class="table">
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="name" align="center"></el-table-column>
@@ -116,6 +116,9 @@ export default {
     },
     changeName (name) {
       this.name = name
+      this.$nextTick(() => {
+        this.search()
+      })
     },
     reset () {
       this.$refs.form.resetFields()
@@ -160,17 +163,16 @@ export default {
       if (params.createTime[0]) {
         params['createTime_gt'] = days(params.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
         params['createTime_lt'] = days(params.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
-        this.startTime = params.createTime_gt
-        this.endTime = params.createTime_lt
         delete params.createTime
       }
       if (this.name === 'pic') {
+        console.log(params)
         this.$refs.picList.getPicList(params)
       } else {
         this.$refs.tableList.getList(params)
       }
     },
-      getDict (value, name) {
+    getDict (value, name) {
       const params = {
         dictValue: value
       }

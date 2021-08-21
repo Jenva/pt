@@ -53,6 +53,7 @@ export default {
       listId: 0,
       taskType: 'PASSENGER',
       taskId: [],
+      cameraList: [],
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -64,12 +65,13 @@ export default {
     this.frameRegister()
     this.getPlayers(true)
     this.resize()
+    this.getCamera()
     const params = this.$route.query.params
     if (params) {
       const data = JSON.parse(params)
-      this.currentCameraCode = data.camera
-      this.getStatFromData(data.camera)
-      this.getRecentListFromRedis(data.camera)
+      this.currentCameraCode = data.cameraCodes[0]
+      this.getList(data)
+      this.startVideo({cameraCodes: [data.camera]})
       this.loopMethod()
       const ids = this.taskList.forEach(item => item.cameraCodes.includes(params.camera))
       this.taskId = [ids.id]
@@ -177,16 +179,14 @@ export default {
     //     cb(res.data.payload.rows)
     //   })
     // },
-    getCamera (data, cb) {
-      const params = {
-        cameraCode: data.cameraCodes[0]
-      }
-      groupAPI.getCameraList(params).then(res => {
-        const cameraList = res.data.payload
-        cb(cameraList)
+    getCamera () {
+      groupAPI.getCameraListByGroupId().then(res => {
+        this.cameraList = res.data.payload
+        console.log(this.cameraList)
       })
     },
     setRegions (data) {
+      console.log(data.areaInfo, 'setRegions')
       const json = {
         playerid: this.players.map(item => item.id)[0],
         // camera: {
@@ -229,23 +229,23 @@ export default {
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
-      this.getCamera(data, (payload) => {
-        payload = payload[0] ? payload[0] : {}
-        var json={
+      const camera = this.cameraList.find(item => item.cameraCode === data.cameraCodes[0])
+      if (camera) {
+        var json = {
           players: [{
             id: this.players.map(item => item.id)[0],
             camera:{
               type: 0,
-              domain:  payload.serverId,
-              id:	payload.code,
+              domain: camera.serverId,
+              id:	camera.cameraCode,
               level: 0,
             }
           }]
         }
-        console.log(json)
+        console.log(json, 'startVideo')
         window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
-        this.setRegions(payload)
-      })
+        this.setRegions(camera)
+      }
     },
     stopVideo () {
       var json = {

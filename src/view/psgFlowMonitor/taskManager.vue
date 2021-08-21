@@ -48,7 +48,7 @@
     </div>
     <sideBar ref="sideBar" :title="title" @close="closedModal" @confirm="confirm">
       <div class="form">
-        <el-form :model="formData" label-width="100px">
+        <el-form :model="formData" label-width="89px">
           <el-form-item label="任务名:">
             <el-input v-model="formData.name"></el-input>
           </el-form-item>
@@ -69,7 +69,7 @@
               placeholder="任意时间点">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="任务时长:">
+          <el-form-item label="任务时长(单位:小时):">
             <el-input v-model="formData.taskTime"></el-input>
           </el-form-item>
           <el-form-item label="摄像机:">
@@ -284,6 +284,10 @@ export default {
   overflow: hidden;
   box-sizing: border-box;
   background: #21232d;
+  .el-input,
+  .el-select {
+    width: 90%;
+  }
   .task-table {
     height: calc(100% - 150px);
     margin-top: 30px;

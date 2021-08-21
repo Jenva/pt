@@ -3,10 +3,10 @@
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="name" align="center"></el-table-column>
         <el-table-column label="视频枪" prop="cameraname" align="center"></el-table-column>
-        <el-table-column label="统计时段" prop="time" align="center">
+        <el-table-column label="统计时段" prop="time" align="center" width="350px">
           <template>
             <span>
-              {{startTime}}-{{endTime}}
+              {{startTime}} - {{endTime}}
             </span>
           </template>
         </el-table-column>
@@ -72,13 +72,15 @@ export default {
     handleCurrentChange () {
 
     },
-    getList (params) {
+    getList (params = {}) {
+      this.startTime = params.createTime_gt
+      this.endTime = params.createTime_lt
       vehicleAPI.statListByLimitTime(params).then(res => {
         const list = res.data.payload
         const tableList = []
         list.forEach(item => {
-          // const groupName = this.grouplist.find(value => value.id === item.group_id)
-          // item.groupName = groupName ? groupName.name : '-'
+          const groupName = this.grouplist.find(value => value.id === item.group_id)
+          item.groupName = groupName ? groupName.name : '-'
           const data = tableList.find(value => value['group_id'] === item['group_id'] && value.cartype === item.cartype)
           if (item.cartype > -1) {
             const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.cartype)

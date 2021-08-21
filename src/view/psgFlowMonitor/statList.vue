@@ -10,7 +10,7 @@
                 v-model="formData.createTime"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                style="width: 90%"
+                style="width: 80%"
               >
               </el-date-picker>
             </el-form-item>
@@ -67,10 +67,9 @@
       :visible="showPic"
       @close="close"
       width="80%"
-      style="height: 80%"
     >
-      <div style="width: 100%;text-align: center;">
-        <img :src="currentFile" alt="" style="height: 100%">
+      <div class="imgPreview">
+        <img :src="currentFile" alt="" class="img">
       </div>
     </el-dialog>
   </div>
@@ -203,6 +202,16 @@ export default {
     margin-top: 20px;
     text-align: right;
   }
+  .imgPreview {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    // overflow: auto;
+  }
+  .img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
 <style lang="less">
@@ -217,6 +226,13 @@ export default {
   .el-form-item__label,
   .el-button {
     font-size: 16Px;
+  }
+  .el-dialog {
+    height: calc(100% - 60Px);
+    margin-top: 10Px!important;
+  }
+  .el-dialog__body {
+    height: calc(100% - 115px);
   }
 }
 </style>
