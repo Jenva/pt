@@ -7,7 +7,7 @@
 </template>
 
 <script>
-// import MenuItem from './MenuItem'
+// import MenuItem from './menuItem'
 export default {
   // components: { MenuItem },
   props: {

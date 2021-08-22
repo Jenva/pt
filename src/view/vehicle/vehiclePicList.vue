@@ -94,7 +94,7 @@ export default {
 .vehicle-pic-list {
   height: calc(100% - 150px);
   margin-top: 30px;
-  overflow: hidden;
+  overflow: scroll;
   ul {
     display: flex;
     justify-content: space-around;

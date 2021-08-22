@@ -30,14 +30,19 @@
         </el-row>
       </el-form>
     </div>
-    <div class="toggle">
+    <div class="toggle" v-if="!isVideoList">
       <span :class="['el-icon-tickets', 'span', name === 'table' ? 'selected' : '']" @click="changeName('table')">
       </span>
       <span :class="['el-icon-menu', 'span', name === 'pic' ? 'selected' : '']" @click="changeName('pic')">
       </span>
     </div>
-    <vehicle-pic-list v-show="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
-    <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-show="name === 'table'"></vehicle-table>
+    <div v-if="isVideoList">
+      <vehicle-video-list ref="videoList" :carTypeDict="carTypeDict"></vehicle-video-list>
+    </div>
+    <div v-else>
+      <vehicle-pic-list v-show="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
+      <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-show="name === 'table'"></vehicle-table>
+    </div>
     <!-- <div class="table">
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="name" align="center"></el-table-column>
@@ -71,10 +76,12 @@ import groupAPI from '@/api/groupAPI'
 import commonAPI from '@/api/commonAPI'
 import vehiclePicList from './vehiclePicList'
 import vehicleTable from './vehicleTable'
+import vehicleVideoList from './vehicleVideoList'
 export default {
   components: {
     vehiclePicList,
-    vehicleTable
+    vehicleTable,
+    vehicleVideoList
   },
   data () {
     return {
@@ -98,6 +105,11 @@ export default {
       //     data
       //   })
       // })
+    }
+  },
+  computed: {
+    isVideoList () {
+      return this.$route.path === '/vehicleVideoList'
     }
   },
   created () {
@@ -165,11 +177,14 @@ export default {
         params['createTime_lt'] = days(params.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
         delete params.createTime
       }
-      if (this.name === 'pic') {
-        console.log(params)
-        this.$refs.picList.getPicList(params)
+      if (this.isVideoList) {
+        this.$refs.videoList.getList(params)
       } else {
-        this.$refs.tableList.getList(params)
+        if (this.name === 'pic') {
+          this.$refs.picList.getPicList(params)
+        } else {
+          this.$refs.tableList.getList(params)
+        }
       }
     },
     getDict (value, name) {

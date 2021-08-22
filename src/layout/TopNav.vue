@@ -73,6 +73,10 @@ export default {
               route: '/vehicleStatList'
             },
             {
+              title: '五类车视频统计',
+              route: '/vehicleVideoList'
+            },
+            {
               title: '五类车统计报表',
               route: '/vehicleStatistics'
             },

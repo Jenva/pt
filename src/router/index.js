@@ -35,6 +35,10 @@ const router = new Router({
         component: statList
       },
       {
+        path: '/vehicleVideoList',
+        component: statList
+      },
+      {
         path: '/vehicleStatistics',
         component: vehicleStatistics
       },

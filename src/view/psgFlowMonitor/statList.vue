@@ -1,16 +1,16 @@
 <template>
   <div class="psg-stat-list">
     <div class="search">
-      <el-form :model="formData" inline ref="form">
+      <el-form :model="formData" ref="form">
         <el-row>
-          <el-col :span="7">
+          <el-col :span="10">
             <el-form-item label="触发时间" prop="createTime">
               <el-date-picker
                 type="datetimerange"
                 v-model="formData.createTime"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                style="width: 80%"
+                style="width: 75%"
               >
               </el-date-picker>
             </el-form-item>

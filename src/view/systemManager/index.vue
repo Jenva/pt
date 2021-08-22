@@ -302,7 +302,7 @@ export default {
         },
         type: 1,
         count: this.groupType === '0-CAR' ? 1 : 8,
-        regions: JSON.parse(data.areaInfo) || []
+        regions: (data.areaInfo && JSON.parse(data.areaInfo)) || []
       }
       this.regions = JSON.parse(data.areaInfo)
       window.bykj && window.bykj.frameCall('editregions', JSON.stringify(json))

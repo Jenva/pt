@@ -47,8 +47,7 @@ export default {
       this.showModal = true
     },
     confirm () {
-      this.$emit('confirm')
-      this.closeModal()
+      this.$emit('confirm', this.closeModal)
     },
     closeModal () {
       setTimeout(() => {

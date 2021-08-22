@@ -44,5 +44,11 @@ export default {
     return APIHelper.createAxios().get(
       url, { params }
     )
+  },
+  statListByCameraLimitTime(params) { // 五类车统计视频
+    const url = '/stat-car/statListByCameraLimitTime'
+    return APIHelper.createAxios().get(
+      url, { params }
+    )
   }
 }

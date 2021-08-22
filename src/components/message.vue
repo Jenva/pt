@@ -163,10 +163,10 @@ export default {
         message.data[key] = message.data.detail[key]
       })
       if (message.appid === 'renqun') {
-        this.peopleData = [].concat(this.peopleData, [message.data])
+        this.peopleData = [].concat([message.data], this.peopleData)
       } else if (message.appid === 'wuleiche') {
         message.data.file = message.data.file0
-        this.carData = [].concat(this.carData, [message.data])
+        this.carData = [].concat([message.data], this.carData)
       }
     },
     downloadFile (id) {
@@ -220,17 +220,17 @@ export default {
   padding-right: 10px;
   /*修改滚动条样式*/
   &::-webkit-scrollbar{
-    width:8px;
-    height:10px;
+    width:8Px;
+    height:10Px;
     /**/
   }
   &::-webkit-scrollbar-track{
     background: #272a35;
-    border-radius:2px;
+    border-radius:2Px;
   }
   &::-webkit-scrollbar-thumb{
     background: #99a8b6;
-    border-radius:10px;
+    border-radius:10Px;
   }
   &::-webkit-scrollbar-thumb:hover{
     background: #616b74;

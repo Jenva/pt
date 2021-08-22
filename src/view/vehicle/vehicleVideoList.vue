@@ -2,6 +2,7 @@
     <div class="table">
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="name" align="center"></el-table-column>
+        <el-table-column label="视频枪" prop="cameraName" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="time" align="center" width="350px">
           <template>
             <span>
@@ -12,6 +13,14 @@
         <el-table-column label="车辆类型" prop="carTypeDisplay" align="center"></el-table-column>
         <el-table-column label="车辆进入" prop="0-count" align="center"></el-table-column>
         <el-table-column label="车辆离开" prop="1-count" align="center"></el-table-column>
+        <el-table-column label="视频回放" align="center" prop="review">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="playVideo(scope.row)">
+              <img src="../../assets/vehiclemanagement_icon_historicversion_normal.png" alt="" style="vertical-align: middle">
+              历史视频
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <!-- <div class="page">
         <el-pagination
@@ -53,7 +62,6 @@ export default {
     this.getGroupList()
   },
   mounted () {
-    this.getList()
     this.getCameraList()
   },
   methods: {
@@ -66,7 +74,7 @@ export default {
     getList (params = {}) {
       this.startTime = params.createTime_gt
       this.endTime = params.createTime_lt
-      vehicleAPI.statListByLimitTime(params).then(res => {
+      vehicleAPI.statListByCameraLimitTime(params).then(res => {
         const list = res.data.payload
         const tableList = []
         list.forEach(item => {
@@ -76,6 +84,11 @@ export default {
           if (item.cartype > -1) {
             const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.cartype)
             item.carTypeDisplay =  types ? types.detailName : '-'
+          }
+          if (item.cameraCode) {
+            const camera = this.cameraList.find(value => value.code === data.cameraCode)
+            item.camera = camera
+            item.cameraName = camera.name
           }
           if (data) {
             data[`${item.status}-count`] = item.count
@@ -102,8 +115,7 @@ export default {
       })
     },
     playVideo (data) {
-      const camera =this.cameraList.find(value => value.code === data.camera_code)
-      if (camera) {
+      if (data.camera) {
         // var cur = new Date()
         var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
         var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
@@ -111,8 +123,8 @@ export default {
         // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
         var json={
             type: 1,
-            domain: camera.serverId || "YFGZHOM1.A1",
-            id:	camera.cameraCode || "000002X0000",
+            domain: data.camera.serverId || "YFGZHOM1.A1",
+            id:	data.camera.cameraCode || "000002X0000",
             level: 0,
             begin:startTime,
             end:stopTime

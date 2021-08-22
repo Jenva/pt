@@ -48,36 +48,64 @@
     </div>
     <sideBar ref="sideBar" :title="title" @close="closedModal" @confirm="confirm">
       <div class="form">
-        <el-form :model="formData" label-width="160px">
-          <el-form-item label="任务名:">
+        <el-form :model="formData" label-width="160px" ref="taskForm">
+          <el-form-item label="任务名:" prop="name"
+            :rules="{
+              required: true, message: '任务名不能为空', trigger: 'blur'
+            }"
+          >
             <el-input v-model="formData.name"></el-input>
           </el-form-item>
-          <el-form-item label="区域:">
+          <el-form-item label="区域:" prop="groupId"
+            :rules="{
+              required: true, message: '区域不能为空', trigger: 'blur'
+            }"
+          >
             <el-select v-model="formData.groupId" @change="groupChange">
               <el-option :value="item.id" :label="item.name" v-for="item in groupList" :key="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="启动方式:">
+          <el-form-item label="启动方式:" prop="bootType"
+            :rules="{
+              required: true, message: '启动方式不能为空', trigger: 'blur'
+            }"
+          >
             <el-radio-group v-model="formData.bootType">
               <el-radio :label="type.detailValue" v-for="type in bootTypeDict" :key="type.id">{{ type.detailName }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="触发时间:">
+          <el-form-item label="触发时间:" prop="triggerTime"
+            :rules="{
+              required: true, message: '触发时间不能为空', trigger: 'blur'
+            }"
+          >
             <el-date-picker
               v-model="formData.triggerTime"
               type="datetime"
               placeholder="任意时间点">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="任务时长(单位:小时):">
+          <el-form-item label="任务时长(单位:小时):" prop="taskTime"
+            :rules="{
+              required: true, message: '任务时长不能为空', trigger: 'blur'
+            }"
+          >
             <el-input v-model="formData.taskTime"></el-input>
           </el-form-item>
-          <el-form-item label="摄像机:">
+          <el-form-item label="摄像机:" prop="cameraCodes"
+            :rules="{
+              required: true, message: '摄像机不能为空', trigger: 'blur'
+            }"
+          >
             <el-select v-model="formData.cameraCodes">
               <el-option :value="camera.cameraCode" :label="camera.cameraName" v-for="camera in cameraList" :key="camera.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="采集频率:">
+          <el-form-item label="采集频率:" prop="rate"
+            :rules="{
+              required: true, message: '采集频率不能为空', trigger: 'blur'
+            }"
+          >
             <el-select v-model="formData.rate">
               <el-option :value="rate.detailValue" :label="rate.detailName" :key="rate.id" v-for="rate in rateDict"></el-option>
             </el-select>
@@ -209,12 +237,17 @@ export default {
         this.getList()
       })
     },
-    confirm () {
-      if (this.type === 'add') {
-        this.addTask()
-      } else {
-        this.updateTask()
-      }
+    confirm (cb) {
+      this.$refs.taskForm.validate((res) => {
+        if (res) {
+          if (this.type === 'add') {
+            this.addTask()
+          } else {
+            this.updateTask()
+          }
+          cb()
+        }
+      })
     },
     bootTask (id) {
       taskAPI.bootTask(id).then(() => {
@@ -262,6 +295,7 @@ export default {
     },
     closedModal () {
       this.formData = {}
+      this.$refs.taskForm.clearValidate()
     }
   }
 }
