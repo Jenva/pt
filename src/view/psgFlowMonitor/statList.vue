@@ -116,6 +116,13 @@ export default {
         this.cameraList = res.data.payload
       })
     },
+    getChildrenNode (id, groups) {
+      groups.push(id)
+      const children = this.groupList.filter(item => item.parentId === id)
+      children.forEach(item => {
+        this.getChildrenNode(item.id, groups)
+      })
+    },
     getGroupList () {
       const params = {
         code: 'PSG'
@@ -139,7 +146,9 @@ export default {
       const params = {}
       const { createTime, groupId } = this.formData
       if (groupId) {
-        params.groupId = groupId
+        const groupIds = []
+        this.getChildrenNode(groupId, groupIds)
+        params.groupLilst = groupIds.join(',')
       }
       if (createTime) {
         params['createTime_gt'] = days(createTime[0]).format('YYYY-MM-DD HH:mm:ss')

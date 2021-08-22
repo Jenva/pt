@@ -87,6 +87,13 @@ export default {
         this.grouplist = res.data.payload
       })
     },
+    getChildrenNode (id, groups) {
+      groups.push(id)
+      const children = this.grouplist.filter(item => item.parentId === id)
+      children.forEach(item => {
+        this.getChildrenNode(item.id, groups)
+      })
+    },
     getCameraList (id) {
       const params = {
         groupId: id
@@ -104,8 +111,12 @@ export default {
         createTime_lt: this.formData.starTime && dayjs(this.formData.starTime[1]).format('YYYY-MM-DD HH:mm:ss'),
         carType: this.formData.carType,
         areaCodeList: this.formData.camera.join(','),
-        groupId: this.formData.groupId
       }
+      const gruopIds = []
+      if (this.formData.groupId) {
+        this.getChildrenNode(this.formData.groupId, gruopIds)
+      }
+      params.groupIdList = gruopIds.join(',')
       this.getBarDatas(params)
       this.getLineDatas(params)
     },

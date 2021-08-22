@@ -135,6 +135,13 @@ export default {
     reset () {
       this.$refs.form.resetFields()
     },
+    getChildrenNode (id, groups) {
+      groups.push(id)
+      const children = this.grouplist.filter(item => item.parentId === id)
+      children.forEach(item => {
+        this.getChildrenNode(item.id, groups)
+      })
+    },
     getList (params) {
       // const params = {
       //   createTime_gt: '2021-05-01 00:00:00',
@@ -177,6 +184,12 @@ export default {
         params['createTime_lt'] = days(params.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
         delete params.createTime
       }
+      const groupIds = []
+      if (this.formData.groupId) {
+        this.getChildrenNode(this.formData.groupId, groupIds)
+        delete params.groupId
+      }
+      params.groupList = groupIds.join(',')
       if (this.isVideoList) {
         this.$refs.videoList.getList(params)
       } else {
