@@ -2,7 +2,7 @@
     <div class="table">
       <el-table :data="tableList" border>
         <el-table-column label="区域" prop="name" align="center"></el-table-column>
-        <el-table-column label="视频枪" prop="cameraName" align="center"></el-table-column>
+        <el-table-column label="视频枪" prop="camera_name" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="time" align="center" width="350px">
           <template>
             <span>
@@ -85,10 +85,10 @@ export default {
             const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.cartype)
             item.carTypeDisplay =  types ? types.detailName : '-'
           }
-          if (item.cameraCode) {
-            const camera = this.cameraList.find(value => value.code === data.cameraCode)
+          if (item.camera_code) {
+            const camera = this.cameraList.find(value => value.code === item.camera_code)
+            console.log(this.cameraList)
             item.camera = camera
-            item.cameraName = camera.name
           }
           if (data) {
             data[`${item.status}-count`] = item.count
@@ -117,14 +117,14 @@ export default {
     playVideo (data) {
       if (data.camera) {
         // var cur = new Date()
-        var startTime = days(this.formData.createTime[0]).format('YYYY-MM-DD HH:mm:ss')
-        var stopTime = days(this.formData.createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        var startTime = days(this.startTime.createTime).format('YYYY-MM-DD HH:mm:ss')
+        var stopTime = days(this.endTime.createTime).format('YYYY-MM-DD HH:mm:ss')
         // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
         // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
         var json={
             type: 1,
-            domain: data.camera.serverId || "YFGZHOM1.A1",
-            id:	data.camera.cameraCode || "000002X0000",
+            domain: data.camera.serverId,
+            id:	data.camera.code,
             level: 0,
             begin:startTime,
             end:stopTime

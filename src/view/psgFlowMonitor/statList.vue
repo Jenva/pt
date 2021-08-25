@@ -148,7 +148,7 @@ export default {
       if (groupId) {
         const groupIds = []
         this.getChildrenNode(groupId, groupIds)
-        params.groupLilst = groupIds.join(',')
+        params.groupIdList = groupIds.join(',')
       }
       if (createTime) {
         params['createTime_gt'] = days(createTime[0]).format('YYYY-MM-DD HH:mm:ss')

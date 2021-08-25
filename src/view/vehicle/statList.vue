@@ -189,7 +189,7 @@ export default {
         this.getChildrenNode(this.formData.groupId, groupIds)
         delete params.groupId
       }
-      params.groupList = groupIds.join(',')
+      params.groupIdList = groupIds.join(',')
       if (this.isVideoList) {
         this.$refs.videoList.getList(params)
       } else {
