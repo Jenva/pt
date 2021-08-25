@@ -50,6 +50,8 @@ export default {
       tableData: [],
       players: [],
       groupList: [],
+      taskList: [],
+      groupId: '',
       listId: 0,
       taskType: 'PASSENGER',
       taskId: [],
@@ -61,24 +63,19 @@ export default {
       },
     }
   },
+  watch: {
+    taskList () {
+      this.getCamera()
+    }
+  },
   mounted () {
     this.frameRegister()
     this.getPlayers(true)
     this.resize()
-    this.getCamera()
-    const params = this.$route.query.params
-    if (params) {
-      const data = JSON.parse(params)
-      this.currentCameraCode = data.cameraCodes[0]
-      this.getList(data)
-      this.startVideo({cameraCodes: [data.camera]})
-      this.loopMethod()
-      const ids = this.taskList.forEach(item => item.cameraCodes.includes(params.camera))
-      this.taskId = [ids.id]
-    }
   },
   beforeDestroy () {
     this.destroyVideo()
+    clearInterval(this.listId)
   },
   methods: {
     getPlayers (isMounted) {
@@ -94,6 +91,21 @@ export default {
       ]
       this.players = players
       isMounted && this.createVideo()
+    },
+    autoPlay () {
+      const params = this.$route.query.data
+      if (params) {
+        const data = JSON.parse(params)
+        const ids = this.taskList
+          .find(item => item.cameraCodes.includes(data.camera))
+        this.currentCameraCode = data.camera
+        data.groupId = ids.groupId
+        data.cameraCodes = [data.camera]
+        this.getList(data)
+        this.startVideo({cameraCodes: [data.camera]})
+        this.loop(data)
+        this.taskId = [ids.id]
+      }
     },
     resize () {
       window.onresize = () => {
@@ -133,7 +145,6 @@ export default {
     loop (data) {
       clearInterval(this.listId)
       this.listId = setInterval(() => {
-        // this.getList({ cameraCodes: [this.currentCameraCode], groupId: this.groupId })
         this.getList(data)
       }, 5000)
     },
@@ -183,6 +194,7 @@ export default {
       groupAPI.getCameraListByGroupId().then(res => {
         this.cameraList = res.data.payload
         console.log(this.cameraList)
+        this.autoPlay()
       })
     },
     setRegions (data) {

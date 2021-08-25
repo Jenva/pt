@@ -147,7 +147,10 @@ export default {
       const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
       window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}`, name}))
-      // this.$router.push(`${path}?data=${message}`)
+      // const data = {
+      //   camera: '10.133.7.121'
+      // }
+      // this.$router.push(`${path}?data=${JSON.stringify(data)}`)
     },
     selecedTab (type) {
       this.currentTab = type
@@ -159,9 +162,11 @@ export default {
     getMessage (evt) {
       console.log(evt)
       const message = evt.data && JSON.parse(evt.data)
+      message.data.taskname = message.taskname
       Object.keys(message.data.detail).forEach(key => {
         message.data[key] = message.data.detail[key]
       })
+      delete message.data.detail
       if (message.appid === 'renqun') {
         this.peopleData = [].concat([message.data], this.peopleData)
       } else if (message.appid === 'wuleiche') {

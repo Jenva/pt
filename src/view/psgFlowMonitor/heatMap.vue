@@ -105,6 +105,19 @@ export default {
     this.getList()
   },
   methods: {
+    connectWebsocket() {
+      const ws = new WebSocket('ws://10.10.220.141:9088/renqun')
+      ws.onmessage = this.getMessage
+    },
+    getMessage (evt) {
+      console.log(evt)
+      const message = evt.data && JSON.parse(evt.data)
+      message.data.taskname = message.taskname
+      Object.keys(message.data.detail).forEach(key => {
+        message.data[key] = message.data.detail[key]
+      })
+      this.peopleData = [].concat([message.data], this.peopleData)
+    },
     showList (row) {
       this.showModal = true
       this.getCameraInfo(row.groupId, (data) => {

@@ -102,6 +102,11 @@ export default {
       ws: ''
     }
   },
+  watch: {
+    taskList () {
+      this.getCamera()
+    }
+  },
   created () {
     // this.getData()
   },
@@ -115,20 +120,21 @@ export default {
     this.getPlayers(1)
     this.getDict('CAR_TYPE', 'carTypeDict')
     this.getDict('CAR_ENTRANCE_TYPE', 'carEntranceType')
-    this.getCamera()
-    const params = this.$route.query.params
-    if (params) {
-      const data = JSON.parse(params)
-      this.currentCameraCode = data.camera
-      this.getStatFromData(data.camera)
-      this.getRecentListFromRedis(data.camera)
-      this.startVideo({cameraCodes: [data.camera]})
-      this.loopMethod()
-      const ids = this.taskList.forEach(item => item.cameraCodes.includes(params.camera))
-      this.taskId = [ids.id]
-    }
   },
   methods: {
+    autoPlay () {
+      const params = this.$route.query.data
+      if (params) {
+        const data = JSON.parse(params)
+        this.currentCameraCode = data.camera
+        this.getStatFromData(data.camera)
+        this.getRecentListFromRedis(data.camera)
+        this.startVideo({cameraCodes: [data.camera]})
+        this.loopMethod()
+        const ids = this.taskList.find(item => item.cameraCodes.includes(data.camera))
+        this.taskId = [ids.id]
+      }
+    },
     loopMethod () { 
       clearInterval(this.recentPicId)
       clearInterval(this.statId)
@@ -214,6 +220,7 @@ export default {
       groupAPI.getCameraListByGroupId().then(res => {
         this.cameraList = res.data.payload
         console.log(this.cameraList)
+        this.autoPlay()
       })
     },
     loadNode (node, resolve) {
