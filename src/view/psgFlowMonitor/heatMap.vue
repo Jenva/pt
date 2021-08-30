@@ -6,7 +6,7 @@
         <el-select v-model="selectedArea" placeholder="请选择区域" @change="getList">
           <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
-        <el-button @click="getMessage">test</el-button>
+        <!-- <el-button @click="getMessage">test</el-button> -->
       </div>
       <div class="list">
         <el-table :data="tableList">
@@ -121,9 +121,10 @@ export default {
       //   "taskname":"办公室1测试客流",
       //   "data": {
       //     "domain":"GZYFHOM1.A1",
-      //     "camera":"1",
+      //     "camera":"10.10.74.30",
       //     "time":"2021-08-25 15:42:57",
       //     "ms":0,
+      //     "groupid": 3,
       //     "detail":{
       //         "regions":[
       //             {
@@ -136,10 +137,9 @@ export default {
       //     }
       //   }
       // }
-      const info = this.camreaInfos.find(value => value.cameraCode === message.data.camera)
       const data = {
         cameraCode: message.data.camera,
-        groupId: info.groupId,
+        groupId: message.data.groupid,
         file: message.data.detail.file,
         passengerCount: message.data.detail.value
       }
@@ -183,7 +183,7 @@ export default {
         count: message.passengerCount,
         code: message.cameraCode
       }
-      const info = this.camreaInfos.find(value => value.cameraCode === message.cameraCode)
+      const info = this.camreaInfos.find(value => value.cameraCode === message.cameraCode && message.groupId === value.groupId)
       if (info) {
         file.configJson = info.configJson && JSON.parse(info.configJson)
       }
