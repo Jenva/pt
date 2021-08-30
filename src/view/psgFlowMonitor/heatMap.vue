@@ -6,6 +6,7 @@
         <el-select v-model="selectedArea" placeholder="请选择区域" @change="getList">
           <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
+        <el-button @click="getMessage">test</el-button>
       </div>
       <div class="list">
         <el-table :data="tableList">
@@ -77,6 +78,7 @@ export default {
       selectedArea: '',
       showModal: false,
       grouplist: [],
+      camreaInfos: [],
       totalCount: 0,
       tableList: [
         { area: '东三走廊', count: 100 }
@@ -99,10 +101,10 @@ export default {
     }
   },
   created () {
+    this.getCameraInfo()
     this.getGroupList()
   },
   mounted () {
-    this.getList()
   },
   methods: {
     connectWebsocket() {
@@ -112,21 +114,86 @@ export default {
     getMessage (evt) {
       console.log(evt)
       const message = evt.data && JSON.parse(evt.data)
-      message.data.taskname = message.taskname
-      Object.keys(message.data.detail).forEach(key => {
-        message.data[key] = message.data.detail[key]
-      })
-      this.peopleData = [].concat([message.data], this.peopleData)
+      // const message = {
+      //   "command":"report",
+      //   "appid":"renqun",
+      //   "taskid":"20",
+      //   "taskname":"办公室1测试客流",
+      //   "data": {
+      //     "domain":"GZYFHOM1.A1",
+      //     "camera":"1",
+      //     "time":"2021-08-25 15:42:57",
+      //     "ms":0,
+      //     "detail":{
+      //         "regions":[
+      //             {
+      //               "id":0,
+      //               "value":0
+      //             }
+      //         ],
+      //         "value":4,
+      //         "file": "group1/M00/02/82/CgrcjWEl9JiASpejAAAnUx2WpE8929.jpg"
+      //     }
+      //   }
+      // }
+      const info = this.camreaInfos.find(value => value.cameraCode === message.data.camera)
+      const data = {
+        cameraCode: message.data.camera,
+        groupId: info.groupId,
+        file: message.data.detail.file,
+        passengerCount: message.data.detail.value
+      }
+      const { newData, file } = this.getMapData(data)
+      const sameData = this.tableList.find(item => item.groupId === newData.groupId)
+      if (sameData) {
+        this.handleSameData(sameData, file, newData)
+      } else {
+        this.tableList.push(newData)
+        this.totalCount += file.count
+      }
+      console.log(this.tableList)
     },
     showList (row) {
       this.showModal = true
-      this.getCameraInfo(row.groupId, (data) => {
+      this.getAllCameraInGroup(row.groupId, (data) => {
         data.payload.forEach(item => {
           item.cameraTypeDict = item.cameraType ? '历史回放' : '实时播放'
         })
         this.videoList = data.payload
         this.total = data.total
       })
+    },
+    handleSameData (sameData, file, newData) {
+      const index = sameData.files.findIndex(file => file.code === newData.files[0].code)
+      if (index > -1) {
+        const picFile = sameData.files[index]
+        this.totalCount += Number(file.count) -  Number(picFile.count)
+        sameData.passengerCount += Number(file.count) - Number(picFile.count)
+        sameData.files.splice(index, 1, newData.files[0])
+      } else {
+        sameData.files.push(file)
+        sameData.passengerCount += file.count
+        this.totalCount += file.count
+      }
+    },
+    getMapData (message) {
+      const groupName = this.grouplist.find(value => value.id === message.groupId)
+      const file = {
+        url: message.file,
+        count: message.passengerCount,
+        code: message.cameraCode
+      }
+      const info = this.camreaInfos.find(value => value.cameraCode === message.cameraCode)
+      if (info) {
+        file.configJson = info.configJson && JSON.parse(info.configJson)
+      }
+      const newData = {
+        files: [file],
+        groupId: message.groupId,
+        groupName: groupName ? groupName.name : '-',
+        passengerCount: message.passengerCount
+      }
+      return { newData, file }
     },
     getList () {
       this.totalCount = 0
@@ -142,31 +209,17 @@ export default {
         const length = res.data.payload.length
         const map = new Map()
         res.data.payload.forEach(async item => {
-          this.getCameraInfo(item.groupId, ({payload}) => {
+          // const cameraList = this.camreaInfos
+          // this.getCameraInfo(item.groupId, ({payload}) => {
             if (map.has(item.groupId)) {
+              const { file } = this.getMapData(item)
               const data = map.get(item.groupId)
-              const file = { url: item.file }
-              const info = payload.find(value => value.cameraCode === item.cameraCode)
-              if (info) {
-                file.configJson = info.configJson && JSON.parse(info.configJson)
-              }
               data.files.push(file)
               data.passengerCount += item.passengerCount
               map.set(item.groupId, data)
             } else {
-              const groupName = this.grouplist.find(value => value.id === item.groupId)
-              const file = { url: item.file }
-              const info = payload.find(value => value.cameraCode === item.cameraCode)
-              if (info) {
-                file.configJson = info.configJson && JSON.parse(info.configJson)
-              }
-              const data = {
-                files: [file],
-                groupId: item.groupId,
-                groupName: groupName ? groupName.name : '-',
-                passengerCount: item.passengerCount
-              }
-              map.set(item.groupId, data)
+              const { newData } = this.getMapData(item)
+              map.set(item.groupId, newData)
             }
             count++
             if (count === length) {
@@ -176,7 +229,7 @@ export default {
               })
               console.log(this.tableList)
             }
-          })
+          // })
         })
       })
     },
@@ -192,13 +245,24 @@ export default {
       }
       return ''
     },
-    getCameraInfo (id, cb) {
-        const params = {
-          groupId: id
-        }
-        psgAPI.listByGroupId(params).then((res) => {
-          cb(res.data)
-        })
+    getAllCameraInGroup (id, cb) {
+      const params = {
+        groupId: id
+      }
+      psgAPI.listByGroupId(params).then((res) => {
+        this.camreaInfos = res.data.payload
+        cb(res.data)
+      })
+    },
+    getCameraInfo (id) {
+      const params = {
+        groupId: id
+      }
+      psgAPI.listByGroupId(params).then((res) => {
+        this.camreaInfos = res.data.payload
+        this.getList()
+        // cb(res.data)
+      })
     },
     closeModal () {
       setTimeout(() => {
