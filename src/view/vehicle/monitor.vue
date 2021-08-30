@@ -41,7 +41,7 @@
                   :prop="`${carType.detailValue + '-' + entranceType.detailValue}-count`"
                   v-for="(entranceType) in carEntranceType" :key="entranceType.id">
                     <template slot-scope="scope">
-                      <a @click="toDetail" style="color: #fff;cursor: pointer;">
+                      <a @click="toDetail(carType.detailValue, entranceType.detailValue)" style="color: #fff;cursor: pointer;">
                         <u>{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}</u>
                       </a>
                     </template>
@@ -180,12 +180,14 @@ export default {
     getDisplayDict (value, arr) {
       return this.$commonJS.getDisplayDict(value, arr)
     },
-    toDetail () {
+    toDetail (carType, entranceType) {
       this.showPreview = true
       window.bykj.frameCall('hideplayer', JSON.stringify({type: 'all'}))
       const params = {
+        carType,
+        status: entranceType,
         'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
-        areaCode: this.currentCameraCode || 'D3C01'
+        areaCode: this.currentCameraCode
       }
       vehicleAPI.getStatDetailList(params).then(res => {
         console.log(res)
