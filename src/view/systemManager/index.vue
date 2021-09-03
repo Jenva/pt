@@ -279,6 +279,7 @@ export default {
       }
       if (node.level === 1) {
         this.groupType = data.code
+        console.log(this.groupType)
       }
     },
     handleCamera () {
@@ -300,7 +301,7 @@ export default {
           domain: data.serverId,
           id:	data.cameraCode
         },
-        type: 1,
+        type: this.groupType === '0-CAR' ? 1 : 0,
         count: this.groupType === '0-CAR' ? 1 : 8,
         regions: (data.areaInfo && JSON.parse(data.areaInfo)) || []
       }

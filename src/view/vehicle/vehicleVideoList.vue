@@ -117,8 +117,8 @@ export default {
     playVideo (data) {
       if (data.camera) {
         // var cur = new Date()
-        var startTime = days(this.startTime.createTime).format('YYYY-MM-DD HH:mm:ss')
-        var stopTime = days(this.endTime.createTime).format('YYYY-MM-DD HH:mm:ss')
+        var startTime = days(this.startTime).format('YYYY-MM-DD HH:mm:ss')
+        var stopTime = days(this.endTime).format('YYYY-MM-DD HH:mm:ss')
         // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
         // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
         var json={

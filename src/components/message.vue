@@ -148,7 +148,7 @@ export default {
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
       window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}`, name}))
       // const data = {
-      //   camera: '10.133.7.121'
+      //   camera: '10.133.7.140'
       // }
       // this.$router.push(`${path}?data=${JSON.stringify(data)}`)
     },

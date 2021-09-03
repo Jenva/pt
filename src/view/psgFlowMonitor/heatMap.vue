@@ -3,7 +3,8 @@
     <div class="area">
       <div class="select">
         <span class="text">区域：</span>
-        <el-select v-model="selectedArea" placeholder="请选择区域" @change="getList">
+        <el-select v-model="selectedArea" placeholder="请选择区域">
+          <el-option value="" label="全部"></el-option>
           <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
         <!-- <el-button @click="getMessage">test</el-button> -->
@@ -80,9 +81,7 @@ export default {
       grouplist: [],
       camreaInfos: [],
       totalCount: 0,
-      tableList: [
-        { area: '东三走廊', count: 100 }
-      ],
+      tableList: [],
       videoList: [
         { deviceName: '摄像机1', isCanUse: '是', playType: '实时播放' }
       ]
@@ -108,7 +107,7 @@ export default {
   },
   methods: {
     connectWebsocket() {
-      const ws = new WebSocket('ws://10.10.220.141:9088/renqun')
+      const ws = new WebSocket('ws://10.10.220.141:9088/v1/renqun')
       ws.onmessage = this.getMessage
     },
     getMessage (evt) {
@@ -124,7 +123,7 @@ export default {
       //     "camera":"10.10.74.30",
       //     "time":"2021-08-25 15:42:57",
       //     "ms":0,
-      //     "groupid": 3,
+      //     "groupid": 5,
       //     "detail":{
       //         "regions":[
       //             {
@@ -139,7 +138,7 @@ export default {
       // }
       const data = {
         cameraCode: message.data.camera,
-        groupId: message.data.groupid,
+        groupId: Number(message.data.bi.groupid),
         file: message.data.detail.file,
         passengerCount: message.data.detail.value
       }
@@ -322,6 +321,7 @@ export default {
     border: 1px solid #13585c;
     background: url(@bgPic);
     background-size: 100% 100%;
+    overflow: hidden;
     .tip {
       position: absolute;
       width: 240px;
