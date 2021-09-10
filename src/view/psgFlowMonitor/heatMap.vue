@@ -21,11 +21,12 @@
         </el-table>
       </div>
     </div>
-    <div class="heat-map-img">
+    <div class="heat-map-img" id="map">
       <div class="tip">
         <span style="font-size: 16Px">当前人数：</span>
         <span class="count">{{totalCount}}</span>
       </div>
+      <div style="position: absolute;right: 50px;bottom: 50px;font-size: 30px;">x: {{pointData.x}}, y: {{pointData.y}}</div>
       <template v-for="item in tableList">
         <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)">
       </template>
@@ -80,6 +81,7 @@ export default {
       showModal: false,
       grouplist: [],
       camreaInfos: [],
+      pointData: {},
       totalCount: 0,
       tableList: [],
       videoList: [
@@ -104,14 +106,25 @@ export default {
     this.getGroupList()
   },
   mounted () {
+    this.getPoint()
   },
   methods: {
     connectWebsocket() {
       const ws = new WebSocket('ws://10.10.220.141:9088/v1/renqun')
       ws.onmessage = this.getMessage
     },
+    getPoint () {
+      const target = document.querySelector('#map')
+      target.addEventListener('mousemove', (e) => {
+        const x = e.offsetX > 0 ? e.offsetX : 0
+        const y = e.offsetY > 0 ? e.offsetY : 0
+        this.pointData = {
+          x: (x  / target.clientWidth * 10000).toFixed(0),
+          y: (y / target.clientHeight * 10000).toFixed(0)
+        }
+      })
+    },
     getMessage (evt) {
-      console.log(evt)
       const message = evt.data && JSON.parse(evt.data)
       // const message = {
       //   "command":"report",
@@ -150,7 +163,6 @@ export default {
         this.tableList.push(newData)
         this.totalCount += file.count
       }
-      console.log(this.tableList)
     },
     showList (row) {
       this.showModal = true
@@ -318,7 +330,7 @@ export default {
     flex: 1;
     height: 100%;
     margin-left: 24px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     background: url(@bgPic);
     background-size: 100% 100%;
     overflow: hidden;

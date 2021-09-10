@@ -192,7 +192,6 @@ export default {
         areaCode: this.currentCameraCode
       }
       vehicleAPI.getStatDetailList(params).then(res => {
-        console.log(res)
         this.picList = res.data.payload.map(item => {
           item.fileList = JSON.parse(item.fileList)
           return item
@@ -206,8 +205,8 @@ export default {
     handleNodeClick (data) {
       if (data.cameraCodes) {
         this.currentCameraCode = data.cameraCodes[0]
-        this.getStatFromData(data.cameraCodes[0] || 'D3C01')
-        this.getRecentListFromRedis(data.cameraCodes[0] || 'D3C01')
+        this.getStatFromData(data.cameraCodes[0])
+        this.getRecentListFromRedis(data.cameraCodes[0])
         this.startVideo(data)
         this.loopMethod()
       }
