@@ -118,11 +118,12 @@ export default {
       target.addEventListener('mousemove', (e) => {
         const x = e.offsetX > 0 ? e.offsetX : 0
         const y = e.offsetY > 0 ? e.offsetY : 0
+        console.log(e.offsetX, e)
         this.pointData = {
           x: (x  / target.clientWidth * 10000).toFixed(0),
-          y: (y / target.clientHeight * 10000).toFixed(0)
+          y: (((target.clientHeight - y) / target.clientHeight) * 10000).toFixed(0)
         }
-      })
+      }, true)
     },
     getMessage (evt) {
       const message = evt.data && JSON.parse(evt.data)
