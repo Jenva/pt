@@ -52,16 +52,6 @@
             <el-table-column label="播放" prop="cameraTypeDict" align="center">
             </el-table-column>
           </el-table>
-          <!-- <div class="page">
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :page-sizes="[10, 20, 50, 100]"
-              :page-size="10"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total">
-            </el-pagination>
-          </div> -->
         </div>
         <div class="bottom-nav">
           <el-button size="small" @click="closeModal">关闭</el-button>
