@@ -327,13 +327,16 @@ export default {
       // ]
       groupAPI.updateCamera(this.analsyCameraId, {areaInfo: JSON.stringify(this.regions)}).then()
     },
-    confirm () {
+    confirm (cb) {
       if (this.type === 1) {
         this.handleGroup()
+        cb()
       } else if (this.type === 2) {
         this.handleCamera()
+        cb()
       } else if (this.type === 3) {
         this.handlerAnalsy()
+        cb()
       }
     }
   }
