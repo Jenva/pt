@@ -21,15 +21,22 @@
         </el-table>
       </div>
     </div>
-    <div class="heat-map-img" id="map">
+    <div class="heat-map-img" ref="map" @mouseup="onMouseUp"
+      @mousedown="onMousedown" @mousewheel="onMousewheel"
+      @mouseover="showbtn = true" @mouseout="showbtn = false"
+    >
       <div class="tip">
         <span style="font-size: 16Px">当前人数：</span>
         <span class="count">{{totalCount}}</span>
       </div>
-      <div style="position: absolute;right: 50px;bottom: 50px;font-size: 30px;">x: {{pointData.x}}, y: {{pointData.y}}</div>
-      <template v-for="item in tableList">
-        <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)">
-      </template>
+      <el-button @click="reset" v-show="showbtn" class="heat-map-rest-btn">复原</el-button>
+      <div ref="mapImg" class="mapImg" @mousemove="onMousemove">
+        <div id="mask" style="width: 100%;height: 100%;position: relative;z-index: 1000"></div>
+        <template v-for="item in tableList">
+          <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)" ref="image">
+        </template>
+      </div>
+      <div class="point">x: {{pointData.x}}, y: {{pointData.y}}</div>
     </div>
     <div class="right-side" v-show="showModal">
       <div class="content" ref="modalContent">
@@ -77,6 +84,15 @@ export default {
   data () {
     return {
       total: 50,
+      scaleNum: 1,
+      offsetLeft: null,
+      offsetTop: null,
+      scaleOffset: 0.05, // 缩放幅度
+      rotateDeg: 0,
+      distanceY: null,
+      distanceX: null,
+      isMouseDown: false,
+      showbtn: false,
       selectedArea: '',
       showModal: false,
       grouplist: [],
@@ -114,16 +130,91 @@ export default {
       ws.onmessage = this.getMessage
     },
     getPoint () {
-      const target = document.querySelector('#map')
+      const target = document.querySelector('#mask')
       target.addEventListener('mousemove', (e) => {
         const x = e.offsetX > 0 ? e.offsetX : 0
         const y = e.offsetY > 0 ? e.offsetY : 0
-        console.log(e.offsetX, e)
         this.pointData = {
           x: (x  / target.clientWidth * 10000).toFixed(0),
           y: (((target.clientHeight - y) / target.clientHeight) * 10000).toFixed(0)
         }
       }, true)
+    },
+    onMousewheel (event) {
+      event.preventDefault()
+      const mapImg = this.$refs['mapImg']
+      const mapWrapper = this.$refs['map']
+      if (!mapImg.style.bottom || mapImg.style.bottom === '0px') {
+        mapImg.style.left = ((mapWrapper.clientWidth - mapImg.clientWidth) / 2) + 'px'
+        mapImg.style.top = ((mapWrapper.clientHeight - mapImg.clientHeight) / 2) + 'px'
+        mapImg.style.bottom = 'auto'
+        mapImg.style.right = 'auto'
+      }
+      const oldScale = this.scaleNum
+      if (event.deltaY > 0) {
+        if (this.scaleNum < 0.2) return
+        this.scaleNum -= this.scaleOffset
+      } else {
+        this.scaleNum += this.scaleOffset
+      }
+      let offsetLeft, offsetTop
+      if (this.offsetLeft !== null) {
+        offsetLeft = this.offsetLeft
+        offsetTop = this.offsetTop
+      } else {
+        offsetLeft = mapImg.offsetLeft
+        offsetTop = mapImg.offsetTop
+      }
+      // 计算左偏移值
+      const newOffsetX = this.scaleNum * event.offsetX
+      const newOffsetLeft = (event.offsetX * oldScale) + offsetLeft - newOffsetX
+      this.offsetLeft = newOffsetLeft
+      const middleX = newOffsetLeft + ((mapImg.clientWidth * this.scaleNum) / 2)
+      mapImg.style.left = (middleX - (mapImg.clientWidth / 2)) + 'px'
+      // 计算上偏移值
+      const newOffsetY = this.scaleNum * event.offsetY
+      const newOffsetTop = (event.offsetY * oldScale) + offsetTop - newOffsetY
+      this.offsetTop = newOffsetTop
+      const middleY = newOffsetTop + ((mapImg.clientHeight * this.scaleNum) / 2)
+      mapImg.style.top = (middleY - (mapImg.clientHeight / 2)) + 'px'
+      mapImg.style.transform = `scale(${this.scaleNum}) rotate(${this.rotateDeg + 'deg'})`
+    },
+    onMousedown(event) {
+      const mapImg = this.$refs['mapImg']
+      this.distanceX = event.clientX - mapImg.offsetLeft
+      this.distanceY = event.clientY - mapImg.offsetTop
+      this.isMouseDown = true
+    },
+    onMouseUp() {
+      this.isMouseDown = false
+    },
+    onMousemove(event) {
+      if (!this.isMouseDown) return
+      const mapImg = this.$refs['mapImg']
+      const { distanceX, distanceY } = this
+      if (!mapImg.style.bottom || mapImg.style.bottom === '0px') {
+        mapImg.style.bottom = 'auto'
+        mapImg.style.right = 'auto'
+      }
+      const oevent = event
+      mapImg.style.left = oevent.clientX - distanceX + 'px'
+      mapImg.style.top = oevent.clientY - distanceY + 'px'
+      this.offsetLeft = oevent.clientX - distanceX - (mapImg.clientWidth * (this.scaleNum - 1)) / 2
+      this.offsetTop = oevent.clientY - distanceY - (mapImg.clientHeight * (this.scaleNum - 1)) / 2
+    },
+    reset () {
+      const mapImg = this.$refs['mapImg']
+      mapImg.style.top = 0
+      mapImg.style.left = 0
+      mapImg.style.right = 0
+      mapImg.style.bottom = 0
+      this.scaleNum = 1
+      this.rotateDeg = 0
+      mapImg.style.transform = `scale(${this.scaleNum})`
+      this.distanceX = null
+      this.distanceY = null
+      this.offsetLeft = null
+      this.offsetTop = null
     },
     getMessage (evt) {
       const message = evt.data && JSON.parse(evt.data)
@@ -327,14 +418,35 @@ export default {
     }
   }
   .heat-map-img {
-    position: relative;
     flex: 1;
     height: 100%;
+    position: relative;
     margin-left: 24px;
-    // border: 1px solid #13585c;
-    background: url(@bgPic);
-    background-size: 100% 100%;
+    border: 1px solid #13585c;
     overflow: hidden;
+    .heat-map-rest-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      z-index: 1100;
+      background: #13585c;
+    }
+    .mapImg {
+      position: relative;
+      width: 99%;
+      height: 100%;
+      margin: auto;
+      background: url(@bgPic);
+      background-size: 100% 100%;
+    }
+    .point {
+      position: absolute;
+      right: 50px;
+      bottom: 50px;
+      font-size: 30px;
+      z-index: 500;
+      color: #0094ff;
+    }
     .tip {
       position: absolute;
       width: 240px;
