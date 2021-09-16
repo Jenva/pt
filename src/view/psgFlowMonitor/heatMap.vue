@@ -116,7 +116,8 @@ export default {
   },
   methods: {
     connectWebsocket() {
-      const ws = new WebSocket('ws://10.10.220.141:9088/v1/renqun')
+      const host = location.hostname
+      const ws = new WebSocket( `ws://${host}:9088/v1/renqun `)
       ws.onmessage = this.getMessage
     },
     getPoint () {
@@ -354,6 +355,7 @@ export default {
       psgAPI.listByGroupId(params).then((res) => {
         this.camreaInfos = res.data.payload
         this.getList()
+        this.connectWebsocket()
         // cb(res.data)
       })
     },

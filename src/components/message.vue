@@ -156,7 +156,8 @@ export default {
       this.currentTab = type
     },
     connectWebsocket() {
-      const ws = new WebSocket('ws://10.10.220.141:9088')
+      const host = location.hostname
+      const ws = new WebSocket(`ws://${host}:9088/v1`)
       ws.onmessage = this.getMessage
     },
     getMessage (evt) {

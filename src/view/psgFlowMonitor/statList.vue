@@ -32,7 +32,7 @@
     <div class="table">
       <el-table :data="tableList" border height="100%">
         <el-table-column label="区域" prop="groupname" align="center"></el-table-column>
-        <el-table-column label="摄像枪名字" prop="cameraname" align="center"></el-table-column>
+        <el-table-column label="视频枪" prop="cameraname" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="collect_time" align="center"></el-table-column>
         <el-table-column label="客流量" prop="passenger_count" align="center"></el-table-column>
         <el-table-column label="视频回放" prop="review" align="center">
@@ -49,7 +49,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="警告指标" align="center" prop="value"></el-table-column>
+        <el-table-column label="告警指标" align="center" prop="remark"></el-table-column>
       </el-table>
       <div class="page">
         <el-pagination
