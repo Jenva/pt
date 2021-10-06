@@ -3,7 +3,9 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="taskId" node-key="id">
+        <el-tree :data="groupList[0] && groupList[0].children"
+          :props="defaultProps" @node-click="handleNodeClick" 
+          :default-expanded-keys="taskId" node-key="id">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -41,7 +43,7 @@
                   :prop="`${carType.detailValue + '-' + entranceType.detailValue}-count`"
                   v-for="(entranceType) in carEntranceType" :key="entranceType.id">
                     <template slot-scope="scope">
-                      <a @click="toDetail" style="color: #fff;cursor: pointer;">
+                      <a @click="toDetail(carType.detailValue, entranceType.detailValue)" style="color: #fff;cursor: pointer;">
                         <u>{{ scope.row[`${carType.detailValue + '-' + entranceType.detailValue}-count`] }}</u>
                       </a>
                     </template>
@@ -180,15 +182,16 @@ export default {
     getDisplayDict (value, arr) {
       return this.$commonJS.getDisplayDict(value, arr)
     },
-    toDetail () {
+    toDetail (carType, entranceType) {
       this.showPreview = true
       window.bykj.frameCall('hideplayer', JSON.stringify({type: 'all'}))
       const params = {
+        carType,
+        status: entranceType,
         'createTime_gt': dayjs().format('YYYY-MM-DD 00:00:00'),
-        areaCode: this.currentCameraCode || 'D3C01'
+        areaCode: this.currentCameraCode
       }
       vehicleAPI.getStatDetailList(params).then(res => {
-        console.log(res)
         this.picList = res.data.payload.map(item => {
           item.fileList = JSON.parse(item.fileList)
           return item
@@ -202,8 +205,8 @@ export default {
     handleNodeClick (data) {
       if (data.cameraCodes) {
         this.currentCameraCode = data.cameraCodes[0]
-        this.getStatFromData(data.cameraCodes[0] || 'D3C01')
-        this.getRecentListFromRedis(data.cameraCodes[0] || 'D3C01')
+        this.getStatFromData(data.cameraCodes[0])
+        this.getRecentListFromRedis(data.cameraCodes[0])
         this.startVideo(data)
         this.loopMethod()
       }

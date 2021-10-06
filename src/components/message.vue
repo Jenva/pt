@@ -148,7 +148,7 @@ export default {
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
       window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}`, name}))
       // const data = {
-      //   camera: '10.133.7.121'
+      //   camera: '10.133.7.140'
       // }
       // this.$router.push(`${path}?data=${JSON.stringify(data)}`)
     },
@@ -156,7 +156,8 @@ export default {
       this.currentTab = type
     },
     connectWebsocket() {
-      const ws = new WebSocket('ws://10.10.220.141:9088')
+      const host = location.hostname
+      const ws = new WebSocket(`ws://${host}:9088/v1`)
       ws.onmessage = this.getMessage
     },
     getMessage (evt) {

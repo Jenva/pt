@@ -279,6 +279,7 @@ export default {
       }
       if (node.level === 1) {
         this.groupType = data.code
+        console.log(this.groupType)
       }
     },
     handleCamera () {
@@ -300,7 +301,7 @@ export default {
           domain: data.serverId,
           id:	data.cameraCode
         },
-        type: 1,
+        type: this.groupType === '0-CAR' ? 1 : 0,
         count: this.groupType === '0-CAR' ? 1 : 8,
         regions: (data.areaInfo && JSON.parse(data.areaInfo)) || []
       }
@@ -326,13 +327,16 @@ export default {
       // ]
       groupAPI.updateCamera(this.analsyCameraId, {areaInfo: JSON.stringify(this.regions)}).then()
     },
-    confirm () {
+    confirm (cb) {
       if (this.type === 1) {
         this.handleGroup()
+        cb()
       } else if (this.type === 2) {
         this.handleCamera()
+        cb()
       } else if (this.type === 3) {
         this.handlerAnalsy()
+        cb()
       }
     }
   }

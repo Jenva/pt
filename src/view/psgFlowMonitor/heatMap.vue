@@ -3,9 +3,11 @@
     <div class="area">
       <div class="select">
         <span class="text">区域：</span>
-        <el-select v-model="selectedArea" placeholder="请选择区域" @change="getList">
+        <el-select v-model="selectedArea" placeholder="请选择区域">
+          <el-option value="" label="全部"></el-option>
           <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
         </el-select>
+        <!-- <el-button @click="getMessage">test</el-button> -->
       </div>
       <div class="list">
         <el-table :data="tableList">
@@ -19,14 +21,22 @@
         </el-table>
       </div>
     </div>
-    <div class="heat-map-img">
+    <div class="heat-map-img" ref="map" @mouseup="onMouseUp"
+      @mousedown="onMousedown" @mousewheel="onMousewheel"
+      @mouseover="showbtn = true" @mouseout="showbtn = false"
+    >
       <div class="tip">
         <span style="font-size: 16Px">当前人数：</span>
         <span class="count">{{totalCount}}</span>
       </div>
-      <template v-for="item in tableList">
-        <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)">
-      </template>
+      <el-button @click="reset" v-show="showbtn" class="heat-map-rest-btn">复原</el-button>
+      <div ref="mapImg" class="mapImg" @mousemove="onMousemove">
+        <div id="mask" style="width: 100%;height: 100%;position: relative;z-index: 1000"></div>
+        <template v-for="item in tableList">
+          <img :src="downloadFile(file.url)" alt="" v-for="(file, index) in item.files" :key="index" class="image" :style="setStyle(file)" ref="image">
+        </template>
+      </div>
+      <div class="point">x: {{pointData.x}}, y: {{pointData.y}}</div>
     </div>
     <div class="right-side" v-show="showModal">
       <div class="content" ref="modalContent">
@@ -42,16 +52,6 @@
             <el-table-column label="播放" prop="cameraTypeDict" align="center">
             </el-table-column>
           </el-table>
-          <!-- <div class="page">
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :page-sizes="[10, 20, 50, 100]"
-              :page-size="10"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total">
-            </el-pagination>
-          </div> -->
         </div>
         <div class="bottom-nav">
           <el-button size="small" @click="closeModal">关闭</el-button>
@@ -74,13 +74,22 @@ export default {
   data () {
     return {
       total: 50,
+      scaleNum: 1,
+      offsetLeft: null,
+      offsetTop: null,
+      scaleOffset: 0.05, // 缩放幅度
+      rotateDeg: 0,
+      distanceY: null,
+      distanceX: null,
+      isMouseDown: false,
+      showbtn: false,
       selectedArea: '',
       showModal: false,
       grouplist: [],
+      camreaInfos: [],
+      pointData: {},
       totalCount: 0,
-      tableList: [
-        { area: '东三走廊', count: 100 }
-      ],
+      tableList: [],
       videoList: [
         { deviceName: '摄像机1', isCanUse: '是', playType: '实时播放' }
       ]
@@ -99,34 +108,186 @@ export default {
     }
   },
   created () {
+    this.getCameraInfo()
     this.getGroupList()
   },
   mounted () {
-    this.getList()
+    this.getPoint()
   },
   methods: {
     connectWebsocket() {
-      const ws = new WebSocket('ws://10.10.220.141:9088/renqun')
+      const host = location.hostname
+      const ws = new WebSocket( `ws://${host}:9088/v1/renqun `)
       ws.onmessage = this.getMessage
     },
+    getPoint () {
+      const target = document.querySelector('#mask')
+      target.addEventListener('mousemove', (e) => {
+        const x = e.offsetX > 0 ? e.offsetX : 0
+        const y = e.offsetY > 0 ? e.offsetY : 0
+        this.pointData = {
+          x: (x  / target.clientWidth * 10000).toFixed(0),
+          y: (((target.clientHeight - y) / target.clientHeight) * 10000).toFixed(0)
+        }
+      }, true)
+    },
+    onMousewheel (event) {
+      event.preventDefault()
+      const mapImg = this.$refs['mapImg']
+      const mapWrapper = this.$refs['map']
+      if (!mapImg.style.bottom || mapImg.style.bottom === '0px') {
+        mapImg.style.left = ((mapWrapper.clientWidth - mapImg.clientWidth) / 2) + 'px'
+        mapImg.style.top = ((mapWrapper.clientHeight - mapImg.clientHeight) / 2) + 'px'
+        mapImg.style.bottom = 'auto'
+        mapImg.style.right = 'auto'
+      }
+      const oldScale = this.scaleNum
+      if (event.deltaY > 0) {
+        if (this.scaleNum < 0.2) return
+        this.scaleNum -= this.scaleOffset
+      } else {
+        this.scaleNum += this.scaleOffset
+      }
+      let offsetLeft, offsetTop
+      if (this.offsetLeft !== null) {
+        offsetLeft = this.offsetLeft
+        offsetTop = this.offsetTop
+      } else {
+        offsetLeft = mapImg.offsetLeft
+        offsetTop = mapImg.offsetTop
+      }
+      // 计算左偏移值
+      const newOffsetX = this.scaleNum * event.offsetX
+      const newOffsetLeft = (event.offsetX * oldScale) + offsetLeft - newOffsetX
+      this.offsetLeft = newOffsetLeft
+      const middleX = newOffsetLeft + ((mapImg.clientWidth * this.scaleNum) / 2)
+      mapImg.style.left = (middleX - (mapImg.clientWidth / 2)) + 'px'
+      // 计算上偏移值
+      const newOffsetY = this.scaleNum * event.offsetY
+      const newOffsetTop = (event.offsetY * oldScale) + offsetTop - newOffsetY
+      this.offsetTop = newOffsetTop
+      const middleY = newOffsetTop + ((mapImg.clientHeight * this.scaleNum) / 2)
+      mapImg.style.top = (middleY - (mapImg.clientHeight / 2)) + 'px'
+      mapImg.style.transform = `scale(${this.scaleNum}) rotate(${this.rotateDeg + 'deg'})`
+    },
+    onMousedown(event) {
+      const mapImg = this.$refs['mapImg']
+      this.distanceX = event.clientX - mapImg.offsetLeft
+      this.distanceY = event.clientY - mapImg.offsetTop
+      this.isMouseDown = true
+    },
+    onMouseUp() {
+      this.isMouseDown = false
+    },
+    onMousemove(event) {
+      if (!this.isMouseDown) return
+      const mapImg = this.$refs['mapImg']
+      const { distanceX, distanceY } = this
+      if (!mapImg.style.bottom || mapImg.style.bottom === '0px') {
+        mapImg.style.bottom = 'auto'
+        mapImg.style.right = 'auto'
+      }
+      const oevent = event
+      mapImg.style.left = oevent.clientX - distanceX + 'px'
+      mapImg.style.top = oevent.clientY - distanceY + 'px'
+      this.offsetLeft = oevent.clientX - distanceX - (mapImg.clientWidth * (this.scaleNum - 1)) / 2
+      this.offsetTop = oevent.clientY - distanceY - (mapImg.clientHeight * (this.scaleNum - 1)) / 2
+    },
+    reset () {
+      const mapImg = this.$refs['mapImg']
+      mapImg.style.top = 0
+      mapImg.style.left = 0
+      mapImg.style.right = 0
+      mapImg.style.bottom = 0
+      this.scaleNum = 1
+      this.rotateDeg = 0
+      mapImg.style.transform = `scale(${this.scaleNum})`
+      this.distanceX = null
+      this.distanceY = null
+      this.offsetLeft = null
+      this.offsetTop = null
+    },
     getMessage (evt) {
-      console.log(evt)
       const message = evt.data && JSON.parse(evt.data)
-      message.data.taskname = message.taskname
-      Object.keys(message.data.detail).forEach(key => {
-        message.data[key] = message.data.detail[key]
-      })
-      this.peopleData = [].concat([message.data], this.peopleData)
+      // const message = {
+      //   "command":"report",
+      //   "appid":"renqun",
+      //   "taskid":"20",
+      //   "taskname":"办公室1测试客流",
+      //   "data": {
+      //     "domain":"GZYFHOM1.A1",
+      //     "camera":"10.10.74.30",
+      //     "time":"2021-08-25 15:42:57",
+      //     "ms":0,
+      //     "groupid": 5,
+      //     "detail":{
+      //         "regions":[
+      //             {
+      //               "id":0,
+      //               "value":0
+      //             }
+      //         ],
+      //         "value":4,
+      //         "file": "group1/M00/02/82/CgrcjWEl9JiASpejAAAnUx2WpE8929.jpg"
+      //     }
+      //   }
+      // }
+      const data = {
+        cameraCode: message.data.camera,
+        groupId: Number(message.data.bi.groupid),
+        file: message.data.detail.file,
+        passengerCount: message.data.detail.value
+      }
+      const { newData, file } = this.getMapData(data)
+      const sameData = this.tableList.find(item => item.groupId === newData.groupId)
+      if (sameData) {
+        this.handleSameData(sameData, file, newData)
+      } else {
+        this.tableList.push(newData)
+        this.totalCount += file.count
+      }
     },
     showList (row) {
       this.showModal = true
-      this.getCameraInfo(row.groupId, (data) => {
+      this.getAllCameraInGroup(row.groupId, (data) => {
         data.payload.forEach(item => {
           item.cameraTypeDict = item.cameraType ? '历史回放' : '实时播放'
         })
         this.videoList = data.payload
         this.total = data.total
       })
+    },
+    handleSameData (sameData, file, newData) {
+      const index = sameData.files.findIndex(file => file.code === newData.files[0].code)
+      if (index > -1) {
+        const picFile = sameData.files[index]
+        this.totalCount += Number(file.count) -  Number(picFile.count)
+        sameData.passengerCount += Number(file.count) - Number(picFile.count)
+        sameData.files.splice(index, 1, newData.files[0])
+      } else {
+        sameData.files.push(file)
+        sameData.passengerCount += file.count
+        this.totalCount += file.count
+      }
+    },
+    getMapData (message) {
+      const groupName = this.grouplist.find(value => value.id === message.groupId)
+      const file = {
+        url: message.file,
+        count: message.passengerCount,
+        code: message.cameraCode
+      }
+      const info = this.camreaInfos.find(value => value.cameraCode === message.cameraCode && message.groupId === value.groupId)
+      if (info) {
+        file.configJson = info.configJson && JSON.parse(info.configJson)
+      }
+      const newData = {
+        files: [file],
+        groupId: message.groupId,
+        groupName: groupName ? groupName.name : '-',
+        passengerCount: message.passengerCount
+      }
+      return { newData, file }
     },
     getList () {
       this.totalCount = 0
@@ -142,31 +303,17 @@ export default {
         const length = res.data.payload.length
         const map = new Map()
         res.data.payload.forEach(async item => {
-          this.getCameraInfo(item.groupId, ({payload}) => {
+          // const cameraList = this.camreaInfos
+          // this.getCameraInfo(item.groupId, ({payload}) => {
             if (map.has(item.groupId)) {
+              const { file } = this.getMapData(item)
               const data = map.get(item.groupId)
-              const file = { url: item.file }
-              const info = payload.find(value => value.cameraCode === item.cameraCode)
-              if (info) {
-                file.configJson = info.configJson && JSON.parse(info.configJson)
-              }
               data.files.push(file)
               data.passengerCount += item.passengerCount
               map.set(item.groupId, data)
             } else {
-              const groupName = this.grouplist.find(value => value.id === item.groupId)
-              const file = { url: item.file }
-              const info = payload.find(value => value.cameraCode === item.cameraCode)
-              if (info) {
-                file.configJson = info.configJson && JSON.parse(info.configJson)
-              }
-              const data = {
-                files: [file],
-                groupId: item.groupId,
-                groupName: groupName ? groupName.name : '-',
-                passengerCount: item.passengerCount
-              }
-              map.set(item.groupId, data)
+              const { newData } = this.getMapData(item)
+              map.set(item.groupId, newData)
             }
             count++
             if (count === length) {
@@ -176,7 +323,7 @@ export default {
               })
               console.log(this.tableList)
             }
-          })
+          // })
         })
       })
     },
@@ -192,13 +339,25 @@ export default {
       }
       return ''
     },
-    getCameraInfo (id, cb) {
-        const params = {
-          groupId: id
-        }
-        psgAPI.listByGroupId(params).then((res) => {
-          cb(res.data)
-        })
+    getAllCameraInGroup (id, cb) {
+      const params = {
+        groupId: id
+      }
+      psgAPI.listByGroupId(params).then((res) => {
+        this.camreaInfos = res.data.payload
+        cb(res.data)
+      })
+    },
+    getCameraInfo (id) {
+      const params = {
+        groupId: id
+      }
+      psgAPI.listByGroupId(params).then((res) => {
+        this.camreaInfos = res.data.payload
+        this.getList()
+        this.connectWebsocket()
+        // cb(res.data)
+      })
     },
     closeModal () {
       setTimeout(() => {
@@ -251,13 +410,35 @@ export default {
     }
   }
   .heat-map-img {
-    position: relative;
     flex: 1;
     height: 100%;
+    position: relative;
     margin-left: 24px;
     border: 1px solid #13585c;
-    background: url(@bgPic);
-    background-size: 100% 100%;
+    overflow: hidden;
+    .heat-map-rest-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      z-index: 1100;
+      background: #13585c;
+    }
+    .mapImg {
+      position: relative;
+      width: 99%;
+      height: 100%;
+      margin: auto;
+      background: url(@bgPic);
+      background-size: 100% 100%;
+    }
+    .point {
+      position: absolute;
+      right: 50px;
+      bottom: 50px;
+      font-size: 30px;
+      z-index: 500;
+      color: #0094ff;
+    }
     .tip {
       position: absolute;
       width: 240px;

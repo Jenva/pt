@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="taskId" node-key="id">
+        <el-tree :data="groupList[0] && groupList[0].children" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="taskId" node-key="id">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
