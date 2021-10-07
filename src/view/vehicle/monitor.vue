@@ -106,6 +106,7 @@ export default {
   },
   watch: {
     taskList () {
+      console.log(this.groupList)
       this.getCamera()
     }
   },

@@ -3,7 +3,7 @@
     <div class="task-list">
       <div class="task-title">任务列表</div>
       <div class="list">
-        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy>
+        <el-tree :data="groupList" :props="defaultProps" @node-click="handleNodeClick">
           <span class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.name }}</span>
           </span>
@@ -12,35 +12,49 @@
     </div>
     <div class="content">
       <div class="videoContent">
-        <div class="main-video">
-          <div class="main-video-title">T1航站楼 A区问询处</div>
-        </div>
-        <div class="second-video">
-          <div class="second-video-title">T1航站楼 F区自助值机区</div>
+        <div :class="[`${num}-video`, 'main-video']" v-for="num in 16" :key="num">
         </div>
       </div>
       <div class="node-chart">
-
+        <div class="node-title">
+          <span>航班号: {{ standData.flightNo  }}</span>
+          <span>机型: {{ standData.craftType  }}</span>
+          <span>机位: {{ standData.craftNo  }}</span>
+          <span>实际保障时间: {{ standData. LocalDateTime   }}</span>
+          <span>计划过站时间: {{ standData.planDepTime  }}</span>
+          <span>航线: {{ standData.flightLine  }}</span>
+          <span>代理公司: {{ standData.flightLine  }}</span>
+        </div>
+        <div class="node-chart-stand">
+          <span v-for="node in nodeList" :key="node.detailValue">
+            <div :class="['node-chart-stand-text', {'line-height': node.detailValue === String(currentStand)}]">
+              {{node.detailName }}
+            </div>
+          </span>
+          <!-- <span v-for="node in nodeList" :key="node.detailValue">{{ node.detailName }}</span> -->
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import psgAPI from '@/api/psgAPI'
-// import groupAPI from '@/api/groupAPI'
+import flightAPI from '@/api/flightAPI'
 import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
-import groupMixins from '@/mixins/groupMixins'
+// import groupMixins from '@/mixins/groupMixins'
 export default {
-  mixins: [groupMixins],
+  // mixins: [groupMixins],
   data () {
     return {
       type: 'PSG',
       tableData: [],
       players: [],
       groupList: [],
+      standData: {},
       listId: 0,
+      currentStand: 0,
+      nodeList: {},
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -49,7 +63,8 @@ export default {
     }
   },
   mounted () {
-    this.frameRegister()
+    this.getDict()
+    this.getFlightGroupList()
     this.getPlayers(true)
     this.resize()
   },
@@ -58,16 +73,18 @@ export default {
   },
   methods: {
     getPlayers (isMounted) {
-      const rect = document.querySelector('.video').getBoundingClientRect()
-      var players =  [
-        { 
-          id: '1',
-          x: rect.left,
-          y: rect.top,
-          w: rect.width,
-          h: rect.height
-        }
-      ]
+      const main = document.querySelectorAll('.main-video')
+      var players =  []
+      main.forEach((item, index) => {
+        const clientRect = item.getBoundingClientRect()
+        players.push({
+          id: index + 1,
+          x: clientRect.left,
+          y: clientRect.top,
+          w: clientRect.width,
+          h: clientRect.height
+        })
+      })
       this.players = players
       isMounted && this.createVideo()
     },
@@ -81,67 +98,51 @@ export default {
       }
     },
     handleNodeClick (data) {
-      if (data.cameraCodes) {
-        this.currentCameraCode = data.cameraCodes[0]
-        this.getList(data)
+      if (data.standId) {
         this.startVideo(data)
-        this.loop(data)
+        this.getByFlightStand(data.standId)
+        this.connectWebsocket(data.standId)
       }
     },
-    getList (data) {
+    getDict () {
       const params = {
-        cameraCode: data.cameraCodes[0] || 'test01',
-        groupId: data.groupId
+        dictValue: 'AIRCRAFT_NODE'
       }
-      psgAPI.getRealTimeFromRedis(params).then(res => {
-        const data = res.data.payload
-        data.areaInfo = JSON.parse(data.areaInfo)
-        for (let i = 0; i < data.areaInfo.length; i++) {
-          const element = data.areaInfo[i]
-          data[i] = element
-        }
-        console.log(data)
-        this.tableData = data
+      commonAPI.getDictByValue(params).then(res => {
+        this.nodeList = res.data.payload
+        this.nodeList.reverse()
       })
     },
-    loop (data) {
-      clearInterval(this.listId)
-      this.listId = setInterval(() => {
-        // this.getList({ cameraCodes: [this.currentCameraCode], groupId: this.groupId })
-        this.getList(data)
-      }, 5000)
+    getFlightGroupList () {
+      flightAPI.flightGroup().then(res => {
+        const groupList = []
+        res.data.payload.forEach(data => {
+          const cameraConfig = data.config && JSON.parse(data.config).streamlist.map(item => item.stream)
+          const gruop = {
+            groupId: data.group_id,
+            name: data.name,
+            standId: data.stand_id,
+            cameraConfig: cameraConfig
+          }
+          groupList.push(gruop)
+        })
+        this.groupList = groupList
+      })
     },
-    connectWebsocket() {
+    connectWebsocket(standId) {
       if (this.ws) this.ws.close()
-      this.ws = new WebSocket('ws://192.168.1.180:9088')
+      const host = location.hostname
+      this.ws = new WebSocket(`ws://${host}:9088/v1/baozhang/${standId}`)
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
-      const detail = evt.data.detial
-      for (let i = 0; i < detail.regions.length; i++) {
-        const element = detail.regions[i]
-        detail[i] = element
-      }
-      detail.passengerCount = detail.value
-      detail.areaInfo = detail.regions
-      this.tableData = detail
+      const message = evt.data && JSON.parse(evt.data)
+      this.currentStand = message.data.event
     },
-    loadNode (node, resolve) {
-      if (node.level === 1) {
-        return resolve(node.data.children)
-      }
-      if (!node.data.parentId) {
-        return resolve([])
-      }
-      this.getTaskList(node.data, (data) => {
-        if (!node.data.children) node.data.children = []
-        const children = node.data.children
-          .concat(data)
-          .map(item => {
-            if (item.taskType) item.leaf = true
-            return item
-          })
-        return resolve(children)
+    getByFlightStand (standId) {
+      flightAPI.getByFlightStand({ depLoc: standId }).then(res => {
+        console.log(res)
+        this.standData = res.data.payload
       })
     },
     getTaskList (data, cb) {
@@ -165,56 +166,44 @@ export default {
     downloadFile (id) {
       return commonAPI.downloadFile(id)
     },
-    frameRegister () {
-      const cxxNotifier = (cmd) => {
-        switch (cmd) {
-          case 'stoplay':
-            this.stopVideo()
-            break
-          case 'startplay':
-            this.startVideo()
-            break
-          case 'destroyplayer':
-            this.destroyVideo()
-            break
-          default:
-            break
-        }
-      }
-      window.bykj && window.bykj.frameRegister(cxxNotifier);
-    },
     createVideo () {
       const json = {
         players: this.players
       }
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
+      window.bykj.frameCall('hideplayer', JSON.stringify({type: 'all'}))
     },
     startVideo (data) {
-      this.getCamera(data, (payload) => {
-        var json={
-          players: [{
-            id: this.players.map(item => item.id)[0],
+      const players = []
+      this.players.forEach((item, index) => {
+        if (data.cameraConfig[index]) {
+          players.push({
+            id: item.id,
             camera:{
               type: 0,
-              domain:  payload[0].serverId,
-              id:	payload[0].code,
-              level: 0,
+              domain:  data.cameraConfig[index].domain,
+              id: data.cameraConfig[index].camera,
+              level: 0
             }
-          }]
+          })
+        }
+      })
+        var json = {
+          players: players
         }
         console.log(json)
+        window.bykj && window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
         window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
-      })
     },
     stopVideo () {
       var json = {
-        players: this.players.map(item => item.id)[0]
+        players: this.players.map(item => ({id: item.id}))[0]
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
       var json = {
-        players: this.players.map(item => item.id)[0]
+        players: this.players.map(item => ({id: item.id}))[0]
       }
       window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
@@ -266,13 +255,25 @@ export default {
     overflow: hidden;
     .videoContent {
       display: flex;
+      height: calc(100% - 400px);
+      overflow: hidden;
+      flex-wrap: wrap;
       .main-video,
       .second-video {
-        flex: 1
+        width: 24.9%;
+        &:nth-child(n) {
+          border-right: 1px solid #2dccd3;
+          border-bottom: 1px solid #2dccd3;
+        }
+        &:nth-child(4n) {
+          border-right: none;
+        }
+        &:nth-child(n + 13) {
+          border-bottom: none;
+        }
       }
       .main-video {
-        height: 496px;
-        border: 1px solid #2dccd3;
+        // border: 1px solid #2dccd3;
         .main-video-title {
           padding: 9px 24px 8px;
           font-size: 18Px;
@@ -295,9 +296,43 @@ export default {
     }
     .node-chart {
       height: 400Px;
-      padding: 24px;
-      background: url('../../assets/supportNode.png') no-repeat;
-      background-size: 100% 100%;
+      // padding: 24px;
+      // background: url('../../assets/supportNode.png') no-repeat;
+      // background-size: 100% 100%;
+      .node-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        font-size: 16px;
+        color: #fff;
+        background: #13585c;
+      }
+      .node-chart-stand {
+        padding: 0 20px;
+        line-height: 400Px;
+        span {
+          position: relative;
+          display: inline-block;
+          width: 96px;
+          height: 68px;
+          line-height: 1.5;
+          background: url('../../assets/cell_2@3x.png');
+          background-size: 100% 100%;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .node-chart-stand-text {
+            line-height: 88px;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+          }
+          .line-height {
+            color: #ff0000
+          }
+        }
+      }
     }
   }
 }

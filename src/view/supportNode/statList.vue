@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import groupAPI from '@/api/groupAPI'
+import flightAPI from '@/api/flightAPI'
 import psgAPI from '@/api/psgAPI'
 import commonAPI from '@/api/commonAPI'
 import days from 'dayjs'
@@ -160,7 +160,7 @@ export default {
         code: 'PSG'
         // type: 1
       }
-      groupAPI.listSonByParent(params).then(res => {
+      flightAPI.getByFlightStand(params).then(res => {
         this.groupList = res.data.payload
       })
     },
