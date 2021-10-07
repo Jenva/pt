@@ -295,7 +295,7 @@ export default {
       }
     }
     .node-chart {
-      height: 400Px;
+      height: 400px;
       // padding: 24px;
       // background: url('../../assets/supportNode.png') no-repeat;
       // background-size: 100% 100%;
@@ -309,7 +309,7 @@ export default {
       }
       .node-chart-stand {
         padding: 0 20px;
-        line-height: 400Px;
+        line-height: 400px;
         span {
           position: relative;
           display: inline-block;
