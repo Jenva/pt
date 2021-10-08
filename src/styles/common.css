@@ -195,3 +195,17 @@ div::-webkit-scrollbar-corner,
 html::-webkit-scrollbar-corner {
   background: #179a16;
 }
+
+.el-picker-panel__body,
+.el-input__inner {
+  font-family: '宋体';
+}
+.el-select-dropdown {
+  background-color: #272a35;
+}
+.el-select-dropdown__item {
+  color: #b5bbc7
+}
+.el-tree-node {
+  margin: 7px 0;
+}
