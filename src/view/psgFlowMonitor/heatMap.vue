@@ -91,6 +91,7 @@ export default {
       pointData: {},
       totalCount: 0,
       tableList: [],
+      ws: '',
       videoList: [
         { deviceName: '摄像机1', isCanUse: '是', playType: '实时播放' }
       ]
@@ -115,12 +116,15 @@ export default {
   mounted () {
     this.getPoint()
   },
+  beforeDestroy () {
+    this.ws.close()
+  },
   methods: {
     connectWebsocket() {
       const host = location.hostname
-      var ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       // const ws = new WebSocket(`ws://${host}:9088/v1/renqun`)
-      ws.onmessage = this.getMessage
+      this.ws.onmessage = this.getMessage
     },
     getPoint () {
       const target = document.querySelector('#mask')

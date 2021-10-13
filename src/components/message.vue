@@ -132,7 +132,8 @@ export default {
     return {
       currentTab: 'custom',
       peopleData: [],
-      carData: []
+      carData: [],
+      ws: ''
     }
   },
   computed: {
@@ -142,6 +143,9 @@ export default {
   },
   mounted () {
     this.connectWebsocket()
+  },
+  beforeDestroy () {
+    this.ws.close()
   },
   methods: {
     toDetail (message) {
@@ -158,9 +162,9 @@ export default {
     },
     connectWebsocket() {
       const host = location.hostname
-      var ws = new ReconnectingWebSocket(`ws://${host}:9088/v1`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       // const ws = new WebSocket(`ws://${host}:9088/v1`)
-      ws.onmessage = this.getMessage
+      this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
       console.log(evt)

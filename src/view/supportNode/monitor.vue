@@ -71,6 +71,7 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
+    this.ws.close()
   },
   methods: {
     getPlayers (isMounted) {
