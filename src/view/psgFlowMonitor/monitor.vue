@@ -126,7 +126,7 @@ export default {
     },
     getList (data) {
       const params = {
-        cameraCode: data.cameraCodes[0] || 'test01',
+        cameraCode: data.cameraCodes[0],
         groupId: data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {

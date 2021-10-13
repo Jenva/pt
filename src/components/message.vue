@@ -126,6 +126,7 @@
 
 <script>
 import commonAPI from '@/api/commonAPI'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   data () {
     return {
@@ -157,7 +158,8 @@ export default {
     },
     connectWebsocket() {
       const host = location.hostname
-      const ws = new WebSocket(`ws://${host}:9088/v1`)
+      var ws = new ReconnectingWebSocket(`ws://${host}:9088/v1`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      // const ws = new WebSocket(`ws://${host}:9088/v1`)
       ws.onmessage = this.getMessage
     },
     getMessage (evt) {

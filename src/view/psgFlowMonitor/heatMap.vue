@@ -67,6 +67,7 @@ import windowTopTitle  from '@/components/windowTopTitle'
 import groupAPI from '@/api/groupAPI'
 import psgAPI from '@/api/psgAPI'
 import commonAPI from '@/api/commonAPI'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   components: {
     windowTopTitle
@@ -117,7 +118,8 @@ export default {
   methods: {
     connectWebsocket() {
       const host = location.hostname
-      const ws = new WebSocket( `ws://${host}:9088/v1/renqun `)
+      var ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      // const ws = new WebSocket(`ws://${host}:9088/v1/renqun`)
       ws.onmessage = this.getMessage
     },
     getPoint () {

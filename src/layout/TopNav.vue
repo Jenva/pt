@@ -126,6 +126,10 @@ export default {
               title: '保障节点信息汇总',
               route: '/supportNodeStatList'
             },
+            {
+              title: '航空器任务管理',
+              route: '/airCraftTaskManager'
+            }
             // {
             //   title: '客流实时热力地图',
             //   route: '/psgFlowHeatMap'

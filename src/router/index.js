@@ -77,6 +77,10 @@ const router = new Router({
       {
         path: '/supportNodeStatList',
         component: () => import('@/view/supportNode/statList')
+      },
+      {
+        path: '/airCraftTaskManager',
+        component: () => import('@/view/supportNode/taskManager')
       }
     ]
   },

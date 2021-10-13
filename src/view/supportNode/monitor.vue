@@ -42,6 +42,7 @@
 import flightAPI from '@/api/flightAPI'
 import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 // import groupMixins from '@/mixins/groupMixins'
 export default {
   // mixins: [groupMixins],
@@ -132,7 +133,7 @@ export default {
     connectWebsocket(standId) {
       if (this.ws) this.ws.close()
       const host = location.hostname
-      this.ws = new WebSocket(`ws://${host}:9088/v1/baozhang/${standId}`)
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/baozhang/${standId}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
