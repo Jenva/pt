@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="content-bottom">
-        <div class="title">今日0点至今五类车进出统计表</div>
+        <div class="title">今日0点至今各类车进出统计表</div>
         <div class="table">
           <el-table :data="tableList" style="width: 100%">
             <!-- <template v-for="(list) in tableList">

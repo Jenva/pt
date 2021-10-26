@@ -4,10 +4,10 @@
       <el-form :model="formData" ref="form" label-width="150px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="节点时间" prop="createTime" style="width: 100%s">
+            <el-form-item label="节点时间" prop="triggerTime" style="width: 100%s">
               <el-date-picker
                 type="datetimerange"
-                v-model="formData.createTime"
+                v-model="formData.triggerTime"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 style="width: 90%"
@@ -16,10 +16,10 @@
             </el-form-item>
           </el-col>          
           <el-col :span="12">
-            <el-form-item label="计划起飞时间" prop="createTime">
+            <el-form-item label="计划起飞时间" prop="planDepTime">
               <el-date-picker
                 type="datetimerange"
-                v-model="formData.createTime"
+                v-model="formData.planDepTime"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 style="width: 90%"
@@ -42,16 +42,18 @@
             </el-form-item>
           </el-col>          
           <el-col :span="12">
-            <el-form-item label="航班号" prop="groupId">
-              <el-input placeholder="请输入航班号" v-model="formData.groupId" style="width: 90%">
+            <el-form-item label="航班号" prop="flightNo">
+              <el-input placeholder="请输入航班号" v-model="formData.flightNo" style="width: 90%">
               </el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="节点名称" prop="groupId">
-              <el-select placeholder="请输入节点名称" v-model="formData.groupId" style="width: 90%">
+            <el-form-item label="节点名称" prop="nodeType">
+              <el-select placeholder="请输入节点名称" v-model="formData.nodeType" style="width: 90%">
+                  <el-option :value="15" label="test"></el-option>
+                  <el-option v-for="(node, key) in nodeList" :key="key" :value="node.detailValue" :label="node.detailName"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -64,13 +66,13 @@
     </div>
     <div class="table">
       <el-table :data="tableList" height="100%">
-        <el-table-column label="航班号" prop="flightCode" align="center"></el-table-column>
-        <el-table-column label="节点名称" prop="nodeName" align="center"></el-table-column>
-        <el-table-column label="节点记录时间" prop="nodeTime" align="center"></el-table-column>
-        <el-table-column label="计划起飞时间" prop="offTime" align="center"></el-table-column>
+        <el-table-column label="航班号" prop="flight_no" align="center"></el-table-column>
+        <el-table-column label="节点名称" prop="nodeType" align="center"></el-table-column>
+        <el-table-column label="节点记录时间" prop="trigger_time" align="center"></el-table-column>
+        <el-table-column label="计划起飞时间" prop="plan_dep_time" align="center"></el-table-column>
         <el-table-column label="计划到达时间" prop="onTime" align="center"></el-table-column>
-        <el-table-column label="机位" prop="position" align="center"></el-table-column>
-        <el-table-column label="机号" align="center" prop="num"></el-table-column>
+        <el-table-column label="机位" prop="dep_loc" align="center"></el-table-column>
+        <el-table-column label="机号" align="center" prop="craft_no"></el-table-column>
       </el-table>
       <div class="page">
         <el-pagination
@@ -88,13 +90,14 @@
 
 <script>
 import flightAPI from '@/api/flightAPI'
-import psgAPI from '@/api/psgAPI'
+// import psgAPI from '@/api/psgAPI'
 import commonAPI from '@/api/commonAPI'
 import days from 'dayjs'
 export default {
   data () {
     return {
       formData: {},
+      nodeList: [],
       tableList: [
         {
           flightCode: 'CZ4389',
@@ -134,8 +137,9 @@ export default {
     }
   },
   mounted () {
-    this.getGroupList()
-    this.getCameraList()
+    this.getDict()
+    // this.getGroupList()
+    // this.getCameraList()
   },
   methods: {
     handleSizeChange (size) {
@@ -155,6 +159,15 @@ export default {
         this.cameraList = res.data.payload
       })
     },
+    getDict () {
+      const params = {
+        dictValue: 'AIRCRAFT_NODE'
+      }
+      commonAPI.getDictByValue(params).then(res => {
+        this.nodeList = res.data.payload
+        this.nodeList.reverse()
+      })
+    },
     getGroupList () {
       const params = {
         code: 'PSG'
@@ -172,14 +185,15 @@ export default {
       this.showPic = false
     },
     search () {
-      const params = {}
-      const { createTime, groupId } = this.formData
-      if (groupId) {
-        params.groupId = groupId
+      const params = Object.assign({}, this.formData)
+
+      if (params.planDepTime) {
+        params['planDepTime_gt'] = days(params.planDepTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['planDepTime_lt'] = days(params.planDepTime[1]).format('YYYY-MM-DD HH:mm:ss')
       }
-      if (createTime) {
-        params['createTime_gt'] = days(createTime[0]).format('YYYY-MM-DD HH:mm:ss')
-        params['createTime_lt'] = days(createTime[1]).format('YYYY-MM-DD HH:mm:ss')
+      if (params.triggerTime) {
+        params['triggerTime_gt'] = days(params.triggerTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['triggerTime_lt'] = days(params.triggerTime[1]).format('YYYY-MM-DD HH:mm:ss')
       }
       this.getList(this.offset, this.limit, params)
     },
@@ -187,13 +201,17 @@ export default {
       this.$refs.form.resetFields()
     },
     getList (offset = 0, limit = 10, params) {
-      psgAPI.queryListByParams(offset, limit, params).then(res => {
+      flightAPI.queryListByParams(offset, limit, params).then(res => {
         res.data.payload.rows.forEach(item => {
-          if (item.area_info) {
-            item.value = JSON.parse(item.area_info)[0].value
+          if (item.node_type) {
+            const nodeType = this.nodeList.find(value => value.detailValue === item.node_type)
+            item.nodeType = nodeType ? nodeType.detailName : '-'
           }
-          if (item.collect_time) {
-            item.collect_time = days(item.collect_time).format('YYYY-MM-DD HH:mm:ss')
+          if (item.plan_dep_time) {
+            item.plan_dep_time = days(item.plan_dep_time).format('YYYY-MM-DD HH:mm:ss')
+          }
+          if (item.trigger_time) {
+            item.trigger_time = days(item.trigger_time).format('YYYY-MM-DD HH:mm:ss')
           }
         })
         this.tableList = res.data.payload.rows

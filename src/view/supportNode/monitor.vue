@@ -12,16 +12,16 @@
     </div>
     <div class="content">
       <div class="videoContent">
-        <div :class="[`${num}-video`, 'main-video']" v-for="num in 16" :key="num">
-        </div>
+        <!-- <div :class="[`${num}-video`, 'main-video']" v-for="num in 16" :key="num">
+        </div> -->
       </div>
       <div class="node-chart">
         <div class="node-title">
           <span>航班号: {{ standData.flightNo  }}</span>
           <span>机型: {{ standData.craftType  }}</span>
           <span>机位: {{ standData.craftNo  }}</span>
-          <span>实际保障时间: {{ standData. LocalDateTime   }}</span>
-          <span>计划过站时间: {{ standData.planDepTime  }}</span>
+          <span>实际保障时间: {{ standData.actArrTime }}</span>
+          <span>计划过站时间: {{ standData.planDepTime }}</span>
           <span>航线: {{ standData.flightLine  }}</span>
           <span>代理公司: {{ standData.flightLine  }}</span>
         </div>
@@ -52,6 +52,7 @@ export default {
       tableData: [],
       players: [],
       groupList: [],
+      selectedData: {},
       standData: {},
       listId: 0,
       currentStand: 0,
@@ -66,7 +67,7 @@ export default {
   mounted () {
     this.getDict()
     this.getFlightGroupList()
-    this.getPlayers(true)
+    // this.getPlayers(true)
     this.resize()
   },
   beforeDestroy () {
@@ -74,25 +75,34 @@ export default {
     this.ws.close()
   },
   methods: {
-    getPlayers (isMounted) {
-      const main = document.querySelectorAll('.main-video')
+    getPlayers (list, isMounted) {
       var players =  []
-      main.forEach((item, index) => {
-        const clientRect = item.getBoundingClientRect()
+      let widthIndex = 0
+      const length = list.length
+      const main = document.querySelector('.videoContent')
+      const clientRect = main.getBoundingClientRect()
+      const width = length > 4 ? clientRect.width / 4 : clientRect.width / length
+      const height = length > 4 ? clientRect.height / 4 : clientRect.height / length
+      list.forEach((item, index) => {
+        widthIndex ++
+        const i = Math.ceil(index / 4) - 1 
+        if (widthIndex > 3) widthIndex = 0
         players.push({
           id: index + 1,
-          x: clientRect.left,
-          y: clientRect.top,
-          w: clientRect.width,
-          h: clientRect.height
+          x: clientRect.left + (width * widthIndex),
+          y: clientRect.top + (height * i),
+          w: width,
+          h: height
         })
       })
       this.players = players
       isMounted && this.createVideo()
+      return players
     },
     resize () {
       window.onresize = () => {
-        this.getPlayers()
+        this.getPlayers(this.selectedData.cameraConfig)
+        console.log(this.players)
         var json = {
           players: this.players
         }
@@ -100,6 +110,7 @@ export default {
       }
     },
     handleNodeClick (data) {
+      this.selectedData = data
       if (data.standId) {
         this.startVideo(data)
         this.getByFlightStand(data.standId)
@@ -172,12 +183,13 @@ export default {
       const json = {
         players: this.players
       }
+      console.log('create')
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
-      window.bykj.frameCall('hideplayer', JSON.stringify({type: 'all'}))
     },
     startVideo (data) {
       const players = []
-      this.players.forEach((item, index) => {
+      const playList= this.getPlayers(data.cameraConfig, true)
+      playList.forEach((item, index) => {
         if (data.cameraConfig[index]) {
           players.push({
             id: item.id,
@@ -190,12 +202,12 @@ export default {
           })
         }
       })
-        var json = {
-          players: players
-        }
-        console.log(json)
-        window.bykj && window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
-        window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
+      var json = {
+        players: players
+      }
+      console.log(json)
+      // window.bykj && window.bykj.frameCall('showplayer', JSON.stringify({type: 'all'}))
+      window.bykj && window.bykj.frameCall('startplay', JSON.stringify(json))
     },
     stopVideo () {
       var json = {

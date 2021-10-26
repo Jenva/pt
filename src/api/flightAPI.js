@@ -12,5 +12,11 @@ export default {
     return APIHelper.createAxios().get(url, {
       params
     })
+  },
+  queryListByParams (offset,limit, params) {
+    const url = `/stat-aircraft/queryListByParams/${offset}/${limit}`
+    return APIHelper.createAxios().get(url, {
+      params
+    })
   }
 }
