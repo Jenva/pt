@@ -30,10 +30,10 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="计划到达时间" prop="createTime">
+            <el-form-item label="计划到达时间" prop="planArrTime">
               <el-date-picker
                 type="datetimerange"
-                v-model="formData.createTime"
+                v-model="formData.planArrTime"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 style="width: 90%"
@@ -70,7 +70,7 @@
         <el-table-column label="节点名称" prop="nodeType" align="center"></el-table-column>
         <el-table-column label="节点记录时间" prop="trigger_time" align="center"></el-table-column>
         <el-table-column label="计划起飞时间" prop="plan_dep_time" align="center"></el-table-column>
-        <el-table-column label="计划到达时间" prop="onTime" align="center"></el-table-column>
+        <el-table-column label="计划到达时间" prop="plan_arr_time" align="center"></el-table-column>
         <el-table-column label="机位" prop="dep_loc" align="center"></el-table-column>
         <el-table-column label="机号" align="center" prop="craft_no"></el-table-column>
       </el-table>
@@ -190,10 +190,17 @@ export default {
       if (params.planDepTime) {
         params['planDepTime_gt'] = days(params.planDepTime[0]).format('YYYY-MM-DD HH:mm:ss')
         params['planDepTime_lt'] = days(params.planDepTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        delete params.planDepTime
       }
       if (params.triggerTime) {
         params['triggerTime_gt'] = days(params.triggerTime[0]).format('YYYY-MM-DD HH:mm:ss')
         params['triggerTime_lt'] = days(params.triggerTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        delete params.triggerTime
+      }
+      if (params.planArrTime) {
+        params['planArrTime_gt'] = days(params.planArrTime[0]).format('YYYY-MM-DD HH:mm:ss')
+        params['planArrTime_lt'] = days(params.planArrTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        delete params.planArrTime
       }
       this.getList(this.offset, this.limit, params)
     },
@@ -212,6 +219,9 @@ export default {
           }
           if (item.trigger_time) {
             item.trigger_time = days(item.trigger_time).format('YYYY-MM-DD HH:mm:ss')
+          }
+          if (item.plan_arr_time) {
+            item.plan_arr_time = days(item.plan_arr_time).format('YYYY-MM-DD HH:mm:ss')
           }
         })
         this.tableList = res.data.payload.rows
