@@ -81,12 +81,11 @@ export default {
       const length = list.length
       const main = document.querySelector('.videoContent')
       const clientRect = main.getBoundingClientRect()
+      const C = Math.ceil(list.length / 4)
       const width = length > 4 ? clientRect.width / 4 : clientRect.width / length
-      const height = length > 4 ? clientRect.height / 4 : clientRect.height / length
+      const height = length > 4 ? clientRect.height / C : clientRect.height
       list.forEach((item, index) => {
-        widthIndex ++
-        const i = Math.ceil(index / 4) - 1 
-        if (widthIndex > 3) widthIndex = 0
+        const i = Math.ceil((index + 1) / 4) - 1 
         players.push({
           id: index + 1,
           x: clientRect.left + (width * widthIndex),
@@ -94,6 +93,8 @@ export default {
           w: width,
           h: height
         })
+        widthIndex ++
+        if (widthIndex > 3) widthIndex = 0
       })
       this.players = players
       isMounted && this.createVideo()
