@@ -344,8 +344,14 @@ export default {
     line-height: 1.5;
   }
   .el-button {
-    font-size: 16px;
+    font-size: 16Px;
     font-family: '宋体';
+  }
+  .el-form-item__content {
+    line-height: 40Px;
+  }
+  .el-form-item__label {
+    font-size: 16Px;
   }
 }
 </style>

@@ -513,9 +513,11 @@ export default {
     background: #21232d;
     color: #fff;
   }
-  .el-tree-node__content:hover,
+  .el-tree-node__content:hover {
+    background: rgba(43, 103, 116, 0.7);
+  }
   .el-tree-node:focus>.el-tree-node__content {
-    background: #a2a4a7;
+    background: rgb(36, 63, 75);
   }
 }
 </style>

@@ -48,7 +48,7 @@
     </div>
     <sideBar ref="sideBar" :title="title" @close="closedModal" @confirm="confirm">
       <div class="form">
-        <el-form :model="formData" label-width="160px" ref="taskForm">
+        <el-form :model="formData" label-width="200px" ref="taskForm">
           <el-form-item label="任务名:" prop="name"
             :rules="{
               required: true, message: '任务名不能为空', trigger: 'blur'
@@ -329,8 +329,14 @@ export default {
     line-height: 1.5;
   }
   .el-button {
-    font-size: 16px;
+    font-size: 16Px;
     font-family: '宋体';
+  }
+  .el-form-item__label {
+    font-size: 16Px;
+  }
+  .el-form-item__content {
+    line-height: 40Px;
   }
 }
 </style>

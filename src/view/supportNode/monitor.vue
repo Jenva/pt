@@ -318,7 +318,7 @@ export default {
         display: flex;
         justify-content: space-between;
         padding: 15px;
-        font-size: 16px;
+        font-size: 16Px;
         color: #fff;
         background: #13585c;
       }

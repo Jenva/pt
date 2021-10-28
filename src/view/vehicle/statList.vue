@@ -4,8 +4,9 @@
       <el-form :model="formData" inline ref="form">
         <el-row>
           <el-col :span="9">
-            <el-form-item label="时间范围" prop="createTime">
-              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 85%"></el-date-picker>
+            <el-form-item label="时间范围" prop="createTime" class="createTime">
+              <el-date-picker type="datetimerange" v-model="formData.createTime" style="width: 95%" start-placeholder="开始日期"
+                end-placeholder="结束日期"></el-date-picker>
             </el-form-item>
           </el-col>          
           <el-col :span="5">
@@ -251,6 +252,12 @@ export default {
 
 <style lang="less">
 .stat-list {
+  .createTime {
+    width: 100%;
+    .el-form-item__content {
+      width: calc(100% - 80Px);
+    }
+  }
   .el-table .cell {
     font-size: 16Px;
     line-height: 1.5;
