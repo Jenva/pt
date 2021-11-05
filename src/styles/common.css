@@ -298,3 +298,15 @@ html::-webkit-scrollbar-corner {
 .el-date-editor .el-range-separator {
   line-height: 36Px!important;
 }
+
+.el-pagination .el-select .el-input {
+  width: 100Px;
+}
+.el-input--mini,
+.el-pagination__sizes .el-input .el-input__inner {
+  font-size: 16Px;
+}
+
+.el-input--mini .el-input__inner {
+  padding: 10Px 0;
+}
