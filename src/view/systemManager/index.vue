@@ -348,7 +348,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 24px;
-  overflow: hidden;
+  overflow: auto;
   box-sizing: border-box;
   background: #1f2831;
   .system-search {
@@ -370,7 +370,7 @@ export default {
   }
   .system-thead {
     width: 100%;
-    line-height: 40px;
+    line-height: 40Px;
     color: #fff;
     font-size: 16Px;
     background: #212330;
@@ -382,12 +382,12 @@ export default {
     width: 100%;
     .system-first-cell {
       width:23%;
-      line-height: 40px;
+      line-height: 40Px;
       text-align: center;
     }
     .system-cell {
       width:25%;
-      line-height: 40px;
+      line-height: 40Px;
       text-align: center;
     }
   }
@@ -397,7 +397,7 @@ export default {
 <style lang="less">
 #system-manager {
   .el-tree-node__content {
-    height: 70px;
+    height: 70Px;
     font-size: 16Px;
     border-bottom: 1px solid #13585c;
   }
@@ -405,9 +405,11 @@ export default {
     font-size: 16Px;
     font-family: '宋体';
   }
-  .el-tree-node__content:hover,
+  .el-tree-node__content:hover {
+    background: rgba(43, 103, 116, 0.7);
+  }
   .el-tree-node:focus>.el-tree-node__content {
-    background: rgb(64, 64, 65);
+    background: rgba(32,56,66,0.7)
   }
 }
 </style>

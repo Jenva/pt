@@ -15,6 +15,11 @@ body,html {
   height: 100%;
 }
 
+.el-button {
+  font-size: 16Px;
+  padding: 12Px 15Px;
+}
+
 .el-button--goon.is-active,
 .el-button--goon:active {
   background: #1d4b56;
@@ -82,7 +87,7 @@ body,html {
 }
 .el-table tbody tr:hover>td {
   /* color: #000; */
-  background-color: #1d1d1d!important;
+  background-color: rgba(43, 103, 116, 0.7)!important;
 }
 .el-table td, .el-table th.is-leaf {
   border-bottom: 1px solid #13585c!important;
@@ -102,6 +107,7 @@ body,html {
 }
 .el-form-item__label {
   color: #fff!important;
+  line-height: 40Px!important;
 }
 .el-input__inner,
 .el-range-input {
@@ -111,15 +117,22 @@ body,html {
 
 .el-range-separator {
   color: #fff!important;
+  line-height: 40Px!important;
 }
 
 .el-tree {
   background: #21232d;
   color: #fff;
 }
-.el-tree-node__content:hover,
+
+.el-tree-node__content {
+  height: 26Px;
+}
+.el-tree-node__content:hover {
+  background: rgba(43, 103, 116, 0.7)
+}
 .el-tree-node:focus>.el-tree-node__content {
-  background: #a2a4a7;
+  background: rgba(32,56,66,0.7);
 }
 
 .el-dialog, .el-pager li {
@@ -170,6 +183,7 @@ color: #fff!important;
   color: #606266
 }
 
+
 /*修改滚动条样式*/
 div::-webkit-scrollbar,
 html::-webkit-scrollbar {
@@ -207,5 +221,92 @@ html::-webkit-scrollbar-corner {
   color: #b5bbc7
 }
 .el-tree-node {
-  margin: 7px 0;
+  margin: 3Px 0;
+}
+
+.el-date-table,
+.el-radio__label,
+.el-input__inner,
+.el-dialog__title,
+.el-select-dropdown__item,
+.el-date-picker__header span,
+.el-date-editor .el-range-input,
+.el-month-table, .el-year-table,
+.el-date-range-picker__header div,
+.el-date-editor .el-range-separator,
+.el-select .el-input .el-select__caret,
+.el-date-range-picker .el-input__inner,
+.el-radio, .el-radio--medium.is-bordered .el-radio__label {
+  font-size: 16Px;
+}
+
+.el-input__inner {
+  height: 40Px;
+}
+
+.el-date-editor .el-range__icon {
+  font-size: 16Px;
+  /* margin-left: -16Px; */
+  line-height: 32Px;
+}
+
+.el-date-range-picker,
+.el-date-picker {
+  width: 40%;
+}
+
+.el-date-picker .el-picker-panel__content {
+  width: 100%;
+}
+
+.el-date-table td span {
+  width: 22Px;
+  height: 22Px;
+  line-height: 22Px;
+}
+
+.el-input--small .el-input__inner {
+  height: 32Px;
+}
+
+.el-month-table td .cell {
+  width: auto;
+}
+
+.el-radio__inner {
+  width: 14Px;
+  height: 14Px;
+}
+
+.el-radio__inner::after {
+  width: 4Px;
+  height: 4Px ;
+}
+
+.el-select-dropdown__item {
+  height: 34Px;
+  line-height: 34Px;
+}
+
+.el-date-table td div {
+  padding: 0 0;
+}
+
+.el-date-table td, .el-date-table td div {
+  height: 22Px;
+}
+.el-date-editor .el-range-separator {
+  line-height: 36Px!important;
+}
+
+.el-pagination .el-select .el-input {
+  width: 100Px;
+}
+.el-input--mini,
+.el-pagination__sizes .el-input .el-input__inner {
+  font-size: 16Px;
+}
+
+.el-input--mini .el-input__inner {
+  padding: 10Px 0;
 }

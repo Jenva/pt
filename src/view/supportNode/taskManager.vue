@@ -346,7 +346,7 @@ export default {
     line-height: 1.5;
   }
   .el-button {
-    font-size: 16px;
+    font-size: 16Px;
     font-family: '宋体';
   }
 }

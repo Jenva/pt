@@ -1,15 +1,15 @@
 <template>
   <div class="vehicle-statistics">
     <div class="statistics-search">
-      <el-form :model="formData" label-width="90px" ref="form">
+      <el-form :model="formData" label-width="80px" ref="form">
         <el-row>
           <el-col :span="5" label-width="100px">
             <el-form-item label="时间范围" prop="starTime">
-              <el-date-picker type="datetimerange" v-model="formData.starTime" style="width: 80%"></el-date-picker>
+              <el-date-picker type="datetimerange" v-model="formData.starTime" style="width: 90%"></el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
-            <el-form-item label="区域" prop="groupId">
+          <el-col :span="4">
+            <el-form-item label="区域" prop="groupId" label-width="60px">
               <el-select v-model="formData.groupId" @change="groupChange">
                 <el-option :value="group.id" :label="group.name" v-for="group in grouplist" :key="group.id"></el-option>
               </el-select>
@@ -23,13 +23,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="五类车类型" prop="carType">
+            <el-form-item label="各类车类型" prop="carType" label-width="100px">
               <el-select v-model="formData.carType">
                 <el-option :value="type.detailValue" :label="type.detailName" v-for="type in carTypeDict" :key="type.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col class="statistics-btn" :span="3">
+          <el-col class="statistics-btn" :span="4">
             <el-button type="primary" @click="search">查询</el-button>
             <el-button @click="reset">重置</el-button>
           </el-col>
@@ -270,5 +270,10 @@ export default {
   .g2-label-spec-value {
     color: #ff5250;
     font-weight: bold;
+  }
+  .vehicle-statistics {
+    .el-form-item__label {
+      font-size: 16Px;
+    }
   }
 </style>

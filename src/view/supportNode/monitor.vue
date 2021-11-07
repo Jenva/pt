@@ -111,6 +111,7 @@ export default {
       }
     },
     handleNodeClick (data) {
+      this.destroyVideo()
       this.selectedData = data
       if (data.standId) {
         this.startVideo(data)
@@ -212,13 +213,14 @@ export default {
     },
     stopVideo () {
       var json = {
-        players: this.players.map(item => ({id: item.id}))[0]
+        players: this.players.map(item => ({id: item.id}))
       }
       window.bykj && window.bykj.frameCall('stopplay', JSON.stringify(json))
     },
     destroyVideo () {
       var json = {
-        players: this.players.map(item => ({id: item.id}))[0]
+        type:"all",
+        players: this.players.map(item => ({id: item.id}))
       }
       window.bykj && window.bykj.frameCall('destroyplayer', JSON.stringify(json));
     }
@@ -318,7 +320,7 @@ export default {
         display: flex;
         justify-content: space-between;
         padding: 15px;
-        font-size: 16px;
+        font-size: 16Px;
         color: #fff;
         background: #13585c;
       }

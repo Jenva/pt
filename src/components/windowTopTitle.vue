@@ -44,7 +44,7 @@ export default {
   .text {
     flex: 6;
     margin-left: 12px;
-    font-size: 20px;
+    font-size: 20Px;
     color: #fff;
   }
 }
