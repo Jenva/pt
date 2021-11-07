@@ -76,7 +76,8 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
-    clearInterval(this.listId)
+    // clearInterval(this.listId)
+    if (this.ws) this.ws.close()
   },
   methods: {
     getPlayers (isMounted) {
@@ -157,7 +158,8 @@ export default {
     connectWebsocket() {
       if (this.ws) this.ws.close()
       const host = location.hostname
-      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun/${this.taskId.id}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      const taskId = this.taskId[0].split('-')[0]
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun/${taskId}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {

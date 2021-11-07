@@ -116,6 +116,7 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
+    if (this.ws) this.ws.close()
     // clearInterval(this.recentPicId)
     // clearInterval(this.statId)
   },
@@ -306,7 +307,8 @@ export default {
     connectWebsocket() {
       if (this.ws) this.ws.close()
       const host = location.hostname
-      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/wuleiche/${this.taskId.id}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
+      const taskId = this.taskId[0].split('-')[0]
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/wuleiche/${taskId}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
@@ -326,7 +328,7 @@ export default {
         } 
       })
       this.vehiclePicList.unshift(detail.file1)
-      console.log(this.tableList)
+      console.log(this.tableList, this.vehiclePicList)
       // this.tableList = [Object.assign({}, this.tableList[0], detail)]
     },
     getRecentListFromRedis (code) {

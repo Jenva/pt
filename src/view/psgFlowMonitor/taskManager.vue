@@ -185,7 +185,7 @@ export default {
     },
     getRateDict () {
       const params = {
-        dictValue: 'RATE'
+        dictValue: 'PSG_RATE'
       }
       commonAPI.getDictByValue(params).then(res => {
         this.rateDict = res.data.payload
