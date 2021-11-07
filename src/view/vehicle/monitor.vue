@@ -73,12 +73,14 @@ import groupAPI from '@/api/groupAPI'
 import taskAPI from '@/api/taskAPI'
 import previewPic from '@/components/previewPic'
 import groupMixins from '@/mixins/groupMixins'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 import dayjs from 'dayjs'
 export default {
   mixins: [groupMixins],
   components: {previewPic},
   data () {
     return {
+      ws: '',
       showPreview: false,
       currentCameraCode: 0,
       recentPicId: 0,
@@ -100,8 +102,7 @@ export default {
       taskType: 'CAR',
       vehiclePicList: [],
       emptyData: [{}],
-      players: [],
-      ws: ''
+      players: []
     }
   },
   watch: {
@@ -115,8 +116,8 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
-    clearInterval(this.recentPicId)
-    clearInterval(this.statId)
+    // clearInterval(this.recentPicId)
+    // clearInterval(this.statId)
   },
   mounted () {
     this.resize()
@@ -129,13 +130,14 @@ export default {
       const params = this.$route.query.data
       if (params) {
         const data = JSON.parse(params)
+        this.getTaskId(data.camera)
+        // const ids = this.taskList.find(item => item.cameraCodes.includes(data.camera))
+        // this.taskId = [ids.id]
         this.currentCameraCode = data.camera
         this.getStatFromData(data.camera)
         this.getRecentListFromRedis(data.camera)
         this.startVideo({cameraCodes: [data.camera]})
-        this.loopMethod()
-        const ids = this.taskList.find(item => item.cameraCodes.includes(data.camera))
-        this.taskId = [ids.id]
+        // this.loopMethod()
       }
     },
     loopMethod () { 
@@ -205,12 +207,17 @@ export default {
     },
     handleNodeClick (data) {
       if (data.cameraCodes) {
+        this.getTaskId(data.cameraCodes[0])
         this.currentCameraCode = data.cameraCodes[0]
         this.getStatFromData(data.cameraCodes[0])
         this.getRecentListFromRedis(data.cameraCodes[0])
         this.startVideo(data)
-        this.loopMethod()
+        // this.loopMethod()
       }
+    },
+    getTaskId (camera) {
+      const ids = this.taskList.find(item => item.cameraCodes.includes(camera))
+      this.taskId = [ids.id]
     },
     getTaskList (data, cb) {
         const params = {
@@ -277,7 +284,7 @@ export default {
           return Object.assign({}, { [key]: current.count }, pre)
         }, {})
         this.tableList = [data]
-        // this.connectWebsocket()
+        this.connectWebsocket()
       })
     },
     setRegions (data) {
@@ -298,19 +305,29 @@ export default {
     },
     connectWebsocket() {
       if (this.ws) this.ws.close()
-      this.ws = new WebSocket('ws://192.168.1.180:9088')
+      const host = location.hostname
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/wuleiche/${this.taskId.id}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
-      const detail = evt.data.detial
-      // const detail = {
-      //   "cartype": 3,
-      //   "count": 2,
-      //   "status": 0
-      // }
-      const key = `${detail.cartype}-${detail.status}-count`
-      detail[key] = detail.count
-      this.tableList = [Object.assign({}, this.tableList[0], detail)]
+      // const detail = evt.data.detial
+      const message = evt.data && JSON.parse(evt.data)
+      const detail = message.data.detail
+      const data = {
+        "cartype": detail.cartype,
+        event: detail.event,
+        collectTime: message.data.time
+      }
+      const key = `${data.cartype}-${data.event}-count`
+      const keys = Object.keys(this.tableList[0])
+      keys.forEach(item => {
+        if (item === key) {
+          this.tableList[0][key] += 1
+        } 
+      })
+      this.vehiclePicList.unshift(detail.file1)
+      console.log(this.tableList)
+      // this.tableList = [Object.assign({}, this.tableList[0], detail)]
     },
     getRecentListFromRedis (code) {
       const params = {

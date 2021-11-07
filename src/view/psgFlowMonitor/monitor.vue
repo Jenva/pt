@@ -42,6 +42,7 @@ import groupAPI from '@/api/groupAPI'
 // import taskAPI from '@/api/taskAPI'
 import commonAPI from '@/api/commonAPI'
 import groupMixins from '@/mixins/groupMixins'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   mixins: [groupMixins],
   data () {
@@ -96,15 +97,15 @@ export default {
       const params = this.$route.query.data
       if (params) {
         const data = JSON.parse(params)
+        this.getTaskId(data.camera)
         const ids = this.taskList
           .find(item => item.cameraCodes.includes(data.camera))
         this.currentCameraCode = data.camera
+        this.taskId = [ids.id]
         data.groupId = ids.groupId
         data.cameraCodes = [data.camera]
         this.getList(data)
         this.startVideo({cameraCodes: [data.camera]})
-        this.loop(data)
-        this.taskId = [ids.id]
       }
     },
     resize () {
@@ -119,10 +120,14 @@ export default {
     handleNodeClick (data) {
       if (data.cameraCodes) {
         this.currentCameraCode = data.cameraCodes[0]
+        this.getTaskId(this.currentCameraCode)
         this.getList(data)
         this.startVideo(data)
-        this.loop(data)
       }
+    },
+    getTaskId (camera) {
+      const ids = this.taskList.find(item => item.cameraCodes.includes(camera))
+      this.taskId = [ids.id]
     },
     getList (data) {
       const params = {
@@ -140,6 +145,7 @@ export default {
           console.log(data)
           this.tableData = data
         }
+        this.connectWebsocket()
       })
     },
     loop (data) {
@@ -150,15 +156,18 @@ export default {
     },
     connectWebsocket() {
       if (this.ws) this.ws.close()
-      this.ws = new WebSocket('ws://192.168.1.180:9088')
+      const host = location.hostname
+      this.ws = new ReconnectingWebSocket(`ws://${host}:9088/v1/renqun/${this.taskId.id}`, null, {debug: true, reconnectInterval: 3000, timeoutInterval: 15000 })
       this.ws.onmessage = this.getMessage
     },
     getMessage (evt) {
-      const detail = evt.data.detial
-      for (let i = 0; i < detail.regions.length; i++) {
-        const element = detail.regions[i]
-        detail[i] = element
-      }
+      const message = evt.data && JSON.parse(evt.data)
+      const detail = message.data.detail
+      // const data = {}
+      // for (let i = 0; i < detail.regions.length; i++) {
+      //   const element = detail.regions[i]
+      //   detail[i] = element
+      // }
       detail.passengerCount = detail.value
       detail.areaInfo = detail.regions
       this.tableData = detail
@@ -181,15 +190,6 @@ export default {
         return resolve(children)
       })
     },
-    // getTaskList (data, cb) {
-    //   const params = {
-    //     groupId: data.id,
-    //     taskType: 'PASSENGER'
-    //   }
-    //   taskAPI.getTaskPageList(0, 100, params).then(res => {
-    //     cb(res.data.payload.rows)
-    //   })
-    // },
     getCamera () {
       groupAPI.getCameraListByGroupId().then(res => {
         this.cameraList = res.data.payload
@@ -198,19 +198,12 @@ export default {
       })
     },
     setRegions (data) {
-      console.log(data.areaInfo, 'setRegions')
       const json = {
         playerid: this.players.map(item => item.id)[0],
-        // camera: {
-        //   domain: data.serverId,
-        //   id:	data.cameraCode
-        // },
         type: 1,
         count: 1,
         regions: (data.areaInfo && JSON.parse(data.areaInfo)) || []
       }
-      // this.regions = JSON.parse(data.areaInfo)
-      // console.log(json)
       window.bykj && window.bykj.frameCall('setregions', JSON.stringify(json))
     },
     downloadFile (id) {
