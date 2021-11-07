@@ -57,6 +57,7 @@ export default {
       listId: 0,
       currentStand: 0,
       nodeList: {},
+      ws: '',
       defaultProps: {
         label: 'label',
         children: 'children',
@@ -72,7 +73,7 @@ export default {
   },
   beforeDestroy () {
     this.destroyVideo()
-    this.ws.close()
+    if (this.ws) this.ws.close()
   },
   methods: {
     getPlayers (list, isMounted) {
