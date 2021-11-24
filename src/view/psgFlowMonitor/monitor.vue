@@ -14,7 +14,7 @@
       <div class="videoContent">
         <div class="video"></div>
         <div class="heatMap">
-          <div class="heatMap-title">热力图</div>
+          <!-- <div class="heatMap-title">热力图</div> -->
           <img :src="downloadFile(tableData.file)" alt="">
         </div>
       </div>
@@ -334,6 +334,7 @@ export default {
         }
         img {
           width: 100%;
+          height: 100%
         }
       }
     }
