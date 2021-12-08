@@ -9,9 +9,9 @@
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="采集频率" prop="rateDisplay" align="center"></el-table-column>
         <el-table-column label="摄像机" prop="cameraCodes" align="center">
-          <template slot-scope="scope">
+          <!-- <template slot-scope="scope">
             <span>{{scope.row.cameraCodes.join(',')}}</span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column label="启动时间" prop="triggerTime" align="center"></el-table-column>
         <el-table-column label="启动类型" prop="bootTypeDict" align="center"></el-table-column>
@@ -229,7 +229,7 @@ export default {
       params.taskType = 'CAR'
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
       params.taskConfig = JSON.stringify({ rate: params.rate })
-      params.cameraCodes = [params.cameraCodes]
+      // params.cameraCodes = [params.cameraCodes]
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
       delete params.alarm
@@ -263,7 +263,7 @@ export default {
       const params = Object.assign({}, this.formData)
       params.taskConfig = JSON.stringify({ rate: params.rate })
       params.stopTime = dayjs(params.triggerTime).add(params.taskTime, 'h').format('YYYY-MM-DD HH:mm:ss')
-      params.cameraCodes = [].concat(params.cameraCodes)
+      // params.cameraCodes = [].concat(params.cameraCodes)
       if (params.triggerTime) params.triggerTime = dayjs(params.triggerTime).format('YYYY-MM-DD HH:mm:ss')
       delete params.rate
       delete params.alarm
@@ -276,7 +276,7 @@ export default {
       this.title = type === 'add' ? '新增' : '编辑'
       if (type === 'edit') {
         const formData = Object.assign({}, data)
-        formData.cameraCodes = formData.cameraCodes.join(',')
+        // formData.cameraCodes = formData.cameraCodes.join(',')
         const triggerTime = dayjs(formData.triggerTime).toDate()
         let startTimeStamp = triggerTime.valueOf()
         let endTimeStamp =  dayjs(formData.stopTime).valueOf()
