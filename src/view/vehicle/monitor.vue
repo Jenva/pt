@@ -137,7 +137,7 @@ export default {
         this.currentCameraCode = data.camera
         this.getStatFromData(data.camera)
         this.getRecentListFromRedis(data.camera)
-        this.startVideo({cameraCodes: [data.camera]})
+        this.startVideo({cameraCodes: data.camera})
         // this.loopMethod()
       }
     },
@@ -208,10 +208,10 @@ export default {
     },
     handleNodeClick (data) {
       if (data.cameraCodes) {
-        this.getTaskId(data.cameraCodes[0])
-        this.currentCameraCode = data.cameraCodes[0]
-        this.getStatFromData(data.cameraCodes[0])
-        this.getRecentListFromRedis(data.cameraCodes[0])
+        this.getTaskId(data.cameraCodes)
+        this.currentCameraCode = data.cameraCodes
+        this.getStatFromData(data.cameraCodes)
+        this.getRecentListFromRedis(data.cameraCodes)
         this.startVideo(data)
         // this.loopMethod()
       }
@@ -367,7 +367,7 @@ export default {
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
-      const camera = this.cameraList.find(item => item.cameraCode === data.cameraCodes[0])
+      const camera = this.cameraList.find(item => item.cameraCode === data.cameraCodes)
       if (camera) {
         var json = {
           players: [{

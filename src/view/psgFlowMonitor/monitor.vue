@@ -100,13 +100,13 @@ export default {
         const data = JSON.parse(params)
         this.getTaskId(data.camera)
         const ids = this.taskList
-          .find(item => item.cameraCodes.includes(data.camera))
+          .find(item => item.cameraCodes === data.camera)
         this.currentCameraCode = data.camera
         this.taskId = [ids.id]
         data.groupId = ids.groupId
-        data.cameraCodes = [data.camera]
+        data.cameraCodes = data.camera
         this.getList(data)
-        this.startVideo({cameraCodes: [data.camera]})
+        this.startVideo({cameraCodes: data.camera})
       }
     },
     resize () {
@@ -120,7 +120,7 @@ export default {
     },
     handleNodeClick (data) {
       if (data.cameraCodes) {
-        this.currentCameraCode = data.cameraCodes[0]
+        this.currentCameraCode = data.cameraCodes
         this.getTaskId(this.currentCameraCode)
         this.getList(data)
         this.startVideo(data)
@@ -132,7 +132,7 @@ export default {
     },
     getList (data) {
       const params = {
-        cameraCode: data.cameraCodes[0],
+        cameraCode: data.cameraCodes,
         groupId: data.groupId
       }
       psgAPI.getRealTimeFromRedis(params).then(res => {
@@ -236,7 +236,7 @@ export default {
       window.bykj && window.bykj.frameCall('createplayer', JSON.stringify(json))
     },
     startVideo (data) {
-      const camera = this.cameraList.find(item => item.cameraCode === data.cameraCodes[0])
+      const camera = this.cameraList.find(item => item.cameraCode === data.cameraCodes)
       if (camera) {
         var json = {
           players: [{

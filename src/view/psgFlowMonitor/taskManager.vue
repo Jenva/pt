@@ -8,7 +8,7 @@
         <el-table-column label="任务名" prop="name" align="center"></el-table-column>
         <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="采集频率" prop="rateDisplay" align="center"></el-table-column>
-        <el-table-column label="摄像机" prop="gun" align="center">
+        <el-table-column label="摄像机" prop="cameraCodes" align="center">
           <!-- <template slot-scope="scope">
             <span>{{scope.row.cameraCodes && scope.row.cameraCodes.join(',')}}</span>
           </template> -->

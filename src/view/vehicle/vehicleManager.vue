@@ -143,7 +143,7 @@ export default {
       title: '',
       cameraList: [],
       formData: {
-        triggerTime: '00:01:00',
+        triggerTime: '',
         cameraCodes: ''
       }
     }
@@ -238,6 +238,7 @@ export default {
       })
     },
     confirm (cb) {
+      this.updateTask()
       this.$refs.taskForm.validate((res) => {
         if (res) {
           if (this.type === 'add') {
