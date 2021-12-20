@@ -394,10 +394,83 @@ export default {
 
 <style lang="less" scoped>
 @bgPic: '../../assets/bg.png';
+#dark {
+  .heatMap {
+    background: #21232d;
+  }
+  .area {
+    border: 1px solid #13585c;
+    .text {
+      color: #fff
+    }
+  }
+  .heat-map-img {
+    .tip {
+      background: #13585c;
+      color: #83a2af;
+      .count {
+        color: #fff;
+      }
+    }
+  }
+  .heat-map-rest-btn {
+    background: #13585c;
+  }
+  .right-side {
+    background: rgba(0,0,0,0.3);
+    .content {
+      background: #21232d;
+      .title {
+        border-top: 1px dashed #13585c;
+        border-bottom: 1px dashed #13585c;
+      }
+      .bottom-nav {
+        border-top: 1px solid #13585c;
+        border-bottom: 1px solid #13585c;
+      }
+    }
+  }
+}
+#light {
+  .heatMap {
+    background: #EBF2FA;
+  }
+  .area {
+    border: 1px solid #BCD0E3;
+    background: #fff;
+    .text {
+      color: #2491F6
+    }
+  }
+  .heat-map-img {
+    border: 1px solid #2491F6;
+    .tip {
+      background: #2491F6;
+      color: #EBF2FA;
+      .count {
+        color: #EBF2FA;
+      }
+    }
+  }
+  .right-side {
+    background: rgba(0,0,0,0.3);
+    .content {
+      background: #EBF2FA;
+      .title {
+        border-top: 1px dashed #2491F6;
+        border-bottom: 1px dashed #2491F6;
+      }
+      .bottom-nav {
+        border-top: 1px solid #2491F6;
+        border-bottom: 1px solid #2491F6;
+      }
+    }
+  }
+}
 .heatMap {
   display: flex;
   height: 100%;
-  background: #1f2831;
+  // background: #1f2831;
   box-sizing: border-box;
   padding: 24px;
   .area {
@@ -406,12 +479,12 @@ export default {
     padding: 23px;
     box-sizing: border-box;
     overflow: hidden;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     .select {
       margin-bottom: 30px;
       .text {
         font-size: 16Px;
-        color: #fff;
+        // color: #fff;
       }
     }
   }
@@ -420,14 +493,14 @@ export default {
     height: 100%;
     position: relative;
     margin-left: 24px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     overflow: hidden;
     .heat-map-rest-btn {
       position: absolute;
       top: 10px;
       right: 20px;
       z-index: 1100;
-      background: #13585c;
+      // background: #13585c;
     }
     .mapImg {
       position: relative;

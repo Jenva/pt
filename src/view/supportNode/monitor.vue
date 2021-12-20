@@ -230,12 +230,99 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .flow-monitor {
+    background: #21232d;
+    .task-list {
+      .task-title {
+        color: #2dccd3;
+      }
+      .list {
+        border: 1px solid #13585c;
+      }
+    }
+    .content {
+      border: 1px solid #13585c;
+    }
+    .main-video,
+    .second-video {
+      &:nth-child(n) {
+        border-right: 1px solid #2dccd3;
+        border-bottom: 1px solid #2dccd3;
+      }
+    }
+    .second-video {
+      border: 1px solid #13585c;
+      .second-video-title {
+        color: #fff;
+      }
+    }
+    .node-title {
+      color: #fff;
+      background: #13585c;
+    }
+    .node-chart-stand {
+      span {
+        .node-chart-stand-text {
+          color: #fff;
+        }
+        .line-height {
+          color: #ff0000
+        }
+      }
+    }
+  }
+}
+#light {
+  .flow-monitor {
+    background: #EBF2FA;
+    .task-list {
+      .task-title {
+        color: #2491F6;
+      }
+      .list {
+        border: 1px solid #BCD0E3;
+        background: #fff;
+      }
+    }
+     .content {
+      border: 1px solid #BCD0E3;
+    }
+    .main-video,
+    .second-video {
+      &:nth-child(n) {
+        border-right: 1px solid #2491F6;
+        border-bottom: 1px solid #2491F6;
+      }
+    }
+    .second-video {
+      border: 1px solid #BCD0E3;
+      .second-video-title {
+        color: #2491F6;
+      }
+    }
+    .node-title {
+      color: #2491F6;
+      background: #BCD0E3;
+    }
+    .node-chart-stand {
+      span {
+        .node-chart-stand-text {
+          color: #2491F6;
+        }
+        .line-height {
+          color: #ff0000
+        }
+      }
+    }
+  }
+}
 .flow-monitor {
   display: flex;
   height: 100%;
   box-sizing: border-box;
   padding: 24px;
-  background: #21232d;
+  // background: #21232d;
   .task-list {
     width: 354px;
     flex-shrink: 0;
@@ -247,7 +334,7 @@ export default {
       background-size: 100% 100%;
       text-align: center;
       line-height: 48Px;
-      color: #2dccd3;
+      // color: #2dccd3;
       font-size: 16Px;
     }
     .custom-tree-node {
@@ -262,14 +349,14 @@ export default {
       height: calc(100% - 50Px);
       box-sizing: border-box;
       padding: 23px;
-      border: 1px solid #13585c;
+      // border: 1px solid #13585c;
     }
   }
   .content {
     width: calc(100% - 354px);
     height: 100%;
     margin-left: 24px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     overflow: hidden;
     .videoContent {
       display: flex;
@@ -279,10 +366,10 @@ export default {
       .main-video,
       .second-video {
         width: 24.9%;
-        &:nth-child(n) {
-          border-right: 1px solid #2dccd3;
-          border-bottom: 1px solid #2dccd3;
-        }
+        // &:nth-child(n) {
+        //   border-right: 1px solid #2dccd3;
+        //   border-bottom: 1px solid #2dccd3;
+        // }
         &:nth-child(4n) {
           border-right: none;
         }
@@ -296,16 +383,16 @@ export default {
           padding: 9px 24px 8px;
           font-size: 18Px;
           line-height: 1;
-          color: #fff;
+          // color: #fff;
         }
       }
       .second-video {
-        border: 1px solid #13585c;
+        // border: 1px solid #13585c;
         .second-video-title {
           padding: 9px 24px 8px;
           font-size: 18Px;
           line-height: 1;
-          color: #fff;
+          // color: #fff;
         }
         img {
           width: 100%;
@@ -322,8 +409,8 @@ export default {
         justify-content: space-between;
         padding: 15px;
         font-size: 16Px;
-        color: #fff;
-        background: #13585c;
+        // color: #fff;
+        // background: #13585c;
       }
       .node-chart-stand {
         padding: 0 20px;
@@ -343,12 +430,12 @@ export default {
           .node-chart-stand-text {
             line-height: 88px;
             text-align: center;
-            color: #fff;
+            // color: #fff;
             font-size: 14px;
           }
-          .line-height {
-            color: #ff0000
-          }
+          // .line-height {
+          //   color: #ff0000
+          // }
         }
       }
     }

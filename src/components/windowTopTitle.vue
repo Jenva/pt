@@ -30,6 +30,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .top-title {
+    .text {
+      color: #fff;
+    }
+  }
+}
+#light {
+  .top-title {
+    .text {
+      color: #2491F6;
+    }
+  }
+}
 .top-title {
   display: flex;
   align-items: center;

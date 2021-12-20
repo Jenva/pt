@@ -192,16 +192,34 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .psg-stat-list {
+    background: #21232d;
+  }
+  .search {
+    border: 1px solid #13585c;
+    background: #1f2831;
+  }
+}
+#light {
+  .psg-stat-list {
+    background: #EBF2FA;
+  }
+  .search {
+    border: 1px solid #BCD0E3;
+    background: #D7E9FA;
+  }
+}
 .psg-stat-list {
   height: 100%;
   padding: 24px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #21232d;
+  // background: #21232d;
   .search {
     padding: 42px 20px 20px;
-    border: 1px solid #13585c;
-    background: #1f2831;
+    // border: 1px solid #13585c;
+    // background: #1f2831;
   }
   .table {
     height: calc(100% - 280px);

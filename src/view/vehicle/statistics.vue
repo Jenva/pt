@@ -168,14 +168,14 @@ export default {
           offset: 20,
           style: {
             fontSize: 16,
-            fill: '#fff'
+            fill: '#000'
           }
         }
       })
       chart.interval().position('type*value').color('type', ['#7f8da9', '#fec514', '#db4c3c', '#daf0fd']).label('value', {
         offset: 5,
         style: {
-          fill: '#fff'
+          fill: '#000'
         }
       })
       chart.render()
@@ -206,7 +206,7 @@ export default {
           offset: 40,
           style: {
             fontSize: 16,
-            fill: '#fff'
+            fill: '#000'
           },
           autoRotate: true
         }
@@ -215,13 +215,13 @@ export default {
         showTitle: true,
         showCrosshairs: true,
         style: {
-          fill: '#fff'
+          fill: '#000'
         }
       })
       chart.line().position('time*rate').label('rate', {
         offset: 20,
         style: {
-          fill: '#fff'
+          fill: '#000'
         }
       })
       chart.render()
@@ -232,14 +232,49 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .vehicle-statistics {
+    background: #21232d;
+  }
+  .statistics-search {
+    border: 1px solid #13585c;
+  }
+  .toggle {
+    .selected.span {
+      color: #209399;
+      background: rgba(19, 154, 163, 0.5);
+    }
+    span {
+      border: 1px solid #209399;
+    }
+  }
+}
+#light {
+  .vehicle-statistics {
+    background: #EBF2FA;
+  }
+  .statistics-search {
+    border: 1px solid #BCD0E3;
+    background: #D7E9FA;
+  }
+  .toggle {
+    .selected.span {
+      color: rgba(164, 180, 195, 1);
+      background: rgba(215, 233, 250, 1);
+    }
+    span {
+      border: 1px solid rgba(164, 180, 195, 1);
+    }
+  }
+}
 .vehicle-statistics {
   // height: 100%;
   min-height: 100%;
   padding: 24px;
-  background: #21232d;
+  // background: #21232d;
   .statistics-search {
     padding: 28px 20px 4px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     .statistics-btn {
       text-align: right;
     }

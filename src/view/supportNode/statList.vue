@@ -1,5 +1,5 @@
 <template>
-  <div class="psg-stat-list">
+  <div class="support-psg-stat-list">
     <div class="search">
       <el-form :model="formData" ref="form" label-width="150px">
         <el-row>
@@ -98,35 +98,7 @@ export default {
     return {
       formData: {},
       nodeList: [],
-      tableList: [
-        {
-          flightCode: 'CZ4389',
-          nodeName: '摆渡车到位',
-          nodeTime: '2021-08-03 14:05:24',
-          offTime: '2021-08-03 15:38:13',
-          onTime: '2021-08-03 23:51:29',
-          position: 'A14',
-          num: 'B-753'
-        },
-        {
-          flightCode: 'CZ4389',
-          nodeName: '摆渡车到位',
-          nodeTime: '2021-08-03 14:05:24',
-          offTime: '2021-08-03 15:38:13',
-          onTime: '2021-08-03 23:51:29',
-          position: 'A14',
-          num: 'B-753'
-        },
-        {
-          flightCode: 'CZ4389',
-          nodeName: '摆渡车到位',
-          nodeTime: '2021-08-03 14:05:24',
-          offTime: '2021-08-03 15:38:13',
-          onTime: '2021-08-03 23:51:29',
-          position: 'A14',
-          num: 'B-753'
-        }
-      ],
+      tableList: [],
       groupList: [],
       cameraList: [],
       currentFile: '',
@@ -247,16 +219,34 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.psg-stat-list {
+#dark {
+  .support-psg-stat-list {
+    background: #21232d;
+    .search {
+      border: 1px solid #13585c;
+      background: #1f2831;
+    }
+  }
+}
+#light {
+  .support-psg-stat-list {
+    background: #EBF2FA;
+    .search {
+      border: 1px solid #BCD0E3;
+      background: #D7E9FA;
+    }
+  }
+}
+.support-psg-stat-list {
   height: 100%;
   padding: 24px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #21232d;
+  // background: #21232d;
   .search {
     padding: 42px 20px 20px;
-    border: 1px solid #13585c;
-    background: #1f2831;
+    // border: 1px solid #13585c;
+    // background: #1f2831;
   }
   .table {
     height: calc(100% - 420px);
@@ -269,7 +259,7 @@ export default {
 }
 </style>
 <style lang="less">
-.psg-stat-list {
+.support-psg-stat-list {
   .el-table .cell {
     font-size: 16Px;
     line-height: 1.5;

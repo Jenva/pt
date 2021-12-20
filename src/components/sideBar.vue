@@ -63,6 +63,36 @@ export default {
 </script> 
 
 <style lang="less" scoped>
+#dark {
+  .side-bar {
+    .content {
+      background: #21232d;
+      .title {
+        border-top: 1px dashed #13585c;
+        border-bottom: 1px dashed #13585c;
+      }
+      .bottom-nav {
+        border-top: 1px solid #13585c;
+        border-bottom: 1px solid #13585c;
+      }
+    }
+  }
+}
+#light {
+  .side-bar {
+    .content {
+      background: #EBF2FA;
+      .title {
+        border-top: 1px dashed #2491F6;
+        border-bottom: 1px dashed #2491F6;
+      }
+      .bottom-nav {
+        border-top: 1px solid #2491F6;
+        border-bottom: 1px solid #2491F6;
+      }
+    }
+  }
+}
 .side-bar {
   position: fixed;
   top:0;
@@ -78,13 +108,13 @@ export default {
     top: 0;
     bottom: 0;
     right: -40%;
-    background: #21232d;
+    // background: #21232d;
     transition: right 0.8s;
     padding-bottom: 60px;
-    .title {
-      border-top: 1px dashed #13585c;
-      border-bottom: 1px dashed #13585c;
-    }
+    // .title {
+    //   border-top: 1px dashed #13585c;
+    //   border-bottom: 1px dashed #13585c;
+    // }
     .table {
       padding: 40px 24px 24px;
       .page {
@@ -99,8 +129,8 @@ export default {
       bottom: 60px;
       right: 0;
       text-align: center;
-      border-top: 1px solid #13585c;
-      border-bottom: 1px solid #13585c;
+      // border-top: 1px solid #13585c;
+      // border-bottom: 1px solid #13585c;
       line-height: 60px;
     }
   }

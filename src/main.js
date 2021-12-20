@@ -5,13 +5,12 @@ import store from './store'
 import ElementUi from 'element-ui'
 import commonJS from './utils/common'
 import 'element-ui/lib/theme-chalk/index.css';
-import './styles/index.css'
+import './styles/index.less'
 import 'amfe-flexible/index.js'
 
 Vue.use(ElementUi)
 Vue.config.productionTip = false
 Vue.prototype.$commonJS = commonJS
-
 
 router.beforeEach((to, from, next) => {
   const isLogined = window.bykj && window.bykj.getToken() || true

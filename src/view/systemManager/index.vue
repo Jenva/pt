@@ -309,22 +309,6 @@ export default {
       window.bykj && window.bykj.frameCall('editregions', JSON.stringify(json))
     },
     handlerAnalsy () {
-      // "saveregions"
-      // const params = [
-      //   {
-      //     "code": "camera01-01" || this.formData.cameraId,
-      //     "x": [ 0.1, 0.6, 0.6, 0.1, 0.3 ],
-      //     "y": [0.85, 0.4, 0.8, 0.8, 0.5 ],
-      //     "in": {
-      //       "x": [0.1, 0.5],
-      //       "y": [0.2, 0.8]
-      //     },
-      //     "out":{
-      //       "x":[ 0.5, 0.8],
-      //       "y":[0.6, 0.4]
-      //     }
-      //   }
-      // ]
       groupAPI.updateCamera(this.analsyCameraId, {areaInfo: JSON.stringify(this.regions)}).then()
     },
     confirm (cb) {
@@ -344,19 +328,45 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  #system-manager {
+    background: #21232d;
+    .system-search-title {
+      color: #fff;
+    }
+    .system-thead {
+      color: #fff;
+      background: #212330;
+      border-bottom: 1px solid #13585c;
+    }
+  }
+}
+#light {
+  #system-manager {
+    background: #EBF2FA;
+    .system-search-title {
+      color: #2491F6;
+    }
+    .system-thead {
+      color: #2491F6;
+      background: #fff;
+      border-bottom: 1px solid #BCD0E3;
+    }
+  }
+}
 #system-manager {
   width: 100%;
   height: 100%;
   padding: 24px;
   overflow: auto;
   box-sizing: border-box;
-  background: #1f2831;
+  // background: #1f2831;
   .system-search {
     margin-bottom: 40px;
     .system-search-title {
       padding-right: 12px;
       font-size: 18px;
-      color: #fff;
+      // color: #fff;
     }
     .system-search-select {
       width: 326px;
@@ -371,10 +381,10 @@ export default {
   .system-thead {
     width: 100%;
     line-height: 40Px;
-    color: #fff;
+    // color: #fff;
     font-size: 16Px;
-    background: #212330;
-    border-bottom: 1px solid #13585c;
+    // background: #212330;
+    // border-bottom: 1px solid #13585c;
   }
   .system-cell-content {
     display: flex;
@@ -396,20 +406,39 @@ export default {
 
 <style lang="less">
 #system-manager {
+  #dark {
+    .el-tree-node__content {
+      border-bottom: 1px solid #13585c;
+    }
+    .el-tree-node__content:hover {
+      background: rgba(43, 103, 116, 0.7);
+    }
+    .el-tree-node:focus>.el-tree-node__content {
+      background: rgba(32,56,66,0.7)
+    }
+  }
+  #light {
+    .el-tree-node__content:hover {
+      background: #BCD0E3;
+    }
+    .el-tree-node:focus>.el-tree-node__content {
+      background: #2491F6
+    }
+  }
   .el-tree-node__content {
     height: 70Px;
     font-size: 16Px;
-    border-bottom: 1px solid #13585c;
+    // border-bottom: 1px solid #13585c;
   }
   .el-button {
     font-size: 16Px;
     font-family: '宋体';
   }
-  .el-tree-node__content:hover {
-    background: rgba(43, 103, 116, 0.7);
-  }
-  .el-tree-node:focus>.el-tree-node__content {
-    background: rgba(32,56,66,0.7)
-  }
+  // .el-tree-node__content:hover {
+  //   background: rgba(43, 103, 116, 0.7);
+  // }
+  // .el-tree-node:focus>.el-tree-node__content {
+  //   background: rgba(32,56,66,0.7)
+  // }
 }
 </style>

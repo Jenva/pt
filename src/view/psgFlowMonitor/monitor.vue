@@ -271,12 +271,67 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .flow-monitor {
+    background: #21232d;
+  }
+  .task-list {
+    .task-title {
+      color: #2dccd3;
+    }
+    .list {
+      border: 1px solid #13585c;
+    }
+  }
+  .content {
+    border: 1px solid #13585c;
+    .videoContent {
+      .video {
+        border: 1px solid #2dccd3;
+      }
+      .heatMap {
+        border: 1px solid #13585c;
+        .heatMap-title {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+#light {
+  .flow-monitor {
+    background: #EBF2FA;
+  }
+  .task-list {
+    .task-title {
+      color: #2491F6;
+    }
+    .list {
+      border: 1px solid #BCD0E3;
+      background: #fff;
+    }
+  }
+  .content {
+    border: 1px solid #BCD0E3;
+    .videoContent {
+      .video {
+        border: 1px solid #2491F6;
+      }
+      .heatMap {
+        border: 1px solid #2491F6;
+        .heatMap-title {
+          color: #2491F6;
+        }
+      }
+    }
+  }
+}
 .flow-monitor {
   display: flex;
   height: 100%;
   box-sizing: border-box;
   padding: 24px;
-  background: #21232d;
+  // background: #21232d;
   .task-list {
     width: 354px;
     height: 100%;
@@ -290,7 +345,7 @@ export default {
       background-size: 100% 100%;
       text-align: center;
       line-height: 48Px;
-      color: #2dccd3;
+      // color: #2dccd3;
       font-size: 16Px;
     }
     .custom-tree-node {
@@ -305,14 +360,14 @@ export default {
       min-height: calc(100% - 60Px);
       box-sizing: border-box;
       padding: 23px;
-      border: 1px solid #13585c;
+      // border: 1px solid #13585c;
     }
   }
   .content {
     width: calc(100% - 354px);
     height: 100%;
     margin-left: 24px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     overflow: hidden;
     .videoContent {
       display: flex;
@@ -322,15 +377,15 @@ export default {
       }
       .video {
         height: 496px;
-        border: 1px solid #2dccd3;
+        // border: 1px solid #2dccd3;
       }
       .heatMap {
-        border: 1px solid #13585c;
+        // border: 1px solid #13585c;
         .heatMap-title {
           padding: 9px 24px 8px;
           font-size: 18Px;
           line-height: 1;
-          color: #fff;
+          // color: #fff;
         }
         img {
           width: 100%;

@@ -44,29 +44,6 @@
       <vehicle-pic-list v-show="name === 'pic'" ref="picList" :carTypeDict="carTypeDict"></vehicle-pic-list>
       <vehicle-table ref="tableList" :carTypeDict="carTypeDict" v-show="name === 'table'"></vehicle-table>
     </div>
-    <!-- <div class="table">
-      <el-table :data="tableList" border>
-        <el-table-column label="区域" prop="name" align="center"></el-table-column>
-        <el-table-column label="统计时段" prop="time" align="center">
-          <template>
-            <span>
-              {{startTime}}-{{endTime}}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="车辆类型" prop="carTypeDisplay" align="center"></el-table-column>
-        <el-table-column label="车辆进入" prop="0-count" align="center"></el-table-column>
-        <el-table-column label="车辆离开" prop="1-count" align="center"></el-table-column>
-        <el-table-column label="视频回放" align="center" prop="review">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="playVideo(scope.row)">
-              <img src="../../assets/vehiclemanagement_icon_historicversion_normal.png" alt="" style="vertical-align: middle">
-              历史视频
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div> -->
   </div>
 </template>
 
@@ -214,24 +191,60 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .stat-list {
+    background: #21232d;
+  }
+  .search {
+    border: 1px solid #13585c;
+    background: #1f2831;
+  }
+  .toggle {
+    .selected.span {
+      color: #209399;
+      background: rgba(19, 154, 163, 0.5);
+    }
+    span {
+      border: 1px solid #209399;
+    }
+  }
+}
+#light {
+  .stat-list {
+    background: #EBF2FA;
+  }
+  .search {
+    border: 1px solid #BCD0E3;
+    background: #D7E9FA;
+  }
+  .toggle {
+    .selected.span {
+      color: rgba(164, 180, 195, 1);
+      background: rgba(215, 233, 250, 1);
+    }
+    span {
+      border: 1px solid rgba(164, 180, 195, 1);
+    }
+  }
+}
 .stat-list {
   height: 100%;
   padding: 24px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #21232d;
+  // background: #21232d;
   .search {
     padding: 42px 20px 20px;
-    border: 1px solid #13585c;
-    background: #1f2831;
+    // border: 1px solid #13585c;
+    // background: #1f2831;
   }
   .toggle {
     width: 100%;
     margin: 20px 0 0;
-    .selected.span {
-      color: #209399;
-      background: rgba(19, 154, 163, 0.5);
-    }
+    // .selected.span {
+    //   color: #209399;
+    //   background: rgba(19, 154, 163, 0.5);
+    // }
     span {
       display: inline-block;
       width: 20Px;
@@ -239,7 +252,7 @@ export default {
       padding: 5Px 10Px;
       font-size: 20Px;
       color: #fff;
-      border: 1px solid #209399;
+      // border: 1px solid #209399;
       cursor: pointer;
     }
   }

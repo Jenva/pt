@@ -89,7 +89,7 @@ export default {
       taskList: [],
       taskId: [],
       tableList: [
-        // { '3-1-count': 10 }
+        { '3-1-count': 10 }
       ],
       defaultProps: {
         children: 'children',
@@ -402,12 +402,78 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .vehicle-monitor {
+    background: #21232d;
+  }
+  .task-list {
+    .task-title {
+      color: #2dccd3;
+    }
+    .list {
+      border: 1px solid #13585c;
+    }
+  }
+  .vehicle-content {
+    border: 1px solid #13585c;
+    .content-bottom {
+      .title {
+        color: #2dccd3;
+      }
+    }
+  }
+  .vehicle-video {
+    border: 1px solid #2dccd3;
+  }
+  .vehicle-current-list {
+    .list {
+      .cell {
+        border: 1px solid #13585c;
+      }
+    }
+  }
+}
+#light {
+  .vehicle-monitor {
+    background: #EBF2FA;
+  }
+  .task-list {
+    .task-title {
+      color: #2491F6;
+    }
+    .list {
+      background: #fff;
+      border: 1px solid #BCD0E3;
+    }
+  }
+  .vehicle-content {
+    border: 1px solid #BCD0E3;
+    .content-bottom {
+      .title {
+        color: #2491F6;
+      }
+    }
+  }
+  .vehicle-video {
+    border: 1px solid #2491F6;
+  }
+  .vehicle-current-list {
+    .title {
+      color: #2491F6;
+    }
+    .list {
+      .cell {
+        border: 1px solid #2491F6;
+      }
+    }
+  }
+}
 .vehicle-monitor {
   display: flex;
   box-sizing: border-box;
   padding: 24px;
   height: 100%;
-  background: #21232d;
+  // background: #21232d;
   overflow: auto;
   .task-list {
     width: 354px;
@@ -427,22 +493,21 @@ export default {
       background-size: 100% 100%;
       text-align: center;
       line-height: 48px;
-      color: #2dccd3;
+      // color: #2dccd3;
       font-size: 16Px;
     }
     .list {
       height: calc(100% - 70px);
       box-sizing: border-box;
       padding: 23px;
-      border: 1px solid #13585c;
+      // border: 1px solid #13585c;
     }
   }
   .vehicle-content {
     width: calc(100% - 354px);
     height: calc(100% - 12px);
     margin-left: 24px;
-    // padding-bottom: 13px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     overflow: hidden;
     .content-main {
       display: flex;
@@ -450,7 +515,7 @@ export default {
       height: calc(100% - 220px);
       .vehicle-video {
         flex: 1;
-        border: 1px solid #2dccd3;
+        // border: 1px solid #2dccd3;
       }
       .vehicle-current-list {
         width: 266px;
@@ -467,7 +532,7 @@ export default {
           overflow: auto;
           .cell {
             margin-bottom: 18px;
-            border: 1px solid #13585c;
+            // border: 1px solid #13585c;
             img {
               width: 100%;
             }
@@ -483,7 +548,7 @@ export default {
         font-size: 18Px;
         font-weight: 700;
         line-height: 1;
-        color: #2dccd3;
+        // color: #2dccd3;
       }
     }
   }
@@ -495,48 +560,48 @@ export default {
     font-size: 16Px;
   }
 }
-.vehicle-monitor {
-  .el-table th, .el-table tr  {
-    background: #21232d!important;
-    color: #fff;
-  }
-  .el-table tbody tr:hover>td {
-    color: #000;
-    background-color: #a2a4a7!important;
-  }
-  /*table边框颜色*/
-  .el-table--border:after,
-  .el-table--group:after,
-  .el-table:before {
-    background-color: #13585c;
-  }
-  .el-table--border,
-  .el-table--group {
-    border-color: #13585c;
-  }
-  .el-table td,
-  .el-table th.is-leaf {
-    border-bottom: 1px solid #13585c;
-  }
+// .vehicle-monitor {
+//   .el-table th, .el-table tr  {
+//     background: #21232d!important;
+//     color: #fff;
+//   }
+//   .el-table tbody tr:hover>td {
+//     color: #000;
+//     background-color: #a2a4a7!important;
+//   }
+//   /*table边框颜色*/
+//   .el-table--border:after,
+//   .el-table--group:after,
+//   .el-table:before {
+//     background-color: #13585c;
+//   }
+//   .el-table--border,
+//   .el-table--group {
+//     border-color: #13585c;
+//   }
+//   .el-table td,
+//   .el-table th.is-leaf {
+//     border-bottom: 1px solid #13585c;
+//   }
 
-  .el-table--border th,
-  .el-table--border th.gutter:last-of-type {
-    border-bottom: 1px solid #13585c;
-  }
+//   .el-table--border th,
+//   .el-table--border th.gutter:last-of-type {
+//     border-bottom: 1px solid #13585c;
+//   }
 
-  .el-table--border td,
-  .el-table--border th {
-    border-right: 1px solid #13585c;
-  }
-  .el-tree {
-    background: #21232d;
-    color: #fff;
-  }
-  .el-tree-node__content:hover {
-    background: rgba(43, 103, 116, 0.7);
-  }
-  .el-tree-node:focus>.el-tree-node__content {
-    background: rgb(36, 63, 75);
-  }
-}
+//   .el-table--border td,
+//   .el-table--border th {
+//     border-right: 1px solid #13585c;
+//   }
+//   .el-tree {
+//     background: #21232d;
+//     color: #fff;
+//   }
+//   .el-tree-node__content:hover {
+//     background: rgba(43, 103, 116, 0.7);
+//   }
+//   .el-tree-node:focus>.el-tree-node__content {
+//     background: rgb(36, 63, 75);
+//   }
+// }
 </style>

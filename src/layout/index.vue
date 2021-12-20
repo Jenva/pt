@@ -11,9 +11,27 @@ export default {
   components: {
     TopNav
   },
+  watch: {
+    $route () {
+      this.changeMode()
+    }
+  },
   computed: {
     showMenu () {
       return window.bykj
+    }
+  },
+  mounted () {
+
+  },
+  methods: {
+    changeMode () {
+      const type = /dark/.test(this.$route.query.type)
+      const dom = document.body
+      dom.id = 'light'
+      if (type) {
+        dom.id = 'dark'
+      }
     }
   }
 }

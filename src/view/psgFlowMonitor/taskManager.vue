@@ -148,7 +148,7 @@ export default {
       bootTypeDict: [],
       rateDict: [],
       type: '',
-      total: 40,
+      total: 0,
       limit: 10,
       title: '',
       cameraList: [],
@@ -316,12 +316,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .task-manager {
+    background: #21232d;
+  }
+}
+#light {
+  .task-manager {
+    background: #EBF2FA;
+  }
+}
 .task-manager {
   height: 100%;
   padding: 36px 24px;
   overflow: hidden;
   box-sizing: border-box;
-  background: #21232d;
+  // background: #21232d;
   .el-input,
   .el-select {
     width: 90%;

@@ -1,5 +1,5 @@
 <template>
-  <div class="task-manager">
+  <div class="supoort-task-manager">
     <div class="task-add">
       <el-button size="samll" type="primary" icon="el-icon-plus" @click="showModal('add')">新增任务</el-button>
     </div>
@@ -318,12 +318,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.task-manager {
+#dark {
+  .supoort-task-manager {
+    background: #21232d;
+  }
+}
+#light {
+  .supoort-task-manager {
+    background: #EBF2FA;
+  }
+}
+.supoort-task-manager {
   height: 100%;
   padding: 36px 24px;
   overflow: hidden;
   box-sizing: border-box;
-  background: #21232d;
+  // background: #21232d;
   .el-input,
   .el-select {
     width: 90%;
@@ -340,7 +350,7 @@ export default {
 </style>
 
 <style lang="less">
-.task-manager {
+.supoort-task-manager {
   .el-table .cell {
     font-size: 16Px;
     line-height: 1.5;

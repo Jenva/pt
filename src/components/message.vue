@@ -26,7 +26,7 @@
               </div>
             </div>
           </li>
-          <!-- <li>
+          <li>
             <div class="message-heatMap">
             </div>
             <div class="message-info">
@@ -117,7 +117,7 @@
                 <el-button class="message-btn" size="mini" @click="toDetail">查看详情</el-button>
               </div>
             </div>
-          </li> -->
+          </li>
         </ul>
       </div>
     </div>
@@ -143,11 +143,20 @@ export default {
   },
   mounted () {
     this.connectWebsocket()
+    this.changeMode()
   },
   beforeDestroy () {
     this.ws.close()
   },
   methods: {
+    changeMode () {
+      const type = /dark/.test(this.$route.query.type)
+      const dom = document.body
+      dom.id = 'light'
+      if (type) {
+        dom.id = 'dark'
+      }
+    },
     toDetail (message) {
       const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
@@ -192,11 +201,73 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .message-sideBar {
+    background: #272a35;
+  }
+  .message-tab {
+    color: #818d99;
+  }
+  .selected {
+    color: #2dccd3;
+  }
+  .message-list {
+    li {
+      border: 1px solid #13585c;
+    }
+  }
+  .message-info {
+    position: relative;
+    flex: 1;
+    .message-text {
+      color: #fff;
+    }
+    .message-title {
+      color: #fff;
+    }
+    .message-close {
+      color: #fff;
+    }
+    .message-other {
+      color: #fff;
+    }
+  }
+}
+#light {
+  .message-sideBar {
+    background: #EBF2FA;
+  }
+  .message-tab {
+    color: #818d99;
+  }
+  .selected {
+    color: #2dccd3;
+  }
+  .message-list {
+    li {
+      border: 1px solid #BCD0E3;
+    }
+  }
+  .message-info {
+    .message-text {
+      color: #2491F6;
+    }
+    .message-title {
+      color: #2491F6;
+    }
+    .message-close {
+      color: #2491F6;
+    }
+    .message-other {
+      color: #2491F6;
+    }
+  }
+}
 .message-sideBar {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  background: #272a35;
+  // background: #272a35;
 }
 .message-content {
   width: 99%;
@@ -209,7 +280,7 @@ export default {
   width: 40%;
   height: 48px;
   font-size: 16px;
-  color: #818d99;
+  // color: #818d99;
   text-align: center;
   line-height: 48px;
   &:hover {
@@ -228,13 +299,11 @@ export default {
 }
 .message-list {
   width: calc(100% - 10px);
-  // height: calc(100% - 50px);
   padding-right: 10px;
   /*修改滚动条样式*/
   &::-webkit-scrollbar{
     width:8Px;
     height:10Px;
-    /**/
   }
   &::-webkit-scrollbar-track{
     background: #272a35;
@@ -254,7 +323,7 @@ export default {
     display: flex;
     padding: 11px;
     margin-bottom: 12px;
-    border: 1px solid #13585c;
+    // border: 1px solid #13585c;
     .message-heatMap {
       width: 100px;
       height: 50px;
@@ -268,15 +337,15 @@ export default {
       position: relative;
       flex: 1;
       .message-text {
-        color: #fff;
+        // color: #fff;
         font-size: 14px;
       }
       .message-title {
-        color: #fff;
+        // color: #fff;
         font-size: 14px;
       }
       .message-close {
-        color: #fff;
+        // color: #fff;
         font-size: 18px;
         cursor: pointer;
       }
@@ -288,8 +357,7 @@ export default {
         position: absolute;
         width: 100%;
         bottom: 0;
-        color: #fff;
-        // line-height: 25px;
+        // color: #fff;
         span {
           vertical-align: -webkit-baseline-middle; 
         }

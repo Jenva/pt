@@ -303,11 +303,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#dark {
+  .vehicle-manager {
+    background: #21232d;
+  }
+}
+#light {
+  .vehicle-manager {
+    background: #EBF2FA;
+  }
+}
 .vehicle-manager {
   height: 100%;
   padding: 36px 24px;
   box-sizing: border-box;
-  background: #21232d;
+  // background: #21232d;
   .el-input,
   .el-select {
     width: 90%;
