@@ -219,8 +219,8 @@ export default {
   }
   .toggle {
     .selected.span {
-      color: rgba(164, 180, 195, 1);
-      background: rgba(215, 233, 250, 1);
+      color: #a0cffa;
+      background: #fff;
     }
     span {
       border: 1px solid rgba(164, 180, 195, 1);
@@ -251,7 +251,7 @@ export default {
       height: 20Px;
       padding: 5Px 10Px;
       font-size: 20Px;
-      color: #fff;
+      color: rgba(164, 180, 195, 1);
       // border: 1px solid #209399;
       cursor: pointer;
     }

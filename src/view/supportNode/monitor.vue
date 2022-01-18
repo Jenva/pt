@@ -56,7 +56,7 @@ export default {
       standData: {},
       listId: 0,
       currentStand: 0,
-      nodeList: {},
+      nodeList: [],
       ws: '',
       defaultProps: {
         label: 'label',
@@ -236,6 +236,8 @@ export default {
     .task-list {
       .task-title {
         color: #2dccd3;
+        background: url('../../assets/tab_bg@2x.jpg');
+        background-size: 100% 100%;
       }
       .list {
         border: 1px solid #13585c;
@@ -263,6 +265,8 @@ export default {
     }
     .node-chart-stand {
       span {
+        background: url('../../assets/cell_2@3x.png');
+        background-size: 100% 100%;
         .node-chart-stand-text {
           color: #fff;
         }
@@ -279,13 +283,15 @@ export default {
     .task-list {
       .task-title {
         color: #2491F6;
+        background: url('../../assets/light-title@2x.png');
+        background-size: contain;
       }
       .list {
         border: 1px solid #BCD0E3;
         background: #fff;
       }
     }
-     .content {
+    .content {
       border: 1px solid #BCD0E3;
     }
     .main-video,
@@ -307,6 +313,8 @@ export default {
     }
     .node-chart-stand {
       span {
+        background: url('../../assets/light-craft@2x.png');
+        background-size: 100% 100%;
         .node-chart-stand-text {
           color: #2491F6;
         }
@@ -330,8 +338,6 @@ export default {
       width: 126px;
       height: 48Px;
       margin-bottom: 12px;
-      background: url('../../assets/tab_bg@2x.jpg');
-      background-size: 100% 100%;
       text-align: center;
       line-height: 48Px;
       // color: #2dccd3;
@@ -413,22 +419,25 @@ export default {
         // background: #13585c;
       }
       .node-chart-stand {
+        position: relative;
         padding: 0 20px;
-        line-height: 400px;
+        top: 50%;
+        transform: translateY(-50%);
+        // line-height: 400px;
         span {
           position: relative;
           display: inline-block;
           width: 96px;
           height: 68px;
           line-height: 1.5;
-          background: url('../../assets/cell_2@3x.png');
-          background-size: 100% 100%;
-          img {
-            width: 100%;
-            height: 100%;
-          }
+          margin-top: 10px;
           .node-chart-stand-text {
-            line-height: 88px;
+            position: relative;
+            // height: 68px;
+            top: 50%;
+            transform: translateY(-50%);
+            // line-height: 68px;
+            margin-top: 8px;
             text-align: center;
             // color: #fff;
             font-size: 14px;

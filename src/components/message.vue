@@ -210,7 +210,9 @@ export default {
   }
   .selected {
     color: #2dccd3;
-  }
+    background: url('../assets/tab_bg@2x.jpg');
+    background-size: 100% 100%;
+    }
   .message-list {
     li {
       border: 1px solid #13585c;
@@ -241,11 +243,13 @@ export default {
     color: #818d99;
   }
   .selected {
-    color: #2dccd3;
+    color: #2491F6;
+    background: url('../assets/message-tab@2x.png');
+    background-size: 100% 100%;
   }
   .message-list {
     li {
-      border: 1px solid #BCD0E3;
+      border: 1px solid #2491F6;
     }
   }
   .message-info {
@@ -279,6 +283,7 @@ export default {
   display: inline-block;
   width: 40%;
   height: 48px;
+  max-width: 178px;
   font-size: 16px;
   // color: #818d99;
   text-align: center;
