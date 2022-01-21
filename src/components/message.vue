@@ -160,7 +160,8 @@ export default {
     toDetail (message) {
       const path = this.currentTab === 'custom' ? '/psgFlowMonitor' : '/vehicleMonitor'
       const name = this.currentTab === 'custom' ? '客流监控' : '五类车监控'
-      window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}`, name}))
+      const type = /dark/.test(this.$route.query.type) ? 'dark' : 'light'
+      window.bykj.frameCall('newwindow', JSON.stringify({url: `${path}?data=${JSON.stringify(message)}&type=${type}`, name}))
       // const data = {
       //   camera: '10.133.7.140'
       // }

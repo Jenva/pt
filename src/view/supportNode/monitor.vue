@@ -27,7 +27,7 @@
         </div>
         <div class="node-chart-stand">
           <span v-for="node in nodeList" :key="node.detailValue">
-            <div :class="['node-chart-stand-text', {'line-height': node.detailValue === String(currentStand)}]">
+            <div :class="['node-chart-stand-text', {'height-line': node.detailValue === String(currentStand)}]">
               {{node.detailName }}
             </div>
           </span>
@@ -153,7 +153,8 @@ export default {
     },
     getMessage (evt) {
       const message = evt.data && JSON.parse(evt.data)
-      this.currentStand = message.data.event
+      console.log(message)
+      this.currentStand = message.data.detail.event
     },
     getByFlightStand (standId) {
       flightAPI.getByFlightStand({ depLoc: standId }).then(res => {
@@ -266,7 +267,7 @@ export default {
         .node-chart-stand-text {
           color: #fff;
         }
-        .line-height {
+        .node-chart-stand-text.height-line {
           color: #ff0000
         }
       }
@@ -310,7 +311,7 @@ export default {
         .node-chart-stand-text {
           color: #2491F6;
         }
-        .line-height {
+        .node-chart-stand-text.height-line {
           color: #ff0000
         }
       }
