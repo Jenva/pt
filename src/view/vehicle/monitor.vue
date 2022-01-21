@@ -409,6 +409,8 @@ export default {
   .task-list {
     .task-title {
       color: #2dccd3;
+      background: url('../../assets/tab_bg@2x.jpg');
+      background-size: 100% 100%;
     }
     .list {
       border: 1px solid #13585c;
@@ -440,6 +442,8 @@ export default {
   .task-list {
     .task-title {
       color: #2491F6;
+      background: url('../../assets/light-title@2x.png');
+      background-size: contain;
     }
     .list {
       background: #fff;
@@ -489,8 +493,6 @@ export default {
       width: 126px;
       height: 48px;
       margin-bottom: 12px;
-      background: url('../../assets/tab_bg@2x.jpg');
-      background-size: 100% 100%;
       text-align: center;
       line-height: 48px;
       // color: #2dccd3;
