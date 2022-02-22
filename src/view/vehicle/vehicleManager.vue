@@ -238,7 +238,7 @@ export default {
       })
     },
     confirm (cb) {
-      this.updateTask()
+      // this.updateTask()
       this.$refs.taskForm.validate((res) => {
         if (res) {
           if (this.type === 'add') {
