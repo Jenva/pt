@@ -16,6 +16,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        :current-page="offset + 1"
         :page-sizes="[12, 24, 60, 120]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
