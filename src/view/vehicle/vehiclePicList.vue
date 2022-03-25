@@ -60,7 +60,8 @@ export default {
       this.offset = page - 1
       this.getPicList(this.params)
     },
-    getPicList (params) {
+    getPicList (params, clickSearch) {
+      if (clickSearch) this.offset = 0
       this.params = params
       vehicleAPI.queryListByParams(this.offset, this.limit, params).then(res => {
         res.data.payload.rows.forEach(item => {

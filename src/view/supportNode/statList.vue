@@ -115,13 +115,13 @@ export default {
   },
   methods: {
     handleSizeChange (size) {
+      this.offset = 0
       this.limit = size
-      this.search()
+      this.handleSearch()
     },
     handleCurrentChange (page) {
-      this.offset = 0
       this.offset = page - 1
-      this.search()
+      this.handleSearch()
     },
     downloadFile (id) {
       return commonAPI.downloadFile(id)
@@ -156,7 +156,7 @@ export default {
     close () {
       this.showPic = false
     },
-    search () {
+    getParams () {
       const params = Object.assign({}, this.formData)
 
       if (params.planDepTime) {
@@ -174,7 +174,15 @@ export default {
         params['planArrTime_lt'] = days(params.planArrTime[1]).format('YYYY-MM-DD HH:mm:ss')
         delete params.planArrTime
       }
+      return params
+    },
+    handleSearch () {
+      const params = this.getParams()
       this.getList(this.offset, this.limit, params)
+    },
+    search () {
+      this.offset = 0
+      this.handleSearch()
     },
     reset () {
       this.$refs.form.resetFields()

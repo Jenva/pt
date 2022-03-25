@@ -172,7 +172,7 @@ export default {
         this.$refs.videoList.getList(params)
       } else {
         if (this.name === 'pic') {
-          this.$refs.picList.getPicList(params)
+          this.$refs.picList.getPicList(params, true)
         } else {
           this.$refs.tableList.getList(params)
         }
@@ -231,7 +231,7 @@ export default {
   height: 100%;
   padding: 24px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: scroll;
   // background: #21232d;
   .search {
     padding: 42px 20px 20px;

@@ -100,13 +100,13 @@ export default {
   },
   methods: {
     handleSizeChange (size) {
+      this.offset = 0
       this.limit = size
-      this.search()
+      this.handleSearch()
     },
     handleCurrentChange (page) {
-      this.offset = 0
       this.offset = page - 1
-      this.search()
+      this.handleSearch()
     },
     downloadFile (id) {
       return commonAPI.downloadFile(id)
@@ -142,7 +142,7 @@ export default {
     getHeight () {
       return 
     },
-    search () {
+    getParams () {
       const params = {}
       const { createTime, groupId } = this.formData
       if (groupId) {
@@ -154,7 +154,15 @@ export default {
         params['createTime_gt'] = days(createTime[0]).format('YYYY-MM-DD HH:mm:ss')
         params['createTime_lt'] = days(createTime[1]).format('YYYY-MM-DD HH:mm:ss')
       }
+      return params
+    },
+    handleSearch () {
+      const params = this.getParams()
       this.getList(this.offset, this.limit, params)
+    },
+    search () {
+      this.offset = 0
+      this.handleSearch()
     },
     reset () {
       this.$refs.form.resetFields()
