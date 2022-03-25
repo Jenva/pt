@@ -192,7 +192,7 @@ export default {
       flightAPI.queryListByParams(offset, limit, params).then(res => {
         res.data.payload.rows.forEach(item => {
           if (item.node_type) {
-            const nodeType = this.nodeList.find(value => Number(value.detailValue) === item.node_type)
+            const nodeType = this.nodeList.find(value => value.detailValue === String(item.node_type))
             item.nodeType = nodeType ? nodeType.detailName : '-'
           }
           if (item.plan_dep_time) {
