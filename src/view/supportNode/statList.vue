@@ -78,6 +78,7 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          :current="offset + 1"
           :page-sizes="[10, 20, 50, 100]"
           :page-size="10"
           layout="total, sizes, prev, pager, next, jumper"
@@ -191,7 +192,7 @@ export default {
       flightAPI.queryListByParams(offset, limit, params).then(res => {
         res.data.payload.rows.forEach(item => {
           if (item.node_type) {
-            const nodeType = this.nodeList.find(value => value.detailValue === item.node_type)
+            const nodeType = this.nodeList.find(value => Number(value.detailValue) === item.node_type)
             item.nodeType = nodeType ? nodeType.detailName : '-'
           }
           if (item.plan_dep_time) {
