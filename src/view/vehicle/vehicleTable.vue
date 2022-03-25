@@ -1,7 +1,7 @@
 <template>
     <div class="table">
       <el-table :data="tableList" border>
-        <el-table-column label="区域" prop="name" align="center"></el-table-column>
+        <el-table-column label="区域" prop="groupName" align="center"></el-table-column>
         <el-table-column label="统计时段" prop="time" align="center" width="350px">
           <template>
             <span>
@@ -44,9 +44,7 @@ export default {
       grouplist: [],
       startTime: '',
       endTime: '',
-      tableList: [
-        { area: 't1', time: '2010-10-10 20:20:20', vehicleType: '汽车', vehicleIn: 1, vehicleOut: 2, review: 1 }
-      ]
+      tableList: []
     }
   },
   created () {
@@ -70,15 +68,17 @@ export default {
         const list = res.data.payload
         const tableList = []
         list.forEach(item => {
+          item.count = Number(item.count)
           const groupName = this.grouplist.find(value => value.id === item.group_id)
           item.groupName = groupName ? groupName.name : '-'
-          const data = tableList.find(value => value['group_id'] === item['group_id'] && value.cartype === item.cartype)
-          if (item.cartype > -1) {
-            const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.cartype)
+          const index = tableList.findIndex(value => value['group_id'] === item['group_id'] && value.carType === item.carType)
+          if (item.carType > -1) {
+            const types = this.carTypeDict.find(value => parseInt(value.detailValue) === item.carType)
             item.carTypeDisplay =  types ? types.detailName : '-'
           }
-          if (data) {
-            data[`${item.status}-count`] = item.count
+          if (index > -1) {
+            const pre = tableList[index][`${item.status}-count`]
+            tableList[index][`${item.status}-count`] = tableList[index][`${item.status}-count`] ? (pre + item.count) : item.count
           } else {
             item[`${item.status}-count`] = item.count
             tableList.push(item)

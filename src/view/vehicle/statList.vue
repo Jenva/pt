@@ -95,7 +95,7 @@ export default {
   },
   mounted () {
     this.getDict('CAR_TYPE', 'carTypeDict')
-    this.getList()
+    // this.getList()
   },
   methods: {
     handleSizeChange () {
