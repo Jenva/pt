@@ -51,6 +51,7 @@ export default {
     return {
       total: 50,
       grouplist: [],
+      cameraList: [],
       startTime: '',
       endTime: '',
       tableList: [
@@ -112,16 +113,17 @@ export default {
       })
     },
     playVideo (data) {
-      if (data.camera) {
+      if (data.camera_name) {
+        const video = this.cameraList.find(item => item.name === data.camera_name)
         // var cur = new Date()
         var startTime = days(this.startTime).format('YYYY-MM-DD HH:mm:ss')
         var stopTime = days(this.endTime).format('YYYY-MM-DD HH:mm:ss')
         // var startTime = days(cur).subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss')
         // var stopTime = days(cur).format('YYYY-MM-DD HH:mm:ss')
-        var json={
+        var json = {
             type: 1,
-            domain: data.camera.serverId,
-            id:	data.camera.code,
+            domain: video && video.serverId,
+            id:	video && video.code,
             level: 0,
             begin:startTime,
             end:stopTime
