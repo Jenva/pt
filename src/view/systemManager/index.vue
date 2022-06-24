@@ -42,18 +42,40 @@
           <div v-if="node.level === 1" class="system-cell">
             <el-button type="text" @click.stop="showGroup('edit', data)">编辑</el-button>
             <el-button type="text" @click.stop="showGroup('add', data, node.level)">添加分区</el-button>
-            <el-button type="text" @click.stop="deleteGroup(data.id)">删除分组</el-button>
+            <!-- <el-button type="text" @click.stop="deleteGroup(data.id)">删除分组</el-button> -->
           </div>
           <div v-else-if="node.level === 2" class="system-cell">
             <el-button type="text" @click.stop="showGroup('add', data, node.level)">添加分区</el-button>
             <el-button type="text" @click.stop="showGroup('edit', data)">编辑分区</el-button>
-            <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button>
+            <el-popover
+              placement="top"
+              width="160"
+              v-model="level2">
+              <p>确定删除分组吗？</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="level2 = false">取消</el-button>
+                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id, 'level2')">确定</el-button>
+              </div>
+              <el-button type="text" slot="reference">删除区域</el-button>
+            </el-popover>
+            <!-- <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button> -->
           </div>
           <div v-else-if="node.level > 2" class="system-cell">
             <el-button type="text" @click.stop="showGroup('edit', data, node.level)">编辑分区</el-button>
             <el-button type="text" @click.stop="showAnalyse('add', data)">添加分析</el-button>
             <el-button type="text" @click.stop="showCamera('add', data)">绑定视频枪</el-button>
-            <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button>
+            <el-popover
+              placement="top"
+              width="160"
+              v-model="level3">
+              <p>确定删除分组吗？</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="level3 = false">取消</el-button>
+                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id, 'level3')">确定</el-button>
+              </div>
+              <el-button type="text" slot="reference">删除区域</el-button>
+            </el-popover>
+            <!-- <el-button type="text" @click.stop="deleteGroup(data.id)">删除区域</el-button> -->
           </div>
         </span>
       </el-tree>
@@ -110,6 +132,8 @@ export default {
       type: '',
       groupList: [],
       loading: false,
+      level2: false,
+      level3: false,
       handleType: '',
       tableList: [],
       formData: {
@@ -246,9 +270,10 @@ export default {
         }
       }
     },
-    deleteGroup (id) {
+    deleteGroup (id, varname) {
       groupAPI.deleteGroup(id).then(() => {
         this.getList()
+        this[varname] = false
       })
     },
     closeModal () {
