@@ -50,11 +50,12 @@
             <el-popover
               placement="top"
               width="160"
-              v-model="level2">
-              <p>确定删除分组吗？</p>
+              title="信息提示"
+              v-model="deleteBtn[`delete${data.id}`]">
+              <p style="text-align: center;font-size: 16px;">确定删除分组吗？</p>
               <div style="text-align: right; margin: 0">
-                <el-button size="mini" type="text" @click="level2 = false">取消</el-button>
-                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id, 'level2')">确定</el-button>
+                <el-button size="mini" type="text" @click="deleteBtn[`delete${data.id}`] = false">取消</el-button>
+                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id)">确定</el-button>
               </div>
               <el-button type="text" slot="reference">删除区域</el-button>
             </el-popover>
@@ -67,11 +68,12 @@
             <el-popover
               placement="top"
               width="160"
-              v-model="level3">
-              <p>确定删除分组吗？</p>
+              title="信息提示"
+              v-model="deleteBtn[`delete${data.id}`]">
+              <p style="text-align: center;font-size: 16px;">确定删除分组吗？</p>
               <div style="text-align: right; margin: 0">
-                <el-button size="mini" type="text" @click="level3 = false">取消</el-button>
-                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id, 'level3')">确定</el-button>
+                <el-button size="mini" type="text" @click="deleteBtn[`delete${data.id}`] = false">取消</el-button>
+                <el-button type="primary" size="mini" @click.stop="deleteGroup(data.id)">确定</el-button>
               </div>
               <el-button type="text" slot="reference">删除区域</el-button>
             </el-popover>
@@ -148,6 +150,7 @@ export default {
       regions: [],
       expandedKey: [],
       groupType: '',
+      deleteBtn: {},
       data: [],
       defaultProps: {
         children: 'children',
@@ -270,10 +273,10 @@ export default {
         }
       }
     },
-    deleteGroup (id, varname) {
+    deleteGroup (id) {
       groupAPI.deleteGroup(id).then(() => {
         this.getList()
-        this[varname] = false
+        this.deleteBtn[`delete${id}`] = false
       })
     },
     closeModal () {
