@@ -184,7 +184,15 @@ body,html {
     background-color: #272a35;
   }
   .el-select-dropdown__item {
-    color: #b5bbc7
+    color: #fff;
+  }
+  .el-select-dropdown__item:hover {
+    background-color: #aad0eb!important;
+    color: #272a35;
+  }
+  .el-select-dropdown__item.selected {
+    background-color: #aad0eb!important;
+    color: #272a35;
   }
   div::-webkit-scrollbar-track,
   html::-webkit-scrollbar-track {
@@ -195,6 +203,27 @@ body,html {
   .el-pagination__jump {
     color: #fff!important;
   }
+
+  .vue-treeselect__control,
+  .vue-treeselect__menu,
+  .vue-treeselect__single-value {
+    background: #272a35;
+    color: #fff!important;
+  }
+
+  .vue-treeselect__option--highlight {
+    background-color: #aad0eb;
+    color: #272a35;
+  }
+
+  .vue-treeselect__option--selected {
+    background-color: #aad0eb;
+    color: #272a35;
+  }
+}
+.vue-treeselect__option--selected {
+  color: #409EFF;
+  background-color: #F5F7FA!important;
 }
 
 .el-pagination,
@@ -246,6 +275,7 @@ html::-webkit-scrollbar-corner {
 .el-radio__label,
 .el-input__inner,
 .el-dialog__title,
+.vue-treeselect__option,
 .el-select-dropdown__item,
 .el-date-picker__header span,
 .el-date-editor .el-range-input,
@@ -301,7 +331,8 @@ html::-webkit-scrollbar-corner {
   height: 4Px ;
 }
 
-.el-select-dropdown__item {
+.el-select-dropdown__item,
+.vue-treeselect__option {
   height: 34Px;
   line-height: 34Px;
 }
@@ -327,4 +358,9 @@ html::-webkit-scrollbar-corner {
 
 .el-input--mini .el-input__inner {
   padding: 10Px 0;
+}
+
+.vue-treeselect__placeholder {
+  font-family: '宋体';
+  font-size: 16Px;
 }

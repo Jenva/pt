@@ -61,9 +61,18 @@
               required: true, message: '区域不能为空', trigger: 'blur'
             }"
           >
-            <el-select v-model="formData.groupId" @change="groupChange">
+            <treeselect 
+              v-model="formData.groupId"
+              placeholder="请选择区域"
+              :searchable="false"
+              :options="groupTreeList"
+              :defaultExpandLevel="Infinity"
+              @select="groupChange"
+              style="width: 90%">
+            </treeselect>
+            <!-- <el-select v-model="formData.groupId" @change="groupChange">
               <el-option :value="item.id" :label="item.name" v-for="item in groupList" :key="item.id"></el-option>
-            </el-select>
+            </el-select> -->
           </el-form-item>
           <el-form-item label="启动方式:" prop="bootType"
             :rules="{
@@ -145,6 +154,7 @@ export default {
         { name: '任务1', area: '西三指廊', rate: '10分钟', gun: '1.108.20.3', startTime: '2021-04-23 09:00:00', warningCount: '999' }
       ],
       groupList: [],
+      groupTreeList: [],
       bootTypeDict: [],
       rateDict: [],
       type: '',
@@ -167,12 +177,25 @@ export default {
     this.getList()
   },
   methods: {
+    getTree (data, list) {
+      for (let i = 0; i < data.length; i++) {
+        const rootNode = data[i]
+        rootNode.label = rootNode.name
+        if (list.some(item => item.parentId === rootNode.id)) {
+          rootNode.children = list.filter(item => item.parentId === rootNode.id)
+          this.getTree(rootNode.children, list)
+        }
+      }
+    },
     getGroup () {
       const params = {
         code: 'PSG'
       }
       groupAPI.listSonByParent(params).then(res => {
         this.groupList = res.data.payload
+        const rootNodes = this.groupList.filter(item => !item.parentId)
+        this.getTree(rootNodes, this.groupList)
+        this.groupTreeList = rootNodes
       })
     },
     getDict () {
@@ -200,7 +223,7 @@ export default {
       })
     },
     groupChange (data) {
-      this.getCameraList(data)
+      this.getCameraList(data.id)
     },
     getList (page = 1, limit = this.limit) {
       const pageNum = (page - 1 ) * limit
